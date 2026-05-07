@@ -1,0 +1,119 @@
+GA PROJECT STRUCTURE EXPLANATION
+
+1.  OVERALL IDEA This project implements a modular Genetic Algorithm
+    (GA) framework. The goal is to separate concerns so that:
+
+-   the GA logic is reusable
+-   simulation is independent
+-   operators (selection, crossover, mutation) are interchangeable
+-   experiments can compare different setups easily
+
+------------------------------------------------------------------------
+
+2.  MAIN ENTRY (main.py)
+
+-   Starts the program
+-   Creates simulation
+-   Configures GA components
+-   Runs training / optimization loop
+-   Used for quick execution and testing
+
+------------------------------------------------------------------------
+
+3.  SIMULATION MODULE (simulation/) simulation.py:
+
+-   Contains the environment or problem simulation
+-   Takes a genome (solution candidate)
+-   Returns a fitness value or performance score
+-   Does NOT know anything about GA logic
+
+------------------------------------------------------------------------
+
+4.  GA CORE (ga/)
+
+4.1 genetic_algorithm.py - Central controller of the GA process -
+Manages: - population initialization - evolution loop - selection,
+crossover, mutation - evaluation coordination - Does NOT implement
+specific strategies
+
+4.2 population.py - Stores a list of individuals - Provides helper
+functions: - best individual - statistics (avg fitness, etc.) -
+iteration over population
+
+4.3 individual.py - Represents a single solution (genome) - Stores: -
+genome (data) - fitness value - Can be copied or modified
+
+4.4 evaluator.py - Handles evaluation of individuals - Can be: - serial
+(single-threaded) - parallel (multiprocessing) - Calls simulation and
+assigns fitness
+
+------------------------------------------------------------------------
+
+5.  OPERATOR MODULES
+
+5.1 selection/ Chooses parents from population.
+
+-   base.py: Abstract interface for selection strategies
+
+-   tournament.py: Selects best from random subsets
+
+-   roulette.py: Selection probability proportional to fitness
+
+------------------------------------------------------------------------
+
+5.2 crossover/ Combines two parents into offspring.
+
+-   base.py: Interface for crossover strategies
+
+-   single_point.py: Splits genomes at one point and recombines
+
+-   uniform.py: Random gene-wise mixing of parents
+
+------------------------------------------------------------------------
+
+5.3 mutation/ Introduces randomness into individuals.
+
+-   base.py: Interface for mutation strategies
+
+-   gaussian.py: Adds Gaussian noise to real-valued genomes
+
+-   bitflip.py: Flips bits in binary genomes
+
+------------------------------------------------------------------------
+
+5.4 replacement/ Defines how new generation replaces old one.
+
+-   elitism.py: Keeps best individuals from previous generation
+
+-   generational.py: Fully replaces old population with offspring
+
+------------------------------------------------------------------------
+
+6.  EXPERIMENTS (experiments/)
+
+compare.py: - Runs multiple GA configurations - Compares performance of
+different: - selection methods - crossover methods - mutation methods -
+Used for benchmarking and research
+
+------------------------------------------------------------------------
+
+7.  WORKFLOW
+
+STEP 1: Initialization - main.py creates simulation - GA creates initial
+population
+
+STEP 2: Evaluation - each individual is passed to simulation - fitness
+is computed
+
+STEP 3: Selection - best parents are chosen using selection strategy
+
+STEP 4: Reproduction - crossover creates offspring - mutation modifies
+offspring
+
+STEP 5: Replacement - new population is formed
+
+STEP 6: Loop - steps 2–5 repeat for N generations
+
+STEP 7: Experiment Output - best solution stored - statistics logged -
+comparison results saved
+

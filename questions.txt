@@ -1,0 +1,11 @@
+------------------------------------------------------------------------
+Coordinate System Indexing
+
+Currently we consistently use matrix style indexing.
+The Initial positions is passed with List of ("type", (row, col)) where row is the index concerning the height.
+
+I think keeping matrix style is good because of numpy.
+
+A note on Convention: use mathematical indexing when working with coordinates and call the variables x, y. Call variables row, col when working with matrix style indexing.
+
+------------------------------------------------------------------------
