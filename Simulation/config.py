@@ -1,4 +1,5 @@
 SEED = None
+END_DAYS = 20
 # Capcities
 CAPACITYL = 100
 CAPACITYS = 10

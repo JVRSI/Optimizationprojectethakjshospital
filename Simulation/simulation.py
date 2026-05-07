@@ -10,13 +10,12 @@ class Simulation:
     def run(self):
         print("a Simulation has started")
         self.initi()
-        while(self.steps < self.end_day):
+        while(self.steps < END_DAYS):
             self.step()
         print("a Simulation has finished")
-    def __init__(self, start_pos, cities, end_day=20,):
+    def __init__(self, start_pos, cities):
         self.start_pos = start_pos
         self.cities = cities
-        self.end_day = end_day
         self.steps = 0
         self.hospitals = []
         self.rng = np.random.default_rng(SEED)
