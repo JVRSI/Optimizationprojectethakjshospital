@@ -9,3 +9,5 @@ class GAConfig:
     mean_hospital_large: int = 30
     mean_hospital_small: float = 50
 
+    n_parents = 5
+
