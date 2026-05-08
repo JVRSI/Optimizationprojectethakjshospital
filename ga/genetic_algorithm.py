@@ -6,8 +6,15 @@ from ga.variation.base import VariationStrategy
 from ga.replacement.base import ReplacementStrategy
 from ga.evaluator import Evaluator
 from ga.generator import Generator
+from ga.analysis.statistics import GAStatistics
+from ga.paths import RUNS_DIR
 
 import numpy as np
+from datetime import datetime
+from pathlib import Path
+from dataclasses import asdict
+import json
+
 
 
 
@@ -40,6 +47,8 @@ class GeneticAlgorithm:
 
         self.config = config
 
+        self.statistics = GAStatistics()
+
         self.selection = selection
         self.variation = variation
         self.replacement = replacement
@@ -70,7 +79,14 @@ class GeneticAlgorithm:
             self.population.individuals
         )
         
+        if self.config.collect_performance_data:
+            self.statistics.record(
+                generation=0,
+                population=self.population.individuals
+            )
+
         #+ statistics
+
 
         pass
 
@@ -114,6 +130,32 @@ class GeneticAlgorithm:
 
         for generation in range(generations):
             self.step(generation)
+            
+            if self.config.collect_performance_data:
+                self.statistics.record(
+                    generation=generation,
+                    population=self.population.individuals
+                )
+
+
+        # save run result, config and stats (in a new folder within runs)
+        dir_name = f"{self.selection.file_name()}_{self.variation.file_name()}_{self.replacement.file_name()}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}_{self.evaluator.file_name()}"
+        dir_path = Path(RUNS_DIR) / dir_name
+
+        # stats and plots
+        if self.config.collect_performance_data:
+            self.statistics.save_csv(dir_path, self.config.plot_images)
+
+        # config
+        config_dict = asdict(self.config)  #!? we should save total configuration, usually one shouldn't (but could) pass simulation config to ga, thus I think we should save the stuff in main and not here. We could use an ExperimentLogger class
+        with open(dir_path / "config.json", "w") as f:
+            json.dump(config_dict, f, indent=4)
+
+        # result
+        best_individual = self.population.best()
+        best_dict = best_individual.to_dict()
+        with open(dir_path / "config.json", "w") as f:
+            json.dump(best_dict, f, indent=4)
             
 
         return best_individual

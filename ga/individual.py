@@ -24,3 +24,12 @@ class Individual:
     # on print(individual) this string is returned
     def __repr__(self):
         return f"genome: {self.genome}\nfitness: {self.fitness}"
+    
+    def to_dict(self):
+        return {
+            "genome": [
+                [gene[0], list(gene[1])]  # tuple -> list
+                for gene in self.genome
+            ],
+            "fitness": self.fitness
+        }
