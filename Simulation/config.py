@@ -1,21 +1,27 @@
-SEED = None
-END_DAYS = 20
-# Capcities
-CAPACITYL = 100
-CAPACITYS = 10
-# Sick rate for population calculations
-SICK_RATE_U = 0.001
-SICK_RATE_N = 0.01
-# Days in treatment expected value
-PATIENT_DAYS_U = 3
-PATIENT_DAYS_N = 7
-# (Non)urgent
-URGENCY_U = 2
-URGENCY_N = 1
-# Survival Prob for dist
-BASE_SURVIVAL_PROB_U = 0.95
-BASE_SURVIVAL_PROB_N = 0.99
-DISTANCE_PENALTY_U = 0.05
-DISTANCE_PENALTY_N = 0.005
-SURVIVAL_NOISE_STD_U = 0.05
-SURVIVAL_NOISE_STD_N = 0.02
+
+from dataclasses import dataclass
+from typing import Tuple
+
+@dataclass
+class SimConfig:
+    SEED = None
+    END_DAYS = 20
+    # Capcities
+    CAPACITYL = 100
+    CAPACITYS = 10
+    # Sick rate for population calculations
+    SICK_RATE_U = 0.001
+    SICK_RATE_N = 0.01
+    # Days in treatment expected value
+    PATIENT_DAYS_U = 3
+    PATIENT_DAYS_N = 7
+    # (Non)urgent
+    URGENCY_U = 2
+    URGENCY_N = 1
+    # Survival Prob for dist
+    BASE_SURVIVAL_PROB_U = 0.95
+    BASE_SURVIVAL_PROB_N = 0.99
+    DISTANCE_PENALTY_U = 0.05
+    DISTANCE_PENALTY_N = 0.005
+    SURVIVAL_NOISE_STD_U = 0.05
+    SURVIVAL_NOISE_STD_N = 0.02
