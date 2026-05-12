@@ -8,7 +8,7 @@ class SimConfig:
     # Hospital capacities
     # Type 2 = large / major hospital
     # Type 1 = smaller regional hospital
-    CAPACITYL = 5
+    CAPACITYL = 100
     CAPACITYS = 2
     COSTL = 10
     COSTS = 5
