@@ -31,8 +31,10 @@ class Hospital:
         self.sc = sc
         if type == 2: # Large hospital
             self.capacity = sc.CAPACITYL
+            self.cost = sc.COSTL
         elif type == 1: # Small hospital
             self.capacity = sc.CAPACITYS
+            self.cost = sc.COSTS
 
     def can_treat(self, patient):
         if self.type == 2:

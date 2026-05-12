@@ -8,8 +8,10 @@ class SimConfig:
     # Hospital capacities
     # Type 2 = large / major hospital
     # Type 1 = smaller regional hospital
-    CAPACITYL = 100
+    CAPACITYL = 5
     CAPACITYS = 2
+    COSTL = 10
+    COSTS = 5
 
     # Daily probability that one person needs hospital treatment.
     # These values are intentionally much lower than before because the

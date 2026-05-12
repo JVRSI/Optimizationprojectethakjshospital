@@ -11,18 +11,42 @@ import time
 class SimResult:
     not_admitted_count: int = 0
     not_survived_count: int = 0
+    admitted_count: int = 0
+
+    not_survived_urgent: int = 0
+    not_survived_nonurgent: int = 0
+    not_admitted_urgent: int = 0
+    not_admitted_nonurgent: int = 0
+    admitted_urgent: int = 0
+    admitted_nonurgent: int = 0
+
+    total_travel_distance: float = 0.0
+    admitted_travel_distances: list = None
+    not_survived_travel_distances: list = None
+
     not_survived_by_day: list = None
     not_admitted_by_day: list = None
+    admitted_by_day: list = None
+
     admitted_choice_counts: dict = None
     admitted_choice_counts_by_day: list = None
     not_survived_choice_counts: dict = None
     not_survived_choice_counts_by_day: list = None
 
+    admitted_per_hospital: dict = None
+    rejected_per_hospital: dict = None
+
     def __post_init__(self):
+        if self.admitted_travel_distances is None:
+            self.admitted_travel_distances = []
+        if self.not_survived_travel_distances is None:
+            self.not_survived_travel_distances = []
         if self.not_survived_by_day is None:
             self.not_survived_by_day = []
         if self.not_admitted_by_day is None:
             self.not_admitted_by_day = []
+        if self.admitted_by_day is None:
+            self.admitted_by_day = []
         if self.admitted_choice_counts is None:
             self.admitted_choice_counts = {}
         if self.admitted_choice_counts_by_day is None:
@@ -31,6 +55,10 @@ class SimResult:
             self.not_survived_choice_counts = {}
         if self.not_survived_choice_counts_by_day is None:
             self.not_survived_choice_counts_by_day = []
+        if self.admitted_per_hospital is None:
+            self.admitted_per_hospital = {}
+        if self.rejected_per_hospital is None:
+            self.rejected_per_hospital = {}
 
 class Simulation:
     def run(self):
@@ -48,7 +76,67 @@ class Simulation:
 
         print(f"Simulation finished in thread {thread_id} after {duration:.4f} seconds")
 
+        return self.calculate_fitness()
+
+    def calculate_fitness(self):
+        total_patients = self.result.admitted_count + self.result.not_survived_count + self.result.not_admitted_count
+
+        if total_patients == 0:
+            return 0.0
+
+        average_admitted_distance = 0.0
+        if len(self.result.admitted_travel_distances) > 0:
+            average_admitted_distance = sum(self.result.admitted_travel_distances) / len(self.result.admitted_travel_distances)
+
+        average_not_survived_distance = 0.0
+        if len(self.result.not_survived_travel_distances) > 0:
+            average_not_survived_distance = sum(self.result.not_survived_travel_distances) / len(self.result.not_survived_travel_distances)
+
+        total_admitted_choice_rank = sum(
+            choice_rank * count
+            for choice_rank, count in self.result.admitted_choice_counts.items()
+        )
+        average_admitted_choice_rank = 0.0
+        if self.result.admitted_count > 0:
+            average_admitted_choice_rank = total_admitted_choice_rank / self.result.admitted_count
+
+        total_not_survived_choice_rank = sum(
+            choice_rank * count
+            for choice_rank, count in self.result.not_survived_choice_counts.items()
+        )
+        average_not_survived_choice_rank = 0.0
+        if self.result.not_survived_count > 0:
+            average_not_survived_choice_rank = total_not_survived_choice_rank / self.result.not_survived_count
+
+        used_hospitals = len(self.result.admitted_per_hospital)
+        total_hospitals = len(self.hospitals)
+        unused_hospitals = total_hospitals - used_hospitals
+        cost_hospitals = 0
+        for hospital in self.hospitals:
+            cost_hospitals += hospital.cost
+
+        fitness = 0.0
+
+        fitness += 10000 * self.result.not_survived_count
+        fitness += 5000 * self.result.not_admitted_count
+
+        fitness += 15000 * self.result.not_survived_urgent
+        fitness += 7000 * self.result.not_admitted_urgent
+
+        fitness += 10 * average_admitted_distance
+        fitness += 25 * average_not_survived_distance
+
+        fitness += 100 * average_admitted_choice_rank
+        fitness += 250 * average_not_survived_choice_rank
+
+        fitness += 50 * unused_hospitals
+        fitness += 100 * cost_hospitals
+
+        return fitness
+
+    def get_result(self):
         return self.result
+
     def __init__(self, start_pos, cities, sc):
         self.sc = sc
         self.start_pos = start_pos
@@ -66,6 +154,7 @@ class Simulation:
     def step(self):
         not_survived_before = self.result.not_survived_count
         not_admitted_before = self.result.not_admitted_count
+        admitted_before = self.result.admitted_count
         admitted_choice_counts_before = self.result.admitted_choice_counts.copy()
         not_survived_choice_counts_before = self.result.not_survived_choice_counts.copy()
 
@@ -74,6 +163,7 @@ class Simulation:
 
         self.result.not_survived_by_day.append(self.result.not_survived_count - not_survived_before)
         self.result.not_admitted_by_day.append(self.result.not_admitted_count - not_admitted_before)
+        self.result.admitted_by_day.append(self.result.admitted_count - admitted_before)
 
         admitted_choice_counts_today = {}
         for choice_rank, count_after in self.result.admitted_choice_counts.items():
@@ -119,6 +209,38 @@ class Simulation:
 
         return max(0.0, min(1.0, prob))
 
+    def record_admission(self, patient, hospital, choice_rank, distance_to_hospital):
+        self.result.admitted_count += 1
+        self.result.total_travel_distance += distance_to_hospital
+        self.result.admitted_travel_distances.append(distance_to_hospital)
+        self.result.admitted_choice_counts[choice_rank] = self.result.admitted_choice_counts.get(choice_rank, 0) + 1
+        self.result.admitted_per_hospital[hospital.hos_id] = self.result.admitted_per_hospital.get(hospital.hos_id, 0) + 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.admitted_urgent += 1
+        else:
+            self.result.admitted_nonurgent += 1
+
+    def record_not_survived(self, patient, hospital, choice_rank, distance_to_hospital):
+        self.result.not_survived_count += 1
+        self.result.total_travel_distance += distance_to_hospital
+        self.result.not_survived_travel_distances.append(distance_to_hospital)
+        self.result.not_survived_choice_counts[choice_rank] = self.result.not_survived_choice_counts.get(choice_rank, 0) + 1
+        self.result.rejected_per_hospital[hospital.hos_id] = self.result.rejected_per_hospital.get(hospital.hos_id, 0) + 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.not_survived_urgent += 1
+        else:
+            self.result.not_survived_nonurgent += 1
+
+    def record_not_admitted(self, patient):
+        self.result.not_admitted_count += 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.not_admitted_urgent += 1
+        else:
+            self.result.not_admitted_nonurgent += 1
+
     def sorted_hospitals_by_distance(self, city_pos):
         return sorted(
             [(self.distance(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
@@ -153,15 +275,16 @@ class Simulation:
             survival_probability = self.survival_probability(patient, distance_to_hospital)
 
             if self.rng.random() > survival_probability:
-                self.result.not_survived_count += 1
-                self.result.not_survived_choice_counts[choice_rank] = self.result.not_survived_choice_counts.get(choice_rank, 0) + 1
+                self.record_not_survived(patient, hospital, choice_rank, distance_to_hospital)
                 return None
 
             if hospital.add_patient(patient):
-                self.result.admitted_choice_counts[choice_rank] = self.result.admitted_choice_counts.get(choice_rank, 0) + 1
+                self.record_admission(patient, hospital, choice_rank, distance_to_hospital)
                 return hospital.hos_id
 
-        self.result.not_admitted_count += 1
+            self.result.rejected_per_hospital[hospital.hos_id] = self.result.rejected_per_hospital.get(hospital.hos_id, 0) + 1
+
+        self.record_not_admitted(patient)
         return None
 
     def update_cities(self):
