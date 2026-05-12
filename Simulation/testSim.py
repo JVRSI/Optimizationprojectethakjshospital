@@ -323,17 +323,41 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
         sc=sc
     )
 
-    result = simulation.run()
+    fitness = simulation.run()
+    result = simulation.get_result()
 
     print()
     print("Simulation finished")
     print("-------------------")
     print("Hospital list:", label)
     print("Days simulated:", sc.END_DAYS)
+    print("Fitness:", fitness)
     print("Total not admitted:", result.not_admitted_count)
     print("Total not survived:", result.not_survived_count)
+
+    print("Total admitted:", result.admitted_count)
+
+    print("Urgent admitted:", result.admitted_urgent)
+    print("Urgent not admitted:", result.not_admitted_urgent)
+    print("Urgent not survived:", result.not_survived_urgent)
+
+    print("Nonurgent admitted:", result.admitted_nonurgent)
+    print("Nonurgent not admitted:", result.not_admitted_nonurgent)
+    print("Nonurgent not survived:", result.not_survived_nonurgent)
+
     print("Not admitted by day:", result.not_admitted_by_day)
     print("Not survived by day:", result.not_survived_by_day)
+
+    print("Admitted by day:", result.admitted_by_day)
+
+    if len(result.admitted_travel_distances) > 0:
+        print("Average admitted travel distance:", np.mean(result.admitted_travel_distances))
+
+    if len(result.not_survived_travel_distances) > 0:
+        print("Average not-survived travel distance:", np.mean(result.not_survived_travel_distances))
+
+    print("Admitted per hospital:", dict(sorted(result.admitted_per_hospital.items())))
+    print("Rejected per hospital:", dict(sorted(result.rejected_per_hospital.items())))
 
     if hasattr(result, "admitted_choice_counts"):
         print("Admitted choice counts:", dict(sorted(result.admitted_choice_counts.items())))

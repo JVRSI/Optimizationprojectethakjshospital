@@ -111,26 +111,53 @@ class Simulation:
         used_hospitals = len(self.result.admitted_per_hospital)
         total_hospitals = len(self.hospitals)
         unused_hospitals = total_hospitals - used_hospitals
-        cost_hospitals = 0
-        for hospital in self.hospitals:
-            cost_hospitals += hospital.cost
+
+        total_hospital_cost = sum(hospital.cost for hospital in self.hospitals)
+
+        death_rate = self.result.not_survived_count / total_patients
+        not_admitted_rate = self.result.not_admitted_count / total_patients
+        urgent_death_rate = self.result.not_survived_urgent / total_patients
+        urgent_not_admitted_rate = self.result.not_admitted_urgent / total_patients
+
+        max_distance = np.sqrt(self.cities.shape[0] ** 2 + self.cities.shape[1] ** 2)
+
+        normalized_admitted_distance = average_admitted_distance / max_distance
+        normalized_not_survived_distance = average_not_survived_distance / max_distance
+
+        max_choice_rank = max(1, len([hospital for hospital in self.hospitals if hospital.type == 2]))
+
+        normalized_admitted_choice_rank = average_admitted_choice_rank / max_choice_rank
+        normalized_not_survived_choice_rank = average_not_survived_choice_rank / max_choice_rank
+
+        max_possible_cost = sum(
+            getattr(self.sc, "COSTL", 3)
+            for hospital in self.hospitals
+        )
+
+        normalized_cost = 0.0
+        if max_possible_cost > 0:
+            normalized_cost = total_hospital_cost / max_possible_cost
+
+        normalized_unused_hospitals = 0.0
+        if total_hospitals > 0:
+            normalized_unused_hospitals = unused_hospitals / total_hospitals
 
         fitness = 0.0
 
-        fitness += 10000 * self.result.not_survived_count
-        fitness += 5000 * self.result.not_admitted_count
+        fitness += 0.40 * death_rate
+        fitness += 0.20 * not_admitted_rate
 
-        fitness += 15000 * self.result.not_survived_urgent
-        fitness += 7000 * self.result.not_admitted_urgent
+        fitness += 0.15 * urgent_death_rate
+        fitness += 0.05 * urgent_not_admitted_rate
 
-        fitness += 10 * average_admitted_distance
-        fitness += 25 * average_not_survived_distance
+        fitness += 0.05 * normalized_admitted_distance
+        fitness += 0.03 * normalized_not_survived_distance
 
-        fitness += 100 * average_admitted_choice_rank
-        fitness += 250 * average_not_survived_choice_rank
+        fitness += 0.04 * normalized_admitted_choice_rank
+        fitness += 0.03 * normalized_not_survived_choice_rank
 
-        fitness += 50 * unused_hospitals
-        fitness += 100 * cost_hospitals
+        fitness += 0.03 * normalized_unused_hospitals
+        fitness += 0.02 * normalized_cost
 
         return fitness
 
