@@ -10,13 +10,11 @@ from entities import City
 from simulation import Simulation
 from config import SimConfig
 from testHospitals import hospitalsL, hospitalsS
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
-MATRIX_PATH = Path(
-    "/Users/johannessigmund/programming/Semester 4/"
-    "Optimization Project/Optimizationprojectethakjshospital/"
-    "Data/gov_data/Daten Matrix Reduced.csv"
-)
+MATRIX_PATH = PROJECT_ROOT  / "Data/gov_data/Daten Matrix Reduced.csv"
+
 # /usr/bin/python3 "/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/Simulation/testSim.py" --list S --seed 42 --days 20 --plot
 
 def load_population_matrix(matrix_path: Path) -> np.ndarray:
