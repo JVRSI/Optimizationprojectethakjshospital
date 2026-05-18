@@ -343,39 +343,40 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
     print("Nonurgent not admitted:", result.not_admitted_nonurgent)
     print("Nonurgent not survived:", result.not_survived_nonurgent)
 
-    print("Not admitted by day:", result.not_admitted_by_day)
-    print("Not survived by day:", result.not_survived_by_day)
+    if False:
+        print("Not admitted by day:", result.not_admitted_by_day)
+        print("Not survived by day:", result.not_survived_by_day)
 
-    print("Admitted by day:", result.admitted_by_day)
+        print("Admitted by day:", result.admitted_by_day)
 
-    if len(result.admitted_travel_distances) > 0:
-        print("Average admitted travel distance:", np.mean(result.admitted_travel_distances))
+        if len(result.admitted_travel_distances) > 0:
+            print("Average admitted travel distance:", np.mean(result.admitted_travel_distances))
 
-    if len(result.not_survived_travel_distances) > 0:
-        print("Average not-survived travel distance:", np.mean(result.not_survived_travel_distances))
+        if len(result.not_survived_travel_distances) > 0:
+            print("Average not-survived travel distance:", np.mean(result.not_survived_travel_distances))
 
-    print("Admitted per hospital:", dict(sorted(result.admitted_per_hospital.items())))
-    print("Rejected per hospital:", dict(sorted(result.rejected_per_hospital.items())))
+        print("Admitted per hospital:", dict(sorted(result.admitted_per_hospital.items())))
+        print("Rejected per hospital:", dict(sorted(result.rejected_per_hospital.items())))
 
-    if hasattr(result, "admitted_choice_counts"):
-        print("Admitted choice counts:", dict(sorted(result.admitted_choice_counts.items())))
-    else:
-        print("Admitted choice counts: not available")
+        if hasattr(result, "admitted_choice_counts"):
+            print("Admitted choice counts:", dict(sorted(result.admitted_choice_counts.items())))
+        else:
+            print("Admitted choice counts: not available")
 
-    if hasattr(result, "admitted_choice_counts_by_day"):
-        print("Admitted choice counts by day:", result.admitted_choice_counts_by_day)
-    else:
-        print("Admitted choice counts by day: not available")
+        if hasattr(result, "admitted_choice_counts_by_day"):
+            print("Admitted choice counts by day:", result.admitted_choice_counts_by_day)
+        else:
+            print("Admitted choice counts by day: not available")
 
-    if hasattr(result, "not_survived_choice_counts"):
-        print("Not survived choice counts:", dict(sorted(result.not_survived_choice_counts.items())))
-    else:
-        print("Not survived choice counts: not available")
+        if hasattr(result, "not_survived_choice_counts"):
+            print("Not survived choice counts:", dict(sorted(result.not_survived_choice_counts.items())))
+        else:
+            print("Not survived choice counts: not available")
 
-    if hasattr(result, "not_survived_choice_counts_by_day"):
-        print("Not survived choice counts by day:", result.not_survived_choice_counts_by_day)
-    else:
-        print("Not survived choice counts by day: not available")
+        if hasattr(result, "not_survived_choice_counts_by_day"):
+            print("Not survived choice counts by day:", result.not_survived_choice_counts_by_day)
+        else:
+            print("Not survived choice counts by day: not available")
 
     if plot:
         plot_hospitals_on_matrix(
