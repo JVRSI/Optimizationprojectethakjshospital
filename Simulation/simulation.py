@@ -1,46 +1,247 @@
 from dataclasses import dataclass
 import random
 import pandas as pd
-from entities import Patient, City, Hospital
-from config import *
+from entities import *
 import heapq
 import numpy as np
+import threading
+import time
+
+@dataclass
+class SimResult:
+    not_admitted_count: int = 0
+    not_survived_count: int = 0
+    admitted_count: int = 0
+
+    not_survived_urgent: int = 0
+    not_survived_nonurgent: int = 0
+    not_admitted_urgent: int = 0
+    not_admitted_nonurgent: int = 0
+    admitted_urgent: int = 0
+    admitted_nonurgent: int = 0
+
+    total_travel_distance: float = 0.0
+    admitted_travel_distances: list = None
+    not_survived_travel_distances: list = None
+
+    not_survived_by_day: list = None
+    not_admitted_by_day: list = None
+    admitted_by_day: list = None
+
+    admitted_choice_counts: dict = None
+    admitted_choice_counts_by_day: list = None
+    not_survived_choice_counts: dict = None
+    not_survived_choice_counts_by_day: list = None
+
+    admitted_per_hospital: dict = None
+    rejected_per_hospital: dict = None
+
+    def __post_init__(self):
+        if self.admitted_travel_distances is None:
+            self.admitted_travel_distances = []
+        if self.not_survived_travel_distances is None:
+            self.not_survived_travel_distances = []
+        if self.not_survived_by_day is None:
+            self.not_survived_by_day = []
+        if self.not_admitted_by_day is None:
+            self.not_admitted_by_day = []
+        if self.admitted_by_day is None:
+            self.admitted_by_day = []
+        if self.admitted_choice_counts is None:
+            self.admitted_choice_counts = {}
+        if self.admitted_choice_counts_by_day is None:
+            self.admitted_choice_counts_by_day = []
+        if self.not_survived_choice_counts is None:
+            self.not_survived_choice_counts = {}
+        if self.not_survived_choice_counts_by_day is None:
+            self.not_survived_choice_counts_by_day = []
+        if self.admitted_per_hospital is None:
+            self.admitted_per_hospital = {}
+        if self.rejected_per_hospital is None:
+            self.rejected_per_hospital = {}
 
 class Simulation:
     def run(self):
-        print("a Simulation has started")
+        start_time = time.time()
+        thread_id = threading.get_ident()
+
+        print(f"Simulation started in thread {thread_id}")
+
         self.initi()
-        while(self.steps < self.end_day):
+        if len(self.cities_list) == 0:
+            self.make_list_of_cities()
+        self.make_list_of_cities()
+
+        while(self.steps < self.sc.END_DAYS):
             self.step()
-        print("a Simulation has finished")
-    def __init__(self, start_pos, cities, end_day=20,):
+
+        duration = time.time() - start_time
+
+        print(f"Simulation finished in thread {thread_id} after {duration:.4f} seconds")
+        self.print_timing_results()
+
+        return self.calculate_fitness()
+
+    def print_timing_results(self):
+        print("\nTiming results per iteration:")
+
+        mean_step_time = sum(self.step_times) / len(self.step_times) if len(self.step_times) > 0 else 0.0
+        mean_update_hospitals_time = sum(self.update_hospitals_times) / len(self.update_hospitals_times) if len(self.update_hospitals_times) > 0 else 0.0
+        mean_update_cities_time = sum(self.update_cities_times) / len(self.update_cities_times) if len(self.update_cities_times) > 0 else 0.0
+
+        print("\nMean timing results:")
+        print(f"Mean step time: {mean_step_time:.6f} seconds")
+        print(f"Mean update_hospitals time: {mean_update_hospitals_time:.6f} seconds")
+        print(f"Mean update_cities time: {mean_update_cities_time:.6f} seconds")
+
+    def calculate_fitness(self):
+        total_patients = self.result.admitted_count + self.result.not_survived_count + self.result.not_admitted_count
+
+        if total_patients == 0:
+            return 0.0
+
+        average_admitted_distance = 0.0
+        if len(self.result.admitted_travel_distances) > 0:
+            average_admitted_distance = sum(self.result.admitted_travel_distances) / len(self.result.admitted_travel_distances)
+
+        average_not_survived_distance = 0.0
+        if len(self.result.not_survived_travel_distances) > 0:
+            average_not_survived_distance = sum(self.result.not_survived_travel_distances) / len(self.result.not_survived_travel_distances)
+
+        total_admitted_choice_rank = sum(
+            choice_rank * count
+            for choice_rank, count in self.result.admitted_choice_counts.items()
+        )
+        average_admitted_choice_rank = 0.0
+        if self.result.admitted_count > 0:
+            average_admitted_choice_rank = total_admitted_choice_rank / self.result.admitted_count
+
+        total_not_survived_choice_rank = sum(
+            choice_rank * count
+            for choice_rank, count in self.result.not_survived_choice_counts.items()
+        )
+        average_not_survived_choice_rank = 0.0
+        if self.result.not_survived_count > 0:
+            average_not_survived_choice_rank = total_not_survived_choice_rank / self.result.not_survived_count
+
+        used_hospitals = len(self.result.admitted_per_hospital)
+        total_hospitals = len(self.hospitals)
+        unused_hospitals = total_hospitals - used_hospitals
+
+        total_hospital_cost = sum(hospital.cost for hospital in self.hospitals)
+
+        death_rate = self.result.not_survived_count / total_patients
+        not_admitted_rate = self.result.not_admitted_count / total_patients
+        urgent_death_rate = self.result.not_survived_urgent / total_patients
+        urgent_not_admitted_rate = self.result.not_admitted_urgent / total_patients
+
+        max_distance = np.sqrt(self.cities.shape[0] ** 2 + self.cities.shape[1] ** 2)
+
+        normalized_admitted_distance = average_admitted_distance / max_distance
+        normalized_not_survived_distance = average_not_survived_distance / max_distance
+
+        max_choice_rank = max(1, len([hospital for hospital in self.hospitals if hospital.type == 2]))
+
+        normalized_admitted_choice_rank = average_admitted_choice_rank / max_choice_rank
+        normalized_not_survived_choice_rank = average_not_survived_choice_rank / max_choice_rank
+
+        max_possible_cost = sum(
+            getattr(self.sc, "COSTL", 3)
+            for hospital in self.hospitals
+        )
+
+        normalized_cost = 0.0
+        if max_possible_cost > 0:
+            normalized_cost = total_hospital_cost / max_possible_cost # change not
+
+        normalized_unused_hospitals = 0.0
+        if total_hospitals > 0:
+            normalized_unused_hospitals = unused_hospitals / total_hospitals
+
+        fitness = 0.0
+
+        fitness += 0.40 * death_rate
+        fitness += 0.20 * not_admitted_rate
+
+        fitness += 0.15 * urgent_death_rate
+        fitness += 0.05 * urgent_not_admitted_rate
+
+        fitness += 0.05 * normalized_admitted_distance
+        fitness += 0.03 * normalized_not_survived_distance
+
+        fitness += 0.04 * normalized_admitted_choice_rank
+        fitness += 0.03 * normalized_not_survived_choice_rank
+
+        fitness += 0.03 * normalized_unused_hospitals
+        fitness += 0.02 * normalized_cost
+
+        return fitness
+
+    def get_result(self):
+        return self.result
+
+    def __init__(self, start_pos, sc, cities_list=None, cities=None):
+        self.sc = sc
         self.start_pos = start_pos
+
+        if cities_list is None:
+            cities_list = []
+
+        if cities is None and len(cities_list) == 0:
+            raise ValueError("Either cities or cities_list must be provided.")
+
         self.cities = cities
-        self.end_day = end_day
+        self.cities_list = cities_list
         self.steps = 0
         self.hospitals = []
-        self.rng = np.random.default_rng(SEED)
-        self.not_admitted_count = 0
-        self.not_survived_count = 0
-        self.not_survived_by_day = []
-        self.not_admitted_by_day = []
+        self.rng = np.random.default_rng(self.sc.SEED)
+        self.result = SimResult()
+
+        self.step_times = []
+        self.update_hospitals_times = []
+        self.update_cities_times = []
     def initi(self):
         size = 0
-        for type, (x, y) in self.start_pos:
-            self.hospitals.append(Hospital(type, size, (x, y)))
+        for type, x, y in self.start_pos:
+            self.hospitals.append(Hospital(type, size, (x, y), self.sc))
             size += 1
         self.precompute_city_hospitals()
     def step(self):
-        not_survived_before = self.not_survived_count
-        not_admitted_before = self.not_admitted_count
+        step_start_time = time.perf_counter()
+        not_survived_before = self.result.not_survived_count
+        not_admitted_before = self.result.not_admitted_count
+        admitted_before = self.result.admitted_count
+        admitted_choice_counts_before = self.result.admitted_choice_counts.copy()
+        not_survived_choice_counts_before = self.result.not_survived_choice_counts.copy()
 
+        update_hospitals_start_time = time.perf_counter()
         self.update_hospitals()
-        self.update_cities()
+        self.update_hospitals_times.append(time.perf_counter() - update_hospitals_start_time)
 
-        self.not_survived_by_day.append(self.not_survived_count - not_survived_before)
-        self.not_admitted_by_day.append(self.not_admitted_count - not_admitted_before)
+        update_cities_start_time = time.perf_counter()
+        self.update_cities()
+        self.update_cities_times.append(time.perf_counter() - update_cities_start_time)
+
+        self.result.not_survived_by_day.append(self.result.not_survived_count - not_survived_before)
+        self.result.not_admitted_by_day.append(self.result.not_admitted_count - not_admitted_before)
+        self.result.admitted_by_day.append(self.result.admitted_count - admitted_before)
+
+        admitted_choice_counts_today = {}
+        for choice_rank, count_after in self.result.admitted_choice_counts.items():
+            count_before = admitted_choice_counts_before.get(choice_rank, 0)
+            admitted_choice_counts_today[choice_rank] = count_after - count_before
+
+        self.result.admitted_choice_counts_by_day.append(admitted_choice_counts_today)
+
+        not_survived_choice_counts_today = {}
+        for choice_rank, count_after in self.result.not_survived_choice_counts.items():
+            count_before = not_survived_choice_counts_before.get(choice_rank, 0)
+            not_survived_choice_counts_today[choice_rank] = count_after - count_before
+
+        self.result.not_survived_choice_counts_by_day.append(not_survived_choice_counts_today)
 
         self.steps += 1
+        self.step_times.append(time.perf_counter() - step_start_time)
     def update_hospitals(self):
         for hospital in self.hospitals:
             while (True):
@@ -56,19 +257,51 @@ class Simulation:
         return ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** 0.5
 
     def survival_probability(self, patient, distance):
-        if patient.urgency == URGENCY_U:
-            base_prob = BASE_SURVIVAL_PROB_U
-            distance_penalty = DISTANCE_PENALTY_U
-            noise_std = SURVIVAL_NOISE_STD_U
+        if patient.urgency == self.sc.URGENCY_U:
+            base_prob = self.sc.BASE_SURVIVAL_PROB_U
+            distance_penalty = self.sc.DISTANCE_PENALTY_U
+            noise_std = self.sc.SURVIVAL_NOISE_STD_U
         else:
-            base_prob = BASE_SURVIVAL_PROB_N
-            distance_penalty = DISTANCE_PENALTY_N
-            noise_std = SURVIVAL_NOISE_STD_N
+            base_prob = self.sc.BASE_SURVIVAL_PROB_N
+            distance_penalty = self.sc.DISTANCE_PENALTY_N
+            noise_std = self.sc.SURVIVAL_NOISE_STD_N
 
         prob = base_prob - distance_penalty * distance
         prob += self.rng.normal(0, noise_std)
 
         return max(0.0, min(1.0, prob))
+
+    def record_admission(self, patient, hospital, choice_rank, distance_to_hospital):
+        self.result.admitted_count += 1
+        self.result.total_travel_distance += distance_to_hospital
+        self.result.admitted_travel_distances.append(distance_to_hospital)
+        self.result.admitted_choice_counts[choice_rank] = self.result.admitted_choice_counts.get(choice_rank, 0) + 1
+        self.result.admitted_per_hospital[hospital.hos_id] = self.result.admitted_per_hospital.get(hospital.hos_id, 0) + 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.admitted_urgent += 1
+        else:
+            self.result.admitted_nonurgent += 1
+
+    def record_not_survived(self, patient, hospital, choice_rank, distance_to_hospital):
+        self.result.not_survived_count += 1
+        self.result.total_travel_distance += distance_to_hospital
+        self.result.not_survived_travel_distances.append(distance_to_hospital)
+        self.result.not_survived_choice_counts[choice_rank] = self.result.not_survived_choice_counts.get(choice_rank, 0) + 1
+        self.result.rejected_per_hospital[hospital.hos_id] = self.result.rejected_per_hospital.get(hospital.hos_id, 0) + 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.not_survived_urgent += 1
+        else:
+            self.result.not_survived_nonurgent += 1
+
+    def record_not_admitted(self, patient):
+        self.result.not_admitted_count += 1
+
+        if patient.urgency == self.sc.URGENCY_U:
+            self.result.not_admitted_urgent += 1
+        else:
+            self.result.not_admitted_nonurgent += 1
 
     def sorted_hospitals_by_distance(self, city_pos):
         return sorted(
@@ -90,27 +323,33 @@ class Simulation:
                 ]
 
     def send_patient_to_nearest_available_hospital(self, patient, city):
+        choice_rank = 0
+
         for hospital_id in city.hospitals_sorted:
             hospital = self.hospitals[hospital_id]
 
             if not hospital.can_treat(patient):
                 continue
 
+            choice_rank += 1
+
             distance_to_hospital = self.distance(patient.home, hospital.location)
             survival_probability = self.survival_probability(patient, distance_to_hospital)
 
             if self.rng.random() > survival_probability:
-                self.not_survived_count += 1
+                self.record_not_survived(patient, hospital, choice_rank, distance_to_hospital)
                 return None
 
             if hospital.add_patient(patient):
+                self.record_admission(patient, hospital, choice_rank, distance_to_hospital)
                 return hospital.hos_id
 
-        self.not_admitted_count += 1
-        return None
+            self.result.rejected_per_hospital[hospital.hos_id] = self.result.rejected_per_hospital.get(hospital.hos_id, 0) + 1
 
-    def update_cities(self):
-        # iterate over pandas DataFrame of cities
+        self.record_not_admitted(patient)
+        return None
+    
+    def make_list_of_cities(self):
         for i in range(self.cities.shape[0]):
             for j in range(self.cities.shape[1]):
                 city = self.cities.iloc[i, j]
@@ -122,43 +361,56 @@ class Simulation:
                 # skip cities with no available population
                 if city.btot == 0:
                     continue
+                self.cities_list.append((i,j,city))
 
-                # Update
-                urgent_sick = self.rng.binomial(city.btot, SICK_RATE_U)
-                remaining_population = city.btot - urgent_sick
-                nonurgent_sick = self.rng.binomial(remaining_population, SICK_RATE_N)
+    def update_cities(self):
+        # iterate over pandas DataFrame of cities
+        for i, j, city in self.cities_list:
 
-                sick_patients = []
+            # skip empty cells
+            if city is None:
+                continue
 
-                for _ in range(urgent_sick):
-                    days = max(1, int(self.rng.normal(PATIENT_DAYS_U, 1)))
-                    sick_patients.append(
-                        Patient(
-                            self.steps + days,
-                            (i, j),
-                            URGENCY_U
-                        )
+            # skip cities with no available population
+            if city.btot == 0:
+                continue
+
+            # Update
+            urgent_sick = self.rng.binomial(city.btot, self.sc.SICK_RATE_U)
+            remaining_population = city.btot - urgent_sick
+            nonurgent_sick = self.rng.binomial(remaining_population, self.sc.SICK_RATE_N)
+
+            sick_patients = []
+
+            for _ in range(urgent_sick):
+                days = max(1, int(self.rng.normal(self.sc.PATIENT_DAYS_U, 1)))
+                sick_patients.append(
+                    Patient(
+                        self.steps + days,
+                        (i, j),
+                        self.sc.URGENCY_U
                     )
+                )
 
-                for _ in range(nonurgent_sick):
-                    days = max(1, int(self.rng.normal(PATIENT_DAYS_N, 2)))
-                    sick_patients.append(
-                        Patient(
-                            self.steps + days,
-                            (i, j),
-                            URGENCY_N
-                        )
+            for _ in range(nonurgent_sick):
+                days = max(1, int(self.rng.normal(self.sc.PATIENT_DAYS_N, 2)))
+                sick_patients.append(
+                    Patient(
+                        self.steps + days,
+                        (i, j),
+                        self.sc.URGENCY_N
                     )
+                )
 
-                for patient in sick_patients:
-                    # patient temporarily leaves the city population
-                    city.btot -= 1
+            for patient in sick_patients:
+                # patient temporarily leaves the city population
+                city.btot -= 1
 
-                    hospital_id = self.send_patient_to_nearest_available_hospital(patient, city)
+                hospital_id = self.send_patient_to_nearest_available_hospital(patient, city)
 
-                    if hospital_id is not None:
-                        city.in_hospital += 1
-                    else:
-                        # if the patient is not admitted or does not survive the trip,
-                        # return them directly to the city population
-                        city.btot += 1
+                if hospital_id is not None:
+                    city.in_hospital += 1
+                else:
+                    # if the patient is not admitted or does not survive the trip,
+                    # return them directly to the city population
+                    city.btot += 1
