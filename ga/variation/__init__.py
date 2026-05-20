@@ -1,5 +1,12 @@
-from ga.variation.basic import BasicVariation
+from ga.variation.basic import BasicMutationVariation, BasicCrossoverVariation
+from ga.variation.classic import ClassicVariation
+from ga.variation.evolutionary import EvolutionaryVariation
+from ga.variation.microGA import MicroGAVariation
 
 __all__ = [
-    "BasicVariation",
+    "BasicMutationVariation",
+    "BasicCrossoverVariation",
+    "ClassicVariation",
+    "EvolutionaryVariation",
+    "MicroGAVariation"
 ]

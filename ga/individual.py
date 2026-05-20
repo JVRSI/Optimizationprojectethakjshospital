@@ -1,7 +1,7 @@
-from typing import TypeAlias
 from __future__ import annotations #to use -> Individual already in the Individual class, also need to change Generator
+from typing import TypeAlias
 
-Gene: TypeAlias = tuple[str, tuple[int, int]]
+Gene: TypeAlias = tuple[int, int, int]
 Genome: TypeAlias = list[Gene]  # if changed to contain mutable (List, dict, etc.) within List we need to change self.copy() to deepcopy
 
 class Individual:
@@ -16,8 +16,8 @@ class Individual:
         self.genome = genome
         self.fitness = None
 
-    def copy(self) -> Individual:
-        clone = Individual(self.genome.copy())  #copy is enough as List only contains immutables, if it would contain List or Dic we would need to deepcopy
+    def clone(self) -> Individual:
+        clone = Individual(self.genome.copy())  #copy is enough as List only contains immutables (tuples), if it would contain List or Dic we would need to deepcopy
         clone.fitness = self.fitness
         return clone
 
@@ -28,7 +28,7 @@ class Individual:
     def to_dict(self):
         return {
             "genome": [
-                [gene[0], list(gene[1])]  # tuple -> list
+                [gene[0], gene[1], gene[2]]  # tuple -> list
                 for gene in self.genome
             ],
             "fitness": self.fitness

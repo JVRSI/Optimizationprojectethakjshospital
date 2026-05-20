@@ -9,3 +9,9 @@ I think keeping matrix style is good because of numpy.
 A note on Convention: use mathematical indexing when working with coordinates and call the variables x, y. Call variables row, col when working with matrix style indexing.
 
 ------------------------------------------------------------------------
+
+Würde sim auch funktionieren wenn wie duplicate hospitals haben können?
+
+------------------------------------------------------------------------
+
+btot ist als float gespeichert, macht das so Sinn?

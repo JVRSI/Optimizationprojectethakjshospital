@@ -2,12 +2,12 @@ import pickle
 from pathlib import Path
 import pandas as pd
 
-from entities import City
+from Simulation.entities import City
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "Data"
+from paths import DATA_DIR
+
 MATRIX_FILE = DATA_DIR / "gov_data" / "Daten Matrix Reduced.csv"
-OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced.pkl"
+OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced_from_root.pkl"
 
 
 def make_list_of_cities_from_matrix(cities):

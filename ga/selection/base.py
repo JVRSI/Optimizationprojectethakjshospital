@@ -1,9 +1,25 @@
 from abc import ABC, abstractmethod
+from numpy.random import Generator
 
 from ga.individual import Individual
+from ga.population import Population
 
 class SelectionStrategy(ABC):
 
+    def __init__(
+            self,
+            n_parents : int,
+            rng : Generator
+        ):
+        super().__init__()
+        self.n_parents = n_parents
+
+
+
+
     @abstractmethod
-    def select(self, population, n_parents) -> list[Individual]:
+    def select(
+            self,
+            population : Population,
+        ):
         pass

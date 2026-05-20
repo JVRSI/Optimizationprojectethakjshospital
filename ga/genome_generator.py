@@ -4,11 +4,11 @@ import numpy as np
 
 from ga.config import GAConfig
 
-Gene: TypeAlias = tuple[str, tuple[int, int]]
+Gene: TypeAlias = tuple[int, int, int]
 Genome: TypeAlias = list[Gene]
 
 
-class Generator(ABC):
+class GenomeGenerator(ABC):
 
     def __init__(
         self, 
@@ -23,7 +23,7 @@ class Generator(ABC):
         pass
 
 
-class BasicGenerator(Generator):
+class BasicGenerator(GenomeGenerator):
     '''
 
     Returns a valid random Genome of fixed size
@@ -52,9 +52,14 @@ class BasicGenerator(Generator):
         col = idx % width
 
         # assign type of hospital
-        types = np.array(["S"] * n, dtype=object)
-        types[:m] = "L"
+        types = np.array([0] * n)
+        types[:m] = 1
 
-        return list(zip(types, zip(row, col)))
+        genes = list((types, row, col))
+
+        if not isinstance(genes, Genome):  ##REMOVE if works fine
+            raise TypeError(f"evaluator must be instance of Evaluator, got {type(genes)}")
+
+        return genes
 
 
