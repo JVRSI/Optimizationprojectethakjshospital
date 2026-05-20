@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import random
 import pandas as pd
-from entities import *
+from Simulation.entities import *
 import heapq
 import numpy as np
 import threading

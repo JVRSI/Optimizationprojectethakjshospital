@@ -15,8 +15,8 @@ GA PROJECT STRUCTURE EXPLANATION
 -   Starts the program
 -   Creates simulation
 -   Configures GA components
--   Runs training / optimization loop
--   Used for quick execution and testing
+-   Starts GA
+-   Assembles results
 
 ------------------------------------------------------------------------
 
@@ -25,7 +25,6 @@ GA PROJECT STRUCTURE EXPLANATION
 -   Contains the environment or problem simulation
 -   Takes a genome (solution candidate)
 -   Returns a fitness value or performance score
--   Does NOT know anything about GA logic
 
 ------------------------------------------------------------------------
 
@@ -33,7 +32,7 @@ GA PROJECT STRUCTURE EXPLANATION
 
 4.1 genetic_algorithm.py - Central controller of the GA process -
 Manages: - population initialization - evolution loop - selection,
-crossover, mutation - evaluation coordination - Does NOT implement
+variation - evaluation coordination - Does NOT implement
 specific strategies
 
 4.2 population.py - Stores a list of individuals - Provides helper
@@ -51,17 +50,31 @@ assigns fitness
 
 5.  OPERATOR MODULES
 
-5.1 selection/ Chooses parents from population.
+5.1 generator.py creates initial population
+
+BasicGenerator: generates random parents with fixed number of hospitals
+
+------------------------------------------------------------------------
+
+5.2 selection/ Chooses parents from population.
+
+Returns list of Individual, no explicit copy
 
 -   base.py: Abstract interface for selection strategies
 
 -   tournament.py: Selects best from random subsets
 
--   roulette.py: Selection probability proportional to fitness
+-   roulette.py: Selection probability proportional to fitness (tweaks fitness)
 
 ------------------------------------------------------------------------
 
-5.2 crossover/ Combines two parents into offspring.
+5.3 variation/ combines crossover and mutation 
+
+variation takes care of all that has to be done to get from selected parents to next generation (including cloning certain parents etc.)
+
+Deleting the fitness value of individuals that where mutated/crossovered in place is currently handled by the variator. Technically this is a job of the mutator/crosser it is currently easier to do in variation
+
+crossover/ Combines two parents into offspring.
 
 -   base.py: Interface for crossover strategies
 
@@ -69,23 +82,13 @@ assigns fitness
 
 -   uniform.py: Random gene-wise mixing of parents
 
-------------------------------------------------------------------------
 
-5.3 mutation/ Introduces randomness into individuals.
+- mutation.py Holds some mutation strategies, Given some Individual I, randomly changes some genes of I (mutation with probability 1)
 
--   base.py: Interface for mutation strategies
+SinglePointMutation: one gene selected uniformly
 
--   gaussian.py: Adds Gaussian noise to real-valued genomes
+SingePointMutationWithEqualOpportunity: equal opportunity to either change/remove an existing hospital or add a new hospital
 
--   bitflip.py: Flips bits in binary genomes
-
-------------------------------------------------------------------------
-
-5.4 replacement/ Defines how new generation replaces old one.
-
--   elitism.py: Keeps best individuals from previous generation
-
--   generational.py: Fully replaces old population with offspring
 
 ------------------------------------------------------------------------
 

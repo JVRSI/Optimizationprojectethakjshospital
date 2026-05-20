@@ -16,8 +16,8 @@ class Population:
     def sort_population(self) -> None:
         self.individuals = sorted(self.individuals, key=lambda x: x.fitness)
 
-        self.best = self.individuals[-1]
-        self.worst = self.individuals[0]
+        self.best_individual = self.individuals[-1]
+        self.worst_individual = self.individuals[0]
         self.average = mean(x.fitness for x in self.individuals)
 
     def best(self) -> Individual:
@@ -37,6 +37,11 @@ class Population:
 
     def size(self):
         return len(self.individuals)
+    
+    def clear_stats(self):
+        self.best_individual = None
+        self.worst_individual = None
+        self.average_fitness = None
 
     def __iter__(self):
         return iter(self.individuals)
