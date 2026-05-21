@@ -1,0 +1,21 @@
+{
+    "n_generations": 100,
+    "initial_population_size": 10,
+    "population_size": 5,
+    "genome_size": [
+        219,
+        345
+    ],
+    "mean_hospital_large": 30,
+    "mean_hospital_small": 50,
+    "collect_performance_data": true,
+    "plot_images": true,
+    "n_parents": 4,
+    "n_hospital_types": 2,
+    "mutation_strategy": "wandering",
+    "wandering_mutation_sigma": 6,
+    "probability_of_mutation": 0.01,
+    "crossover_strategy": "single_grid",
+    "n_crossovers": 10,
+    "probability_of_crossover": 0.95
+}
