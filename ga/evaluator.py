@@ -69,9 +69,7 @@ class ParallelEvaluator(Evaluator):
             cities_list=cities.copy(),
             cities=cities_matrix
         )
-        f = simulation.run(log=False)
-        print(f)
-        individual.fitness = f
+        individual.fitness = simulation.run(log=False)
         return individual
 
     def evaluate(

@@ -17,6 +17,17 @@ class GenerationStats:
     n_hospitals_large : int
     n_hospitals_small : int
 
+    def __str__(self):
+        return (
+            f"Generation: {self.generation}\n"
+            f"Best:  {self.best_fitness:9.4f}\n"
+            f"Mean:  {self.mean_fitness:9.4f}\n"
+            f"Worst: {self.worst_fitness:9.4f}\n"
+            f"Std:   {self.std_fitness:9.4f}\n"
+            f"Large Hospitals: {self.n_hospitals_large}\n"
+            f"Small Hospitals: {self.n_hospitals_small}"
+        )
+
 
 class GAStatistics:
 
@@ -26,13 +37,12 @@ class GAStatistics:
     def record(
         self, 
         generation : int, 
-        population : Population
+        population : Population,
     ):
 
         fitness_values = np.array([
             ind.fitness for ind in population.individuals
         ])
-        print(fitness_values)
 
         best = population.best()
         n_large = sum(1 for t in best.genome if t[0] == 1)
@@ -40,14 +50,14 @@ class GAStatistics:
 
         stats = GenerationStats(
             generation=generation,
-            best_fitness=np.max(fitness_values),
+            best_fitness=np.min(fitness_values),
             mean_fitness=np.mean(fitness_values),
-            worst_fitness=np.min(fitness_values),
+            worst_fitness=np.max(fitness_values),
             std_fitness=np.std(fitness_values),
             n_hospitals_large=n_large,
             n_hospitals_small=n_small
         )
-
+        print(stats)
         self.history.append(stats)
 
     def save_csv(
