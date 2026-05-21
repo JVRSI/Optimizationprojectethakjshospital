@@ -55,7 +55,7 @@ class BasicGenerator(GenomeGenerator):
         types = np.array([0] * n)
         types[:m] = 1
 
-        genes = list((types, row, col))
+        genes = list(zip(types, row, col))
 
         #if not isinstance(genes, Genome):  ##REMOVE if works fine
         #    raise TypeError(f"evaluator must be instance of Evaluator, got {type(genes)}")

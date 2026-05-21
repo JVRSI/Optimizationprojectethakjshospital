@@ -64,11 +64,12 @@ class SimResult:
             self.rejected_per_hospital = {}
 
 class Simulation:
-    def run(self):
-        start_time = time.time()
-        thread_id = threading.get_ident()
+    def run(self, log=False):
 
-        print(f"Simulation started in thread {thread_id}")
+        if log:
+            start_time = time.time()
+            thread_id = threading.get_ident()
+            print(f"Simulation started in thread {thread_id}")
 
         self.initi()
         if len(self.cities_list) == 0:
@@ -77,10 +78,11 @@ class Simulation:
         while(self.steps < self.sc.END_DAYS):
             self.step()
 
-        duration = time.time() - start_time
 
-        print(f"Simulation finished in thread {thread_id} after {duration:.4f} seconds")
-        self.print_timing_results()
+        if log:
+            duration = time.time() - start_time
+            print(f"Simulation finished in thread {thread_id} after {duration:.4f} seconds")
+            self.print_timing_results()
 
         return self.calculate_fitness()
 

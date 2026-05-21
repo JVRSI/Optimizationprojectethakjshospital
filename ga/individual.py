@@ -28,7 +28,7 @@ class Individual:
     def to_dict(self):
         return {
             "genome": [
-                [gene[0], gene[1], gene[2]]  # tuple -> list
+                [int(gene[0]), int(gene[1]), int(gene[2])]  # tuple -> list
                 for gene in self.genome
             ],
             "fitness": self.fitness

@@ -3,6 +3,8 @@ from typing import Tuple
 
 @dataclass
 class GAConfig:
+    n_generations : int = 10
+
     initial_population_size: int = 1000
     population_size: int = 200
 

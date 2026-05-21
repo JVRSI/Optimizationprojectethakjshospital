@@ -15,13 +15,17 @@ class RouletteSelection(SelectionStrategy):
 
         #use  f_max - f_i + epsilon  to build roulette (currently fitness is between 0 and 1, might want to change that)
         f_max = population.worst().fitness    #!COMPUTATION, finding worst might be inefficient -> change to 1 / fitness
+        print(f_max)
         epsilon = 1e-6
 
         cumsum = np.cumsum(
             f_max - np.fromiter((i.fitness for i in population), dtype=float) + epsilon
         )
+        print([i.fitness for i in population])
 
         r = self.rng.random(self.n_parents) * cumsum[-1]
+
+        
 
         indices = np.searchsorted(cumsum,r)
 

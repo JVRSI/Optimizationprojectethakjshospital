@@ -7,12 +7,14 @@ from dataclasses import asdict
 import json
 
 
-from paths import DATA_DIR, RUNS_DIR
+from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH
 
 from ga import GAConfig, GeneticAlgorithm, BasicGenerator, ParallelEvaluator
 from ga.selection import RouletteSelection
-from ga.variation import EvolutionaryVariation
+from ga.variation import EvolutionaryVariation, MicroGAVariation
 from ga.analysis.statistics import GAStatistics
+
+from testSim import matrix_to_city_dataframe, load_population_matrix
 
 
 
@@ -34,21 +36,22 @@ rng = np.random.default_rng(seed)
 ##############################################################################################
 #GA config
 ga_config = GAConfig(
-    initial_population_size=100,
-    population_size=200,
+    n_generations=1,
+    initial_population_size=1,
+    population_size=5,
     genome_size= size,
     mean_hospital_large=30,
     mean_hospital_small=50,
     collect_performance_data=True,
     plot_images=True,
-    n_parents=5,
+    n_parents=4,
     n_hospital_types=2,
     mutation_strategy="wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
     wandering_mutation_sigma=6,
     probability_of_mutation=0.01,
     crossover_strategy="single_grid", #{single_grid, grid, single_point}
     n_crossovers=10,
-    probability_of_crossover=0.95
+    probability_of_crossover=0.95,
 )
 
 
@@ -58,7 +61,7 @@ ga_config = GAConfig(
 #Sim config
 sim_config = SimConfig(
     SEED=seed,
-    END_DAYS=20,
+    END_DAYS=100,
     CAPACITYL=100,
     CAPACITYS=2,
     COSTL=10,
@@ -77,14 +80,15 @@ sim_config = SimConfig(
     SURVIVAL_NOISE_STD_N=0.003,
 )
 
-
+cities = matrix_to_city_dataframe(load_population_matrix(MATRIX_PATH))
 
 genome_generator = BasicGenerator(rng=rng,config=ga_config)
 selector = RouletteSelection(n_parents=ga_config.n_parents,rng=rng)
-variator = EvolutionaryVariation(rng=rng,ga_config=ga_config)
-evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=16)
+variator = MicroGAVariation(rng=rng,ga_config=ga_config)
+evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=5,cities_matrix=cities)
 ga_stats = GAStatistics()
 
+store_run = False
 
 
 genetic_algorithm = GeneticAlgorithm(
@@ -101,29 +105,32 @@ def main():
 
     # all your current main.py code goes here
 
-    best = genetic_algorithm.run(50)
+    best = genetic_algorithm.run()
 
-    # save run result, config and stats (in a new folder within runs)
-    dir_name = f"{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
-    dir_path = Path(RUNS_DIR) / dir_name
 
-    # stats and plots
-    if ga_config.collect_performance_data:
-        ga_stats.save_csv(dir_path, ga_config.plot_images)
+    if store_run:
 
-    # config
-    ga_config_dict = asdict(ga_config)
-    with open(dir_path / "ga_config.json", "w") as f:
-        json.dump(ga_config_dict, f, indent=4)
+        # save run result, config and stats (in a new folder within runs)
+        dir_name = f"{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
+        dir_path = Path(RUNS_DIR) / dir_name
 
-    sim_config_dict = asdict(sim_config)
-    with open(dir_path / "ga_config.json", "w") as f:
-        json.dump(sim_config_dict, f, indent=4)
+        # stats and plots
+        if ga_config.collect_performance_data:
+            ga_stats.save_csv(dir_path, ga_config.plot_images)
 
-    # result
-    best_dict = best.to_dict()
-    with open(dir_path / "best.json", "w") as f:
-        json.dump(best_dict, f, indent=4)
+        # config
+        ga_config_dict = asdict(ga_config)
+        with open(dir_path / "ga_config.json", "w") as f:
+            json.dump(ga_config_dict, f, indent=4)
+
+        sim_config_dict = asdict(sim_config)
+        with open(dir_path / "sim_config.json", "w") as f:
+            json.dump(sim_config_dict, f, indent=4)
+
+        # result
+        best_dict = best.to_dict()
+        with open(dir_path / "best.json", "w") as f:
+            json.dump(best_dict, f, indent=4)
 
 
 if __name__ == "__main__":
