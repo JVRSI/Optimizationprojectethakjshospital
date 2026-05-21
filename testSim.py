@@ -7,15 +7,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
-from entities import City
-from simulation import Simulation
+from Simulation.entities import City
+from Simulation import Simulation
 from config import SimConfig
-from testHospitals import hospitalsL, hospitalsS
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+from Simulation.testHospitals import hospitalsL, hospitalsS
+PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
 
 MATRIX_PATH = PROJECT_ROOT  / "Data/gov_data/Daten Matrix Reduced.csv"
-PICKLE_PATH = PROJECT_ROOT / "Data/gov_data/cities_list_reduced.pkl"
+PICKLE_PATH = PROJECT_ROOT / "Data/gov_data/cities_list_reduced_from_root_rounded.pkl"
 
 # /usr/bin/python3 "/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/Simulation/testSim.py" --list S --seed 42 --days 20 --plot
 

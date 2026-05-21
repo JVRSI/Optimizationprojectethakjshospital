@@ -20,8 +20,9 @@ class City:
 
 
 class Hospital:
-    capacity = 0
-
+    __slots__ = (
+        "hos_id", "type","location","patientqueue","current_load","patient_counter","sc","capacity","cost"
+    )
     def __init__(self, type, id, location, sc):
         self.hos_id = id
         self.type = type
@@ -29,6 +30,8 @@ class Hospital:
         self.patientqueue = []
         self.current_load = 0
         self.patient_counter = 0
+        self.capacity = 0
+        self.cost = 0
         self.sc = sc
         if type == 2: # Large hospital
             self.capacity = sc.CAPACITYL
