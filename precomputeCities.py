@@ -7,13 +7,14 @@ from Simulation.entities import City
 from paths import DATA_DIR
 
 MATRIX_FILE = DATA_DIR / "gov_data" / "Daten Matrix Reduced.csv"
-OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced_from_root.pkl"
+OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded.pkl"
 
 
 def make_list_of_cities_from_matrix(cities):
     cities_list = []
     city_id = 0
-
+    max = 0
+    tp = 0
     for i in range(cities.shape[0]):
         for j in range(cities.shape[1]):
             value = cities.iloc[i, j]
@@ -21,13 +22,14 @@ def make_list_of_cities_from_matrix(cities):
             # skip empty cells
             if pd.isna(value):
                 continue
-
-            population = value
+            tp += value
+            population = round(value)
 
             # skip cells with no population
             if population <= 0:
                 continue
-
+            if population > max:
+                max = population
             city = City(
                 id=city_id,
                 btot=population,
@@ -38,17 +40,18 @@ def make_list_of_cities_from_matrix(cities):
             cities_list.append((i, j, city))
             city_id += 1
 
-    return cities_list
+    return cities_list, max, tp
 
 
 def precompute_cities_list():
     print(f"Loading city matrix from: {MATRIX_FILE}")
 
     cities = pd.read_csv(MATRIX_FILE, header=None, sep=";")
-    cities_list = make_list_of_cities_from_matrix(cities)
+    cities_list, max, tp = make_list_of_cities_from_matrix(cities)
 
     rows, cols = cities.shape
     total_population = sum(city.btot for _, _, city in cities_list)
+    
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
@@ -58,7 +61,10 @@ def precompute_cities_list():
     print(f"Stored precomputed cities list in: {OUTPUT_FILE}")
     print(f"Matrix dimensions: {rows} x {cols}")
     print(f"Number of City objects stored: {len(cities_list)}")
-    print(f"Total population stored: {total_population}")
+    print(f"Total population stored after: {total_population}")
+    print(f"Total population stored before: {tp}")
+    print(f"Max: {max}")
+    
 
     return cities_list
 
