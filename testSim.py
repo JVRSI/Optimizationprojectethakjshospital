@@ -324,7 +324,7 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
         sc=sc
     )
 
-    fitness = simulation.run()
+    fitness = simulation.run(log=True)
     result = simulation.get_result()
 
     print()
