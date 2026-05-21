@@ -7,6 +7,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pickle
 
+from pympler import asizeof
+
 from Simulation.entities import City
 from Simulation import Simulation
 from Simulation.config import SimConfig
@@ -326,10 +328,12 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
 
     fitness = simulation.run(log=True)
     result = simulation.get_result()
+    size_of_sim_obj = asizeof.asizeof(simulation)
 
     print()
     print("Simulation finished")
     print("-------------------")
+    print(f"Size of simulation obj: {size_of_sim_obj} bytes or {size_of_sim_obj/1048576:.3f} MB")
     print("Hospital list:", label)
     print("Days simulated:", sc.END_DAYS)
     print("Fitness:", fitness)
