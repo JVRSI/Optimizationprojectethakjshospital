@@ -68,10 +68,10 @@ class MutationStrategy(ABC):
         
 
         if i is None:  #new hospital
-            genome.append((n-1,row,col))
+            genome.append((n,row,col))
             return
-        n = n + genome[i] % self.n_gene_types # 0 = small hospital, 1 = large hospital, 2 = no hospital
-        if n == self.n_gene_types - 1:  #delete hospital
+        n = n + genome[i][0] % self.n_gene_types # 1 = small hospital, 2 = large hospital, 0 = no hospital
+        if n == 0:  #delete hospital
             del genome[i]
             return
         

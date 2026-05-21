@@ -26,7 +26,7 @@ class Evaluator(ABC):
 
         self.sim_config = sim_config
         self.cities = cities
-        self.cities_matrix = cities_matrix
+        #self.cities_matrix = cities_matrix
 
 
 
@@ -62,12 +62,12 @@ class ParallelEvaluator(Evaluator):
         self.sim_config = sim_config
 
     @staticmethod
-    def _evaluate_single(individual, simulation_config, cities,cities_matrix):
+    def _evaluate_single(individual, simulation_config, cities):
         simulation = Simulation(
             start_pos=individual.genome,
             sc=simulation_config,
             cities_list=cities.copy(),
-            cities=cities_matrix
+            #cities=cities_matrix
         )
         individual.fitness = simulation.run(log=False)
         return individual
@@ -81,7 +81,7 @@ class ParallelEvaluator(Evaluator):
             self._evaluate_single,
             simulation_config=self.sim_config,
             cities=self.cities,
-            cities_matrix=self.cities_matrix
+            #cities_matrix=self.cities_matrix
         )
 
         with ProcessPoolExecutor(max_workers=self.workers) as executor:

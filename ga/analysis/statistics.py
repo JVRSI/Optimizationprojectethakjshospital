@@ -45,7 +45,7 @@ class GAStatistics:
         ])
 
         best = population.best()
-        n_large = sum(1 for t in best.genome if t[0] == 1)
+        n_large = sum(1 for t in best.genome if t[0] == 2)
         n_small = len(best.genome) - n_large 
 
         stats = GenerationStats(

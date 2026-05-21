@@ -52,8 +52,8 @@ class BasicGenerator(GenomeGenerator):
         col = idx % width
 
         # assign type of hospital
-        types = np.array([0] * n)
-        types[:m] = 1
+        types = np.array([1] * n)
+        types[:m] = 2
 
         genes = list(zip(types, row, col))
 
