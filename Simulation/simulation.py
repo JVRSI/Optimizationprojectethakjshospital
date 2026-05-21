@@ -9,7 +9,7 @@ import os
 import time
 
 class Simulation:
-    # Initialization -------------------------------------------------------------------------------------------
+    # ---------- Initialization -----------------------------------------------------------------------------------
     def __init__(self, start_pos, sc, cities_list=None, cities=None):
         self.sc = sc
         self.start_pos = start_pos
@@ -32,14 +32,25 @@ class Simulation:
         self.update_cities_times = []
 
     def initi(self):
+        """
+        Create hospital objects from the provided start positions and
+        precompute nearest-hospital rankings for all cities.
+        """
         size = 0
-        for type, x, y in self.start_pos:
-            self.hospitals.append(Hospital(type, size, (x, y), self.sc))
+        for hospital_type, x, y in self.start_pos:
+            self.hospitals.append(Hospital(hospital_type, size, (x, y), self.sc))
             size += 1
         self.precompute_city_hospitals()
 
-    # Start of Sim and Step
-    def run(self, log = True):
+    # ---------- Start of Sim and Step -----------------------------------------------------------------------------------
+    def run(self, log=True):
+        """
+        Execute the full simulation over all configured days
+        and return the final fitness score.
+        log = True -> prints Timing and other things
+        Fitness score lower better
+        returns 1.0 if no hospitals
+        """
         start_time = time.time()
         thread_id = threading.get_ident()
 
@@ -69,6 +80,13 @@ class Simulation:
         return self.calculate_fitness()
     
     def step(self):
+        """
+        Execute one simulation day:
+        1. discharge completed patients
+        2. generate new sick patients
+        3. attempt hospital admissions
+        4. record daily statistics
+        """
         step_start_time = time.perf_counter()
         not_survived_before = self.result.not_survived_count
         not_admitted_before = self.result.not_admitted_count
@@ -105,8 +123,14 @@ class Simulation:
         self.steps += 1
         self.step_times.append(time.perf_counter() - step_start_time)
     
-    # Fitness
+    # ---------- Fitness -----------------------------------------------------------------------------------
     def calculate_fitness(self):
+        """
+        Combine mortality, admission failure, travel distance,
+        hospital usage, and cost into a normalized fitness score.
+
+        Lower fitness values are better.
+        """
         total_patients = self.result.admitted_count + self.result.not_survived_count + self.result.not_admitted_count
 
         if total_patients == 0:
@@ -188,7 +212,7 @@ class Simulation:
 
         return fitness
 
-    # Main Logic
+    # ---------- Main Logic -----------------------------------------------------------------------------------
     def update_hospitals(self):
         for hospital in self.hospitals:
             while (True):
@@ -200,15 +224,14 @@ class Simulation:
                 home_city.btot += 1
 
     def update_cities(self):
-        # iterate over pandas DataFrame of cities
+        """
+        Generate new sick patients for each city and attempt
+        to admit them to hospitals.
+        """
         for city in self.cities_list:
 
-            # skip empty cells
-            if city is None:
-                continue
-
-            # skip cities with no available population
-            if city.btot == 0:
+            # skip empty cells or with no available population
+            if city is None or city.btot == 0:
                 continue
 
             # Update
@@ -251,7 +274,7 @@ class Simulation:
                     # return them directly to the city population
                     city.btot += 1
 
-# Helper -----------------------------------------------------------------------------------
+    # ---------- Helper -----------------------------------------------------------------------------------
     def print_timing_results(self):
         print("\nTiming results per iteration:")
 
@@ -348,6 +371,12 @@ class Simulation:
                 ]
 
     def send_patient_to_nearest_available_hospital(self, patient, city):
+        """
+        Try hospitals in ascending distance order until:
+        - patient dies during travel -> deathrate
+        - patient is admitted
+        - no valid hospital remains -> not admittedrate
+        """
         choice_rank = 0
 
         for hospital_id in city.hospitals_sorted:
