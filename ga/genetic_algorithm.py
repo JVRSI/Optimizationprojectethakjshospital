@@ -27,7 +27,7 @@ class GeneticAlgorithm:
     ):
         if not isinstance(config, GAConfig):
             raise TypeError(f"config must be instance of GAConfig, got {type(config)}")
-        if not isinstance(self.genome_generator, GenomeGenerator):
+        if not isinstance(genome_generator, GenomeGenerator):
             raise TypeError(f"genome_generator must be instance of GenomeGenerator, got {type(genome_generator)}")
         if not isinstance(selection, SelectionStrategy):
             raise TypeError(f"selection must be instance of Selection, got {type(selection)}")
