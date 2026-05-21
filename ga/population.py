@@ -16,8 +16,8 @@ class Population:
     def sort_population(self) -> None:
         self.individuals = sorted(self.individuals, key=lambda x: x.fitness)
 
-        self.best_individual = self.individuals[-1]
-        self.worst_individual = self.individuals[0]
+        self.best_individual = self.individuals[0]
+        self.worst_individual = self.individuals[-1]
         self.average = mean(x.fitness for x in self.individuals)
 
     def best(self) -> Individual:

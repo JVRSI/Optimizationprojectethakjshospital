@@ -13,6 +13,7 @@ class SelectionStrategy(ABC):
         ):
         super().__init__()
         self.n_parents = n_parents
+        self.rng = rng
 
 
 

@@ -75,7 +75,7 @@ class GeneticAlgorithm:
         if self.config.collect_performance_data:
             self.statistics.record(
                 generation=0,
-                population=self.population.individuals
+                population=self.population
             )
 
         pass
@@ -89,7 +89,7 @@ class GeneticAlgorithm:
         #stuff is done inplace (hopefully)
 
         # select parents to construct offspring from
-        self.selection.select(self.population.individuals)
+        self.selection.select(self.population)
 
         # create offspring
         self.variation.variate(self.population.individuals)
@@ -102,7 +102,7 @@ class GeneticAlgorithm:
         #+ statistics
 
 
-    def run(self, generations):
+    def run(self):
         """
         Führt den genetischen Algorithmus über mehrere Generationen aus.
 
@@ -116,16 +116,18 @@ class GeneticAlgorithm:
         - Optional: Fortschritt loggen oder beste Lösung speichern.
         - Am Ende die beste gefundene Lösung zurückgeben.
         """
+        generations = self.config.n_generations
 
         self.initialize()
 
         for generation in range(generations):
+            print(f"Generation {generation}/{generations}")
             self.step(generation)
             
             if self.config.collect_performance_data:
                 self.statistics.record(
                     generation=generation,
-                    population=self.population.individuals
+                    population=self.population
                 )
 
 

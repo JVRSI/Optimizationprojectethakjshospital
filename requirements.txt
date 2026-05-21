@@ -6,3 +6,4 @@ pympler
 typing_extensions
 pytest
 scikit-learn
+tqdm

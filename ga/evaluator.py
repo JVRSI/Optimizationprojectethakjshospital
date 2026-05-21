@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from ga.individual import Individual
 from typing import Tuple
+from tqdm import tqdm
 
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
@@ -16,12 +17,14 @@ class Evaluator(ABC):
     def __init__(
             self,
             sim_config : SimConfig,
-            cities : list[Tuple[int,int,int]]
+            cities : list[Tuple[int,int,int]],
+            cities_matrix = None
         ):
         super().__init__()
 
         self.sim_config = sim_config
         self.cities = cities
+        self.cities_matrix = cities_matrix
 
 
 
@@ -34,9 +37,6 @@ class Evaluator(ABC):
 
 
 class SerialEvaluator(Evaluator):
-
-    def __init__(self, simulation):
-        self.simulation = simulation
 
     def evaluate(
         self,
@@ -51,19 +51,21 @@ class ParallelEvaluator(Evaluator):
             self,
             sim_config : SimConfig,
             cities : list[Tuple[int,int,int]],
-            n_workers : int = 16
+            n_workers : int = 16,
+            cities_matrix = None,
         ):
-        super().__init__(sim_config, cities)
+        super().__init__(sim_config, cities,cities_matrix=cities_matrix)
 
         self.workers = n_workers
         self.sim_config = sim_config
 
     @staticmethod
-    def _evaluate_single(individual, simulation_config, cities):
+    def _evaluate_single(individual, simulation_config, cities,cities_matrix):
         simulation = Simulation(
             start_pos=individual.genome,
             sc=simulation_config,
-            cities_list=cities.copy()
+            cities_list=cities.copy(),
+            cities=cities_matrix
         )
         individual.fitness = simulation.run()
         return individual
@@ -76,10 +78,14 @@ class ParallelEvaluator(Evaluator):
         fn = partial(
             self._evaluate_single,
             simulation_config=self.sim_config,
-            cities=self.cities
+            cities=self.cities,
+            cities_matrix=self.cities_matrix
         )
 
         with ProcessPoolExecutor(max_workers=self.workers) as executor:
-            results = list(executor.map(fn, individuals))
+            results = list(tqdm(
+                executor.map(fn, individuals),
+                total=len(individuals)
+            ))
 
         individuals[:] = results 

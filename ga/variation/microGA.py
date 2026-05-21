@@ -38,6 +38,6 @@ class MicroGAVariation(VariationStrategy):
 
         idx = self.rng.choice(len(parents), size=self.config.n_parents, replace=False)
 
-        self.crosser.variate(parents=parents[idx])
+        self.crosser.variate(parents=[parents[i] for i in idx])
 
         parents.extend(elite)
