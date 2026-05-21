@@ -39,14 +39,15 @@ class Simulation:
         self.precompute_city_hospitals()
 
     # Start of Sim and Step
-    def run(self):
+    def run(self, log = True):
         start_time = time.time()
         thread_id = threading.get_ident()
 
         if log:
             start_time = time.time()
             thread_id = threading.get_ident()
-            print(f"Simulation started in thread {thread_id}")
+            process_id = os.getpid()
+            print(f"Simulation started in thread {thread_id}, process {process_id}")
 
         self.initi()
         if len(self.cities_list) == 0:
@@ -55,12 +56,15 @@ class Simulation:
         # No hospital fitness = 1
         if(len(self.hospitals) == 0):
             return 1.0
+        
+        # Run simulation
         while(self.steps < self.sc.END_DAYS):
             self.step()
 
-
-        print(f"Simulation finished in thread {thread_id}, in process {os.getpid()}, after {duration:.4f} seconds")
-        self.print_timing_results()
+        if log:
+            duration = time.time() - start_time
+            print(f"Simulation finished in thread {thread_id}, in process {process_id}, after {duration:.4f} seconds")
+            self.print_timing_results()
 
         return self.calculate_fitness()
     
