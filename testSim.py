@@ -320,7 +320,6 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
 
     simulation = Simulation(
         start_pos=hospitals_row_col,
-        cities=cities,
         cities_list=cities_list,
         sc=sc
     )

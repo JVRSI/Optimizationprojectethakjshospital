@@ -2,6 +2,7 @@ import heapq
 
 # agents who get send to hospital
 class Patient:
+    __slots__ = ("days", "home", "urgency")
     def __init__(self, days, home, urgency):
         self.days = days
         self.home = home
@@ -9,12 +10,13 @@ class Patient:
 
 # Object for the cells
 class City:
-    __slots__ = ("city_id", "btot", "hospitals_sorted", "in_hospital")
-    def __init__(self, id, btot, inHospital, hospitals):
+    __slots__ = ("city_id", "btot", "hospitals_sorted", "in_hospital", "location")
+    def __init__(self, id, btot, inHospital, hospitals, location=(-10,-100)):
         self.city_id = id
         self.btot = btot
         self.hospitals_sorted = hospitals
         self.in_hospital = inHospital 
+        self.location = location
     has_hospital = False
     hospital_ob = None
 
