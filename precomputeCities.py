@@ -35,11 +35,12 @@ def make_list_of_cities_from_matrix(cities):
                 id=city_id,
                 btot=population,
                 inHospital=0,
-                hospitals=[]
+                hospitals=[],
+                location=(i,j)
             )
             if(city_id == 1):
                 print(f"Size of a City: {asizeof.asizeof(city)}")
-            cities_list.append((i, j, city))
+            cities_list.append(city)
             city_id += 1
 
     return cities_list, max, tp
@@ -52,7 +53,7 @@ def precompute_cities_list():
     cities_list, max, tp = make_list_of_cities_from_matrix(cities)
 
     rows, cols = cities.shape
-    total_population = sum(city.btot for _, _, city in cities_list)
+    total_population = sum(city.btot for city in cities_list)
     
 
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
