@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 import random
 import pandas as pd
-from Simulation.entities import *
+try:
+    from Simulation.entities import *
+except ImportError:
+    from entities import *
 import heapq
 import numpy as np
 import threading
