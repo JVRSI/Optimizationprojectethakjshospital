@@ -154,7 +154,7 @@ class Simulation:
 
         normalized_cost = 0.0
         if max_possible_cost > 0:
-            normalized_cost = total_hospital_cost / max_possible_cost # change not
+            normalized_cost = total_hospital_cost / self.sc.TOTALCOST 
 
         normalized_unused_hospitals = 0.0
         if total_hospitals > 0:

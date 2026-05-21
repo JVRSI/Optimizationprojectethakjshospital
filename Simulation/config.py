@@ -12,6 +12,7 @@ class SimConfig:
     CAPACITYS  : int = 2
     COSTL : float = 10
     COSTS :float = 5
+    TOTALCOST : float = 300
 
     # Daily probability that one person needs hospital treatment.
     # These values are intentionally much lower than before because the

@@ -10,8 +10,8 @@ class Individual:
             self, 
             genome : Genome 
         ):
-        if not isinstance(genome, Genome):
-            raise TypeError(f"config must be instance of GAConfig, got {type(genome)}")
+        #if not isinstance(genome, Genome):
+        #    raise TypeError(f"config must be instance of GAConfig, got {type(genome)}")
         
         self.genome = genome
         self.fitness = None

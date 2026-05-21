@@ -56,6 +56,7 @@ class ParallelEvaluator(Evaluator):
         super().__init__(sim_config, cities)
 
         self.workers = n_workers
+        self.sim_config = sim_config
 
     @staticmethod
     def _evaluate_single(individual, simulation_config, cities):
@@ -74,7 +75,7 @@ class ParallelEvaluator(Evaluator):
 
         fn = partial(
             self._evaluate_single,
-            simulation_config=self.simulation_config,
+            simulation_config=self.sim_config,
             cities=self.cities
         )
 

@@ -97,26 +97,38 @@ genetic_algorithm = GeneticAlgorithm(
     rng=rng
 )
 
-best = genetic_algorithm.run(50)
+def main():
 
- # save run result, config and stats (in a new folder within runs)
-dir_name = f"{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
-dir_path = Path(RUNS_DIR) / dir_name
+    # all your current main.py code goes here
 
-# stats and plots
-if ga_config.collect_performance_data:
-    ga_stats.save_csv(dir_path, ga_config.plot_images)
+    best = genetic_algorithm.run(50)
 
-# config
-ga_config_dict = asdict(ga_config)
-with open(dir_path / "ga_config.json", "w") as f:
-    json.dump(ga_config_dict, f, indent=4)
+    # save run result, config and stats (in a new folder within runs)
+    dir_name = f"{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
+    dir_path = Path(RUNS_DIR) / dir_name
 
-sim_config_dict = asdict(sim_config)
-with open(dir_path / "ga_config.json", "w") as f:
-    json.dump(sim_config_dict, f, indent=4)
+    # stats and plots
+    if ga_config.collect_performance_data:
+        ga_stats.save_csv(dir_path, ga_config.plot_images)
 
-# result
-best_dict = best.to_dict()
-with open(dir_path / "best.json", "w") as f:
-    json.dump(best_dict, f, indent=4)
+    # config
+    ga_config_dict = asdict(ga_config)
+    with open(dir_path / "ga_config.json", "w") as f:
+        json.dump(ga_config_dict, f, indent=4)
+
+    sim_config_dict = asdict(sim_config)
+    with open(dir_path / "ga_config.json", "w") as f:
+        json.dump(sim_config_dict, f, indent=4)
+
+    # result
+    best_dict = best.to_dict()
+    with open(dir_path / "best.json", "w") as f:
+        json.dump(best_dict, f, indent=4)
+
+
+if __name__ == "__main__":
+
+    main()
+
+
+
