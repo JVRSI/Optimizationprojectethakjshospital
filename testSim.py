@@ -10,7 +10,7 @@ import pickle
 from Simulation.entities import City
 from Simulation import Simulation
 from Simulation.config import SimConfig
-from Simulation.testHospitals import hospitalsL, hospitalsS
+from Simulation.HospitalLists.testHospitals import hospitalsL, hospitalsS
 PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
 
