@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from ga.individual import Individual
 from typing import Tuple
 from tqdm import tqdm
+import os
+import copy
 
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
@@ -67,7 +69,9 @@ class ParallelEvaluator(Evaluator):
             cities_list=cities.copy(),
             cities=cities_matrix
         )
-        individual.fitness = simulation.run()
+        f = simulation.run()
+        print(f)
+        individual.fitness = f
         return individual
 
     def evaluate(

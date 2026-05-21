@@ -10,10 +10,12 @@ from ga.analysis.plotting import plot_fitness
 @dataclass
 class GenerationStats:
     generation: int
-    best_fitness: float
-    mean_fitness: float
-    worst_fitness: float
-    std_fitness: float
+    best_fitness : float
+    mean_fitness : float
+    worst_fitness : float
+    std_fitness : float
+    n_hospitals_large : int
+    n_hospitals_small : int
 
 
 class GAStatistics:
@@ -30,6 +32,11 @@ class GAStatistics:
         fitness_values = np.array([
             ind.fitness for ind in population.individuals
         ])
+        print(fitness_values)
+
+        best = population.best()
+        n_large = sum(1 for t in best.genome if t[0] == 1)
+        n_small = len(best.genome) - n_large 
 
         stats = GenerationStats(
             generation=generation,
@@ -37,6 +44,8 @@ class GAStatistics:
             mean_fitness=np.mean(fitness_values),
             worst_fitness=np.min(fitness_values),
             std_fitness=np.std(fitness_values),
+            n_hospitals_large=n_large,
+            n_hospitals_small=n_small
         )
 
         self.history.append(stats)

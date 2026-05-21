@@ -5,9 +5,11 @@ from datetime import datetime
 from pathlib import Path
 from dataclasses import asdict
 import json
+import sys
+import argparse
 
 
-from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH
+from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, LOCAL_RUN
 
 from ga import GAConfig, GeneticAlgorithm, BasicGenerator, ParallelEvaluator
 from ga.selection import RouletteSelection
@@ -36,8 +38,8 @@ rng = np.random.default_rng(seed)
 ##############################################################################################
 #GA config
 ga_config = GAConfig(
-    n_generations=1,
-    initial_population_size=1,
+    n_generations=10,
+    initial_population_size=10,
     population_size=5,
     genome_size= size,
     mean_hospital_large=30,
@@ -80,6 +82,16 @@ sim_config = SimConfig(
     SURVIVAL_NOISE_STD_N=0.003,
 )
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-g", "--n-generations", type=int, default=ga_config.n_generations)
+parser.add_argument("-l", "--log-local", action="store_true")
+parser.add_argument("-d", "--dont-store-stats", action="store_true")
+args = parser.parse_args()
+
+ga_config.n_generations = args.n_generations
+
+
+
 cities = matrix_to_city_dataframe(load_population_matrix(MATRIX_PATH))
 
 genome_generator = BasicGenerator(rng=rng,config=ga_config)
@@ -88,7 +100,13 @@ variator = MicroGAVariation(rng=rng,ga_config=ga_config)
 evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=5,cities_matrix=cities)
 ga_stats = GAStatistics()
 
-store_run = False
+store_run = True
+runs_dir = LOCAL_RUN
+
+if args.dont_store_stats:
+    store_run = False
+if args.log_local:
+    runs_dir = LOCAL_RUN
 
 
 genetic_algorithm = GeneticAlgorithm(
@@ -112,7 +130,7 @@ def main():
 
         # save run result, config and stats (in a new folder within runs)
         dir_name = f"{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
-        dir_path = Path(RUNS_DIR) / dir_name
+        dir_path = runs_dir / dir_name
 
         # stats and plots
         if ga_config.collect_performance_data:

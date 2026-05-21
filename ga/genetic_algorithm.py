@@ -121,7 +121,7 @@ class GeneticAlgorithm:
         self.initialize()
 
         for generation in range(generations):
-            print(f"Generation {generation}/{generations}")
+            print(f"Generation {generation+1}/{generations}")
             self.step(generation)
             
             if self.config.collect_performance_data:
