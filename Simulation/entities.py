@@ -9,6 +9,7 @@ class Patient:
 
 # Object for the cells
 class City:
+    __slots__ = ("city_id", "btot", "hospitals_sorted", "in_hospital")
     def __init__(self, id, btot, inHospital, hospitals):
         self.city_id = id
         self.btot = btot

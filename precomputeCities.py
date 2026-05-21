@@ -1,6 +1,7 @@
 import pickle
 from pathlib import Path
 import pandas as pd
+from pympler import asizeof
 
 from Simulation.entities import City
 
@@ -36,7 +37,8 @@ def make_list_of_cities_from_matrix(cities):
                 inHospital=0,
                 hospitals=[]
             )
-
+            if(city_id == 1):
+                print(f"Size of a City: {asizeof.asizeof(city)}")
             cities_list.append((i, j, city))
             city_id += 1
 
@@ -64,6 +66,7 @@ def precompute_cities_list():
     print(f"Total population stored after: {total_population}")
     print(f"Total population stored before: {tp}")
     print(f"Max: {max}")
+    print(f"Size of citieslist: {asizeof.asizeof(cities_list)}")
     
 
     return cities_list
