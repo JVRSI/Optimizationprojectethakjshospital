@@ -9,7 +9,7 @@ import sys
 import argparse
 
 
-from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, LOCAL_RUN
+from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, RUNS_LOCAL
 
 from ga import GAConfig, GeneticAlgorithm, BasicGenerator, ParallelEvaluator
 from ga.selection import RouletteSelection
@@ -51,7 +51,7 @@ ga_config = GAConfig(
     mutation_strategy="wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
     wandering_mutation_sigma=6,
     probability_of_mutation=0.01,
-    crossover_strategy="single_grid", #{single_grid, grid, single_point}
+    crossover_strategy="grid", #{single_grid, grid, single_point}
     n_crossovers=10,
     probability_of_crossover=0.95,
 )
@@ -97,16 +97,16 @@ cities = matrix_to_city_dataframe(load_population_matrix(MATRIX_PATH))
 genome_generator = BasicGenerator(rng=rng,config=ga_config)
 selector = RouletteSelection(n_parents=ga_config.n_parents,rng=rng)
 variator = MicroGAVariation(rng=rng,ga_config=ga_config)
-evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=5,cities_matrix=cities)
+evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=10,cities_matrix=None)
 ga_stats = GAStatistics()
 
 store_run = True
-runs_dir = LOCAL_RUN
+runs_dir = RUNS_LOCAL
 
 if args.dont_store_stats:
     store_run = False
 if args.log_local:
-    runs_dir = LOCAL_RUN
+    runs_dir = RUNS_LOCAL
 
 
 genetic_algorithm = GeneticAlgorithm(
