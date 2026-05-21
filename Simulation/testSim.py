@@ -5,6 +5,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import pickle
 
 from entities import City
 from simulation import Simulation
@@ -14,6 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 MATRIX_PATH = PROJECT_ROOT  / "Data/gov_data/Daten Matrix Reduced.csv"
+PICKLE_PATH = PROJECT_ROOT / "Data/gov_data/cities_list_reduced.pkl"
 
 # /usr/bin/python3 "/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/Simulation/testSim.py" --list S --seed 42 --days 20 --plot
 
@@ -308,7 +310,8 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
     validate_hospitals_inside_matrix(hospitals_row_col, matrix)
 
     sc = SimConfig()
-
+    with open(PICKLE_PATH, "rb") as f:
+        cities_list = pickle.load(f)
     if seed is not None:
         sc.SEED = seed
 
@@ -318,6 +321,7 @@ def run_simulation(hospital_list_name: str, seed: Optional[int], days: Optional[
     simulation = Simulation(
         start_pos=hospitals_row_col,
         cities=cities,
+        cities_list=cities_list,
         sc=sc
     )
 

@@ -70,7 +70,6 @@ class Simulation:
         self.initi()
         if len(self.cities_list) == 0:
             self.make_list_of_cities()
-        self.make_list_of_cities()
 
         while(self.steps < self.sc.END_DAYS):
             self.step()
@@ -350,6 +349,7 @@ class Simulation:
         return None
     
     def make_list_of_cities(self):
+        self.cities_list = []
         for i in range(self.cities.shape[0]):
             for j in range(self.cities.shape[1]):
                 city = self.cities.iloc[i, j]
