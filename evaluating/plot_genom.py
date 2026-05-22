@@ -5,10 +5,14 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
 from typing import Union
+from datetime import datetime
+import argparse
 
 from paths import RUNS_DIR, RUNS_LOCAL, DATA_DIR
-from colors import PALETTE_DARKISH_VAR, PALETTE_GREENISH
-
+try:
+    from colors import PALETTE_DARKISH_VAR, PALETTE_GREENISH
+except ImportError:
+    from evaluating.colors import PALETTE_DARKISH_VAR, PALETTE_GREENISH
 
 #color stuff
 
@@ -31,11 +35,42 @@ c_face       = "white"
 c_text       = "black"
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-n", "--newest", action="store_true")
+args = parser.parse_args()
+
+
 
 save_plot = False
 
-run_dir = RUNS_LOCAL / "RouletteSelection_MicroGAVariation_BasicGenerator_2026-05-22_00-08-44_ParallelEvaluator"
+run_dir = RUNS_LOCAL / "RouletteSelection_MicroGAVariation_GravityGenerator_2026-05-22_11-19-23_ParallelEvaluator"
 #run_dir = RUNS_DIR  / ""
+
+def get_run_datetime(path: Path) -> datetime:
+    parts = path.name.split("_")
+
+    date_part = parts[3]
+    time_part = parts[4]
+
+    return datetime.strptime(
+        f"{date_part}_{time_part}",
+        "%Y-%m-%d_%H-%M-%S"
+    )
+
+
+def get_latest_run(run_dir: Path) -> Path:
+
+    runs = [
+        p for p in run_dir.iterdir()
+        if p.is_dir()
+    ]
+
+    return max(runs, key=get_run_datetime)
+
+if args.newest:
+    run_dir = get_latest_run(RUNS_LOCAL)
+
+
 
 json_file = run_dir / "best.json"
 
@@ -76,7 +111,7 @@ def plot_genome(
     """
 
     sizes, row, col = map(np.array, zip(*genome))
-    l = 1
+    l = 2
 
 
     matrix = load_matrix()
@@ -98,26 +133,31 @@ def plot_genome(
 
     major = sizes == l
 
+    print(sizes)
+
+    plt.scatter(
+        col[major],
+        row[major],
+        s=90,
+        facecolors=c_hospital_l,
+        edgecolors=None,
+        linewidths=1.5,
+        label="Large hospitals"
+    )
+    
+
     plt.scatter(
         col[~major],
         row[~major],
-        s=dot_sizes[~major],
+        s=45,
         c=c_hospital_s,
         edgecolors=None,
         linewidths=0.8,
         label="Hospitals"
     )
 
-
-    plt.scatter(
-        col[major],
-        row[major],
-        s=dot_sizes[major],
-        facecolors=c_hospital_l,
-        edgecolors=None,
-        linewidths=1.5,
-        label="Large hospitals"
-    )
+    
+    
 
     if fitness is None:
         title = "Genome"
