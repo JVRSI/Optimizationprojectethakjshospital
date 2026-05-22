@@ -1,29 +1,23 @@
-from abc import ABC, abstractmethod
+from ga.selection.base import SelectionStrategy
 from numpy.random import Generator
 
 from ga.individual import Individual
 from ga.population import Population
 
-class SelectionStrategy(ABC):
+class TruncateSelection(SelectionStrategy):
 
     def __init__(
             self,
             n_parents : int,
             rng : Generator
         ):
-        super().__init__()
         self.n_parents = n_parents
-        self.rng = rng
 
-
-
-
-    @abstractmethod
     def select(
             self,
             population : Population,
         ):
-        """
-        Selects parents from population and updates population in place
-        """
-        pass
+        population.sort_population()
+
+        for i in range(population.size()-1,self.n_parents-1,-1):
+            del population.individuals[i]
