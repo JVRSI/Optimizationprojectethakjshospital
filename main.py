@@ -11,9 +11,9 @@ import argparse
 
 from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, RUNS_LOCAL
 
-from ga import GAConfig, GeneticAlgorithm, BasicGenerator, ParallelEvaluator
+from ga import GAConfig, GeneticAlgorithm, BasicGenerator, GravityGenerator, ParallelEvaluator
 from ga.selection import RouletteSelection
-from ga.variation import EvolutionaryVariation, MicroGAVariation
+from ga.variation import EvolutionaryVariation, MicroGAVariation, ClassicVariation
 from ga.analysis.statistics import GAStatistics
 
 from testSim import matrix_to_city_dataframe, load_population_matrix
@@ -33,24 +33,24 @@ size = (219,345)
 seed = 42
 rng = np.random.default_rng(seed)
 
-
+n_workers = 15
 
 ##############################################################################################
 #GA config
 ga_config = GAConfig(
-    n_generations=10,
-    initial_population_size=10,
-    population_size=5,
+    n_generations=100,
+    initial_population_size=100,
+    population_size=100,
     genome_size= size,
     mean_hospital_large=30,
     mean_hospital_small=50,
     collect_performance_data=True,
     plot_images=True,
-    n_parents=4,
-    n_hospital_types=2,
-    mutation_strategy="wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
-    wandering_mutation_sigma=6,
-    probability_of_mutation=0.01,
+    n_parents=20,
+    n_hospital_types=2, #not everywhere is support for variable hospital types
+    mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
+    wandering_mutation_sigma=16,
+    probability_of_mutation=0.08,
     crossover_strategy="grid", #{single_grid, grid, single_point}
     n_crossovers=10,
     probability_of_crossover=0.95,
@@ -92,12 +92,12 @@ ga_config.n_generations = args.n_generations
 
 
 
-cities = matrix_to_city_dataframe(load_population_matrix(MATRIX_PATH))
+cities_matrix = load_population_matrix(MATRIX_PATH)
 
-genome_generator = BasicGenerator(rng=rng,config=ga_config)
+genome_generator = GravityGenerator(rng=rng,config=ga_config,cities_matrix=cities_matrix)
 selector = RouletteSelection(n_parents=ga_config.n_parents,rng=rng)
-variator = MicroGAVariation(rng=rng,ga_config=ga_config)
-evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=10,cities_matrix=None)
+variator = ClassicVariation(rng=rng,ga_config=ga_config)
+evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=n_workers,cities_matrix=None)
 ga_stats = GAStatistics()
 
 store_run = True
@@ -154,6 +154,7 @@ def main():
 if __name__ == "__main__":
 
     main()
+    pass
 
 
 
