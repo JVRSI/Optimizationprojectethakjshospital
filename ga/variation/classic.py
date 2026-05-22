@@ -34,9 +34,9 @@ class ClassicVariation(VariationStrategy):
         #select random individuals for crossover
         nc = self.rng.binomial(self.n,self.pc)
         idx = self.rng.choice(self.n, size=nc, replace=False)
-        self.crosser.variate(parents[idx])
+        self.crosser.variate([parents[i] for i in idx])
 
         #select random individuals for mutation
         nm = self.rng.binomial(self.n,self.pm)
         idx = self.rng.choice(self.n, size=nm, replace=False)
-        self.mutator.variate(parents[idx])
+        self.mutator.variate([parents[i] for i in idx])
