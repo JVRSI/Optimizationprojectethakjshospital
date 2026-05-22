@@ -64,7 +64,7 @@ class MutationStrategy(ABC):
         if i is None then the gene to mutate is not in the list -> append new hospital
         """
 
-        n = (self.rng.randint(1, self.n_gene_types))
+        n = (self.rng.integers(1, self.n_gene_types))
         
 
         if i is None:  #new hospital
@@ -143,7 +143,8 @@ class SinglePointWanderMutation(MutationStrategy):
             nr = max(0, min(self.height - 1, row + dr))
             nc = max(0, min(self.width - 1, col + dc))
 
-            c = self.get_genome_index(genome=individual.genome,row=row,col=col)
+            c = self.get_genome_index(genome=individual.genome,row=nr,col=nc)
+
             if c is None:
                 individual.genome[i] = (t, nr, nc)
                 return
@@ -173,7 +174,7 @@ class SinglePointWanderMutationWithProbabilityOfNormalMutation(MutationStrategy)
     def mutate(
             self,
             individual : Individual,
-            probability_of_normal_mutation : float = 0.1
+            probability_of_normal_mutation : float = 0.5
         ) -> None:
 
         """
@@ -184,3 +185,7 @@ class SinglePointWanderMutationWithProbabilityOfNormalMutation(MutationStrategy)
             self.normal.mutate(individual)
         else: # wandering mutation
             self.wander.mutate(individual)
+
+
+
+            

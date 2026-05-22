@@ -36,8 +36,8 @@ class MicroGAVariation(VariationStrategy):
         idx = np.argpartition(fitness, n_elite)[:n_elite]
         elite = [parents[i].clone() for i in idx]   #elite gets "deep copy", rest gets in place crossover (including old references to elite)
 
+        # choose parings randomly
         idx = self.rng.choice(len(parents), size=self.config.n_parents, replace=False)
-
         self.crosser.variate(parents=[parents[i] for i in idx])
 
         parents.extend(elite)
