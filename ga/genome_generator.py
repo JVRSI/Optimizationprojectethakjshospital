@@ -18,9 +18,21 @@ class GenomeGenerator(ABC):
         self.rng = rng
         self.config = config
 
+        self.n = self.config.mean_hospital_large + self.config.mean_hospital_small
+        self.m = self.config.mean_hospital_large
+
+        self.height = self.config.genome_size[0]
+        self.width = self.config.genome_size[1]
+        self.total = self.width * self.height
+
     @abstractmethod
     def __call__(self) -> Genome:
         pass
+
+    def get_position_from_total_index(self, idx): 
+        row = idx // self.width
+        col = idx % self.width
+        return row, col
 
 
 class BasicGenerator(GenomeGenerator):
@@ -34,32 +46,54 @@ class BasicGenerator(GenomeGenerator):
     '''
 
     def __call__(self) -> Genome:
-        height = self.config.genome_size[0]
-        width = self.config.genome_size[1]
-        total = width * height
 
-        n = self.config.mean_hospital_large + self.config.mean_hospital_small
-        m = self.config.mean_hospital_large
-
-        if n > total:
+        if self.n > self.total:
             raise ValueError("Total amount of placable hospitals extends total number of squares")
 
         # random unique indices, not sorted
-        idx = self.rng.choice(total, size=n, replace=False)
+        idx = self.rng.choice(self.total, size=self.n, replace=False)
 
         # transform to (row,col)
-        row = idx // width
-        col = idx % width
+        row, col = self.get_position_from_total_index(idx)
 
         # assign type of hospital
-        types = np.array([1] * n)
-        types[:m] = 2
+        types = np.array([1] * self.n)
+        types[:self.m] = 2
 
-        genes = list(zip(types, row, col))
+        return list(zip(types, row, col))    
 
-        #if not isinstance(genes, Genome):  ##REMOVE if works fine
-        #    raise TypeError(f"evaluator must be instance of Evaluator, got {type(genes)}")
+class GravityGenerator(GenomeGenerator):
+    
+    def __init__(
+            self, 
+            rng : np.random.Generator, 
+            config : GAConfig,
+            cities_matrix : np.ndarray,
+        ):
+        super().__init__(rng, config)
 
-        return genes
 
+        epsilon = 1e-6
+
+        #array of accumulated sums
+        self.cumsum = np.cumsum(
+            np.ravel(cities_matrix) + epsilon
+        )
+
+    
+    def __call__(self) -> Genome:
+
+        #random indicies with higher chance in squares with more population
+        r = self.rng.random(self.n) * self.cumsum[-1]
+        i = np.searchsorted(self.cumsum,r)
+
+        # transform to (row,col)
+        row, col = self.get_position_from_total_index(i)
+
+        # assign type of hospital
+        types = np.array([1] * self.n)
+        types[:self.m] = 2
+
+
+        return list(zip(types, row, col))
 
