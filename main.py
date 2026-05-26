@@ -65,9 +65,10 @@ sim_config = SimConfig(
     SEED=seed,
     END_DAYS=100,
     CAPACITYL=100,
-    CAPACITYS=2,
-    COSTL=10,
-    COSTS=5,
+    CAPACITYS=20,
+    COSTL=1500,
+    COSTS=250,
+    TOTALCOST=37000,
     SICK_RATE_U=2e-5,
     SICK_RATE_N=8e-5,
     PATIENT_DAYS_U=3,
@@ -97,7 +98,7 @@ cities_matrix = load_population_matrix(MATRIX_PATH)
 genome_generator = GravityGenerator(rng=rng,config=ga_config,cities_matrix=cities_matrix)
 selector = RouletteSelection(n_parents=ga_config.n_parents,rng=rng)
 variator = ClassicVariation(rng=rng,ga_config=ga_config)
-evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=n_workers,cities_matrix=None)
+evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=n_workers,cities_matrix=None, rng=rng)
 ga_stats = GAStatistics()
 
 store_run = True

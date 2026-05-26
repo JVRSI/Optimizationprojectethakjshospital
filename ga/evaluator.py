@@ -20,12 +20,14 @@ class Evaluator(ABC):
             self,
             sim_config : SimConfig,
             cities : list[Tuple[int,int,int]],
-            cities_matrix = None
+            cities_matrix = None,
+            rng = None,
         ):
         super().__init__()
 
         self.sim_config = sim_config
         self.cities = cities
+        self.rng = rng
         #self.cities_matrix = cities_matrix
 
 
@@ -54,19 +56,21 @@ class ParallelEvaluator(Evaluator):
             sim_config : SimConfig,
             cities : list[Tuple[int,int,int]],
             n_workers : int = 16,
+            rng = None,
             cities_matrix = None,
         ):
-        super().__init__(sim_config, cities,cities_matrix=cities_matrix)
+        super().__init__(sim_config, cities,cities_matrix=cities_matrix, rng = rng)
 
         self.workers = n_workers
         self.sim_config = sim_config
 
     @staticmethod
-    def _evaluate_single(individual, simulation_config, cities):
+    def _evaluate_single(individual, simulation_config, cities, rng):
         simulation = Simulation(
             start_pos=individual.genome,
             sc=simulation_config,
             cities_list=cities.copy(),
+            rng = rng,
             #cities=cities_matrix
         )
         individual.fitness = simulation.run(log=False)
@@ -81,6 +85,7 @@ class ParallelEvaluator(Evaluator):
             self._evaluate_single,
             simulation_config=self.sim_config,
             cities=self.cities,
+            rng=self.rng,
             #cities_matrix=self.cities_matrix
         )
 

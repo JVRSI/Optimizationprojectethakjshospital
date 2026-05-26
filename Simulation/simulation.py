@@ -10,7 +10,7 @@ import time
 
 class Simulation:
     # ---------- Initialization -----------------------------------------------------------------------------------
-    def __init__(self, start_pos, sc, cities_list=None, cities=None):
+    def __init__(self, start_pos, sc, cities_list=None, cities=None, rng = None):
         self.sc = sc
         self.start_pos = start_pos
 
@@ -24,7 +24,10 @@ class Simulation:
         self.cities_list = cities_list
         self.steps = 0
         self.hospitals = []
-        self.rng = np.random.default_rng(self.sc.SEED)
+        if(rng is None): 
+            self.rng = np.random.default_rng(self.sc.SEED)
+        else:
+            self.rng = rng
         self.result = SimResult()
 
         self.step_times = []
@@ -196,7 +199,7 @@ class Simulation:
 
         fitness = 0.0
 
-        fitness += 0.40 * (death_rate + not_admitted_rate)
+        fitness += 0.30 * (death_rate + not_admitted_rate)
 
         fitness += 0.15 * urgent_death_rate
         fitness += 0.05 * urgent_not_admitted_rate
@@ -208,7 +211,7 @@ class Simulation:
         fitness += 0.03 * normalized_not_survived_choice_rank
 
         fitness += 0.03 * normalized_unused_hospitals
-        fitness += 0.02 * normalized_cost
+        fitness += 0.12 * normalized_cost
 
         return fitness
 
