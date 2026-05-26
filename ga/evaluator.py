@@ -58,11 +58,13 @@ class ParallelEvaluator(Evaluator):
             n_workers : int = 16,
             rng = None,
             cities_matrix = None,
+            record_individual_history:bool = False
         ):
         super().__init__(sim_config, cities,cities_matrix=cities_matrix, rng = rng)
 
         self.workers = n_workers
         self.sim_config = sim_config
+        self.rih = record_individual_history
 
     @staticmethod
     def _evaluate_single(individual, simulation_config, cities, rng):
@@ -71,28 +73,34 @@ class ParallelEvaluator(Evaluator):
             sc=simulation_config,
             cities_list=cities.copy(),
             rng = rng,
-            #cities=cities_matrix
+            #cities=cities_matrix,
         )
         individual.fitness = simulation.run(log=False)
         return individual
 
-    def evaluate(
-            self, 
-            individuals: list[Individual]
-        ) -> None:
+    def evaluate(self, individuals: list[Individual]) -> None:
 
         fn = partial(
             self._evaluate_single,
             simulation_config=self.sim_config,
             cities=self.cities,
             rng=self.rng,
-            #cities_matrix=self.cities_matrix
         )
 
+        # split
+        to_run = [(i, ind) for i, ind in enumerate(individuals) if ind.fitness is None]
+
+        def wrapped(item):
+            i, ind = item
+            return i, fn(ind)
+
+        # calculate new fitness values
         with ProcessPoolExecutor(max_workers=self.workers) as executor:
-            results = list(tqdm(
-                executor.map(fn, individuals),
-                total=len(individuals)
+            computed = list(tqdm(
+                executor.map(wrapped, to_run),
+                total=len(to_run)
             ))
 
-        individuals[:] = results 
+        # assign new results
+        for i, ind in computed:
+            individuals[i] = ind
