@@ -34,8 +34,6 @@ class BasicMutationVariation(VariationStrategy):
         
         for individual in parents:
             self.mutator.mutate(individual)
-            individual.fitness = None
-
         pass
 
 class BasicCrossoverVariation(VariationStrategy):
@@ -66,7 +64,4 @@ class BasicCrossoverVariation(VariationStrategy):
         
         for i in range(t):
             self.crosser.crossover(parent1=parents[i],parent2=parents[i+1]) #+ maybe randomize ?
-            parents[i].fitness = None
-            parents[i+1].fitness = None
-
         pass

@@ -24,8 +24,13 @@ class CrossoverStrategy(ABC):
         self.n_genes = self.height * self.width
         self.rng = rng
 
+    def crossover(self, parent1 : Individual, parent2 : Individual):
+        parent1.fitness = None
+        parent2.fitness = None
+        self._crossover(parent1=parent1,parent2=parent2)
+
     @abstractmethod
-    def crossover(
+    def _crossover(
         self,
         parent1 : Individual,
         parent2 : Individual,
@@ -41,7 +46,7 @@ class CrossoverStrategy(ABC):
 
 class SingleBreakCrossover(CrossoverStrategy):
 
-    def crossover(
+    def _crossover(
             self, 
             parent1 : Individual, 
             parent2 : Individual, 
@@ -61,7 +66,7 @@ class SingleBreakCrossover(CrossoverStrategy):
 
 
 class SingleGridCrossover(CrossoverStrategy):
-    def crossover(
+    def _crossover(
             self, 
             parent1 : Individual, 
             parent2 : Individual, 
@@ -103,7 +108,7 @@ class GridCrossover(CrossoverStrategy):
         super().__init__(ga_config, rng)
         self.n_pivots = n_pivots
 
-    def crossover(
+    def _crossover(
             self, 
             parent1 : Individual, 
             parent2 : Individual, 

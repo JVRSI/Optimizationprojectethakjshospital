@@ -24,9 +24,13 @@ class MutationStrategy(ABC):
         self.rng = rng
         self.n_gene_types = ga_config.n_hospital_types + 1
 
+    def mutate(self, individual : Individual):
+        individual.fitness = None
+        self._mutate(individual=individual)
+
 
     @abstractmethod
-    def mutate(
+    def _mutate(
         self, 
         individual : Individual,
     ) -> None:
@@ -81,7 +85,7 @@ class MutationStrategy(ABC):
 
 
 class SinglePointMutation(MutationStrategy):
-    def mutate(
+    def _mutate(
         self, 
         individual : Individual
     ) -> None:
@@ -93,7 +97,7 @@ class SinglePointMutation(MutationStrategy):
 
 
 class SingePointMutationWithEqualOpportunity(MutationStrategy):
-     def mutate(
+     def _mutate(
         self, 
         individual : Individual,
     ) -> None:
@@ -126,7 +130,7 @@ class SinglePointWanderMutation(MutationStrategy):
 
         self.sigma = sigma
 
-    def mutate(
+    def _mutate(
             self, 
             individual: Individual
         ) -> None:
@@ -171,7 +175,7 @@ class SinglePointWanderMutationWithProbabilityOfNormalMutation(MutationStrategy)
         self.normal = SingePointMutationWithEqualOpportunity(ga_config, rng)
         self.wander = SinglePointWanderMutation(ga_config, rng)
 
-    def mutate(
+    def _mutate(
             self,
             individual : Individual,
             probability_of_normal_mutation : float = 0.5
