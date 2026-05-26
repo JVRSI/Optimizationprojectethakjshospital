@@ -26,7 +26,9 @@ class CrossoverStrategy(ABC):
 
     def crossover(self, parent1 : Individual, parent2 : Individual):
         parent1.fitness = None
+        parent1.sim_records = None
         parent2.fitness = None
+        parent2.sim_records = None
         self._crossover(parent1=parent1,parent2=parent2)
 
     @abstractmethod

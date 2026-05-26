@@ -14,6 +14,7 @@ class GAConfig:
 
     collect_performance_data: bool = True # to safe to csv and plot
     plot_images : bool = True # to also create nice plots (only plots if data is collected)
+    record_individual_history : bool = False
 
     n_parents : int = 5
 

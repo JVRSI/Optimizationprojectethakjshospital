@@ -26,6 +26,7 @@ class MutationStrategy(ABC):
 
     def mutate(self, individual : Individual):
         individual.fitness = None
+        individual.sim_records = None
         self._mutate(individual=individual)
 
 

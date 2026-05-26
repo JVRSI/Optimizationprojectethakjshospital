@@ -2,8 +2,10 @@ from dataclasses import dataclass, asdict
 import csv
 import numpy as np
 from pathlib import Path
+import json
 
 from ga.population import Population
+from ga.individual import Individual
 from ga.analysis.plotting import plot_fitness
 
 
@@ -31,8 +33,12 @@ class GenerationStats:
 
 class GAStatistics:
 
-    def __init__(self):
+    def __init__(self, record_individual_history:bool = False):
         self.history: list[GenerationStats] = []
+        self.rih = record_individual_history
+        if self.rih:
+            self.worst_history: list[Individual] = []
+            self.best_history: list[Individual] = []
 
     def record(
         self, 
@@ -45,6 +51,10 @@ class GAStatistics:
         ])
 
         best = population.best()
+        worst = population.worst()
+        if self.rih:
+            self.worst_history.append(worst.clone())
+            self.best_history.append(best.clone())
         n_large = sum(1 for t in best.genome if t[0] == 2)
         n_small = len(best.genome) - n_large 
 
@@ -63,7 +73,8 @@ class GAStatistics:
     def save_csv(
         self, 
         run_dir: str | Path,
-        do_plot: bool
+        do_plot: bool,
+        record_individual_history: True,
     ):
 
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -84,3 +95,18 @@ class GAStatistics:
 
         if do_plot:
             plot_fitness(csv_path,run_dir)
+        
+        if record_individual_history:
+            self.save_individual_history(run_dir=run_dir)
+    
+    def save_individual_history(self, run_dir):
+        b_json_path = run_dir / "recordings_best.json"
+
+        with open(b_json_path, "w") as f:
+            json.dump([asdict(b.sim_records) for b in self.best_history], f, indent=4)
+
+        w_json_path = run_dir / "recordings_worst.json"
+
+        with open(w_json_path, "w") as f:
+            json.dump([asdict(w.sim_records) for w in self.worst_history], f, indent=4)
+

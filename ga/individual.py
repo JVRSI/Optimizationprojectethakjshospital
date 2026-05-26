@@ -1,5 +1,6 @@
 from __future__ import annotations #to use -> Individual already in the Individual class, also need to change Generator
 from typing import TypeAlias
+from dataclasses import asdict
 
 Gene: TypeAlias = tuple[int, int, int]
 Genome: TypeAlias = list[Gene]  # if changed to contain mutable (List, dict, etc.) within List we need to change self.copy() to deepcopy
@@ -15,10 +16,12 @@ class Individual:
         
         self.genome = genome
         self.fitness = None
+        self.sim_records = None
 
     def clone(self) -> Individual:
         clone = Individual(self.genome.copy())  #copy is enough as List only contains immutables (tuples), if it would contain List or Dic we would need to deepcopy
         clone.fitness = self.fitness
+        clone.sim_records = self.sim_records
         return clone
 
     # on print(individual) this string is returned
@@ -31,5 +34,10 @@ class Individual:
                 [int(gene[0]), int(gene[1]), int(gene[2])]  # tuple -> list
                 for gene in self.genome
             ],
-            "fitness": self.fitness
+            "fitness": self.fitness,
+            "sim_records": (
+                asdict(self.sim_records)
+                if self.sim_records is not None
+                else None
+            )
         }

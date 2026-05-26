@@ -67,7 +67,7 @@ class ParallelEvaluator(Evaluator):
         self.rih = record_individual_history
 
     @staticmethod
-    def _evaluate_single(individual, simulation_config, cities, rng):
+    def _evaluate_single(individual:Individual, simulation_config, cities, rng, rih = False):
         simulation = Simulation(
             start_pos=individual.genome,
             sc=simulation_config,
@@ -76,6 +76,8 @@ class ParallelEvaluator(Evaluator):
             #cities=cities_matrix,
         )
         individual.fitness = simulation.run(log=False)
+        if rih:
+            individual.sim_records = simulation.get_result()
         return individual
 
     def evaluate(self, individuals: list[Individual]) -> None:
@@ -85,6 +87,7 @@ class ParallelEvaluator(Evaluator):
             simulation_config=self.sim_config,
             cities=self.cities,
             rng=self.rng,
+            rih=self.rih
         )
 
         # split

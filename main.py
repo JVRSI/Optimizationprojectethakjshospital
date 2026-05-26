@@ -34,6 +34,7 @@ seed = 42
 rng = np.random.default_rng(seed)
 
 n_workers = 15
+record_history_of_best_and_worst = True
 
 ##############################################################################################
 #GA config
@@ -46,6 +47,7 @@ ga_config = GAConfig(
     mean_hospital_small=50,
     collect_performance_data=True,
     plot_images=True,
+    record_individual_history=record_history_of_best_and_worst,
     n_parents=20,
     n_hospital_types=2, #not everywhere is support for variable hospital types
     mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
@@ -135,7 +137,7 @@ def main():
 
         # stats and plots
         if ga_config.collect_performance_data:
-            ga_stats.save_csv(dir_path, ga_config.plot_images)
+            ga_stats.save_csv(dir_path, ga_config.plot_images, record_individual_history=ga_config.record_individual_history)
 
         # config
         ga_config_dict = asdict(ga_config)
