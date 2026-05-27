@@ -18,6 +18,9 @@ class GenerationStats:
     std_fitness : float
     n_hospitals_large : int
     n_hospitals_small : int
+    time_simulation : float
+    time_offspring : float
+    n_population : int
 
     def __str__(self):
         return (
@@ -27,7 +30,11 @@ class GenerationStats:
             f"Worst: {self.worst_fitness:9.4f}\n"
             f"Std:   {self.std_fitness:9.4f}\n"
             f"Large Hospitals: {self.n_hospitals_large}\n"
-            f"Small Hospitals: {self.n_hospitals_small}"
+            f"Small Hospitals: {self.n_hospitals_small}\n"
+            f"Time of Simulation: {self.time_simulation:9.4f}\n"
+            f"Time creating offspring: {self.time_offspring:9.4f}\n"
+            f"Time of Sim per individual: {(self.time_simulation / self.n_population):9.4f}\n"
+            f"Time creating individual: {(self.time_offspring / self.n_population):9.4f}"
         )
 
 
@@ -40,10 +47,13 @@ class GAStatistics:
             self.worst_history: list[Individual] = []
             self.best_history: list[Individual] = []
 
+
     def record(
         self, 
         generation : int, 
         population : Population,
+        time_simulation_total : float,
+        time_creating_offspring : float,
     ):
 
         fitness_values = np.array([
@@ -65,7 +75,10 @@ class GAStatistics:
             worst_fitness=np.max(fitness_values),
             std_fitness=np.std(fitness_values),
             n_hospitals_large=n_large,
-            n_hospitals_small=n_small
+            n_hospitals_small=n_small,
+            time_offspring=time_creating_offspring,
+            time_simulation=time_simulation_total,
+            n_population=population.size(),
         )
         print(stats)
         self.history.append(stats)

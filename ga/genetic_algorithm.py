@@ -1,3 +1,5 @@
+import time
+
 from ga.population import Population
 from ga.individual import Individual
 from ga.config import GAConfig
@@ -48,42 +50,38 @@ class GeneticAlgorithm:
 
         self.rng = rng
 
+        self.genome_generator = genome_generator
+
+
+    def initialize(self) -> None:
+        """
+        Initializes and evaluates generation 0
+
+        returns time of simulation
+        """
+
         self.population = Population(
             [
-                Individual(genome_generator())
+                Individual(self.genome_generator())
                 for _ in range(self.config.initial_population_size)
             ]
         )
 
-    def initialize(self) -> None:
-        """
-        Bereitet den genetischen Algorithmus für den Start vor.
-
-        Typische Aufgaben:
-        - Bewertet die initiale Population.
-        - Setzt Statistiken oder Tracking-Variablen zurück.
-        - Initialisiert Generationenzähler.
-        - Optional: sortiert Population nach Fitness.
-        """
-
         # initial evaluation
+        ta = time.time()
         self.evaluator.evaluate(
             self.population.individuals
         )
-        
-        #statistics
-        if self.config.collect_performance_data:
-            self.statistics.record(
-                generation=0,
-                population=self.population
-            )
+        te = time.time()
 
-        pass
+        return te - ta
 
 
-    def step(self, generation) -> None:
+    def step(self) -> float:
         """
         Updating one generation
+
+        returns time of evaluating the simulation
         """
 
         #stuff is done inplace (hopefully)
@@ -95,11 +93,14 @@ class GeneticAlgorithm:
         self.variation.variate(self.population.individuals)
 
         # evaluate offspring
+        ta = time.time()
         self.evaluator.evaluate(self.population.individuals)
+        te = time.time()
 
         self.population.clear_stats()
 
         #+ statistics
+        return te - ta
 
 
     def run(self):
@@ -118,17 +119,35 @@ class GeneticAlgorithm:
         """
         generations = self.config.n_generations
 
-        self.initialize()
+
+        #initialize
+
+        ta = time.time()
+        ts = self.initialize()
+        te = time.time()
+
+        #statistics
+        if self.config.collect_performance_data:
+            self.statistics.record(
+                generation=0,
+                population=self.population,
+                time_creating_offspring=(te-ta-ts),
+                time_simulation_total=ts,
+            )
 
         for generation in range(1, generations+1):
             print("-----------------------------------------------------------------------")
             print(f"Generation {generation}/{generations}")
-            self.step(generation)
+            ta = time.time()
+            ts = self.step(generation)
+            te = time.time()
             
             if self.config.collect_performance_data:
                 self.statistics.record(
                     generation=generation,
-                    population=self.population
+                    population=self.population,
+                    time_simulation_total=ts,
+                    time_creating_offspring=(te-ta-ts),
                 )
 
 
