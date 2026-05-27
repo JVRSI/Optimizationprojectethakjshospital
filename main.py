@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 from pathlib import Path
 from datetime import datetime
-from pathlib import Path
 from dataclasses import asdict
 import json
 import sys
@@ -56,6 +55,9 @@ ga_config = GAConfig(
     crossover_strategy="grid", #{single_grid, grid, single_point}
     n_crossovers=10,
     probability_of_crossover=0.95,
+    do_random_restarts=False,
+    n_best_to_keep=10,
+    n_steps_of_no_improvement_to_converge=5
 )
 
 
@@ -126,7 +128,10 @@ def main():
 
     # all your current main.py code goes here
 
-    best = genetic_algorithm.run()
+    best, status = genetic_algorithm.run()
+
+    print("-------------------------------------------------------------------------------")
+    print(status)
 
 
     if store_run:

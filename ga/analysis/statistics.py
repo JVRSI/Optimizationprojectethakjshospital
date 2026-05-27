@@ -21,6 +21,7 @@ class GenerationStats:
     time_simulation : float
     time_offspring : float
     n_population : int
+    did_random_restart : bool
 
     def __str__(self):
         return (
@@ -34,7 +35,8 @@ class GenerationStats:
             f"Time of Simulation: {self.time_simulation:9.4f}\n"
             f"Time creating offspring: {self.time_offspring:9.4f}\n"
             f"Time of Sim per individual: {(self.time_simulation / self.n_population):9.4f}\n"
-            f"Time creating individual: {(self.time_offspring / self.n_population):9.4f}"
+            f"Time creating individual: {(self.time_offspring / self.n_population):9.4f}\n"
+            f"Did random restart: {self.did_random_restart}"
         )
 
 
@@ -46,6 +48,8 @@ class GAStatistics:
         if self.rih:
             self.worst_history: list[Individual] = []
             self.best_history: list[Individual] = []
+        self.steps_from_last_improvement = 0
+        self.current_best = 100
 
 
     def record(
@@ -54,6 +58,7 @@ class GAStatistics:
         population : Population,
         time_simulation_total : float,
         time_creating_offspring : float,
+        currently_random_restart=False,
     ):
 
         fitness_values = np.array([
@@ -68,6 +73,13 @@ class GAStatistics:
         n_large = sum(1 for t in best.genome if t[0] == 2)
         n_small = len(best.genome) - n_large 
 
+        val_best = best.fitness
+        if self.current_best > val_best:
+            self.current_best = val_best
+            self.steps_from_last_improvement = 0
+        else:
+            self.steps_from_last_improvement = self.steps_from_last_improvement + 1
+
         stats = GenerationStats(
             generation=generation,
             best_fitness=np.min(fitness_values),
@@ -79,6 +91,7 @@ class GAStatistics:
             time_offspring=time_creating_offspring,
             time_simulation=time_simulation_total,
             n_population=population.size(),
+            did_random_restart=currently_random_restart
         )
         print(stats)
         self.history.append(stats)
@@ -122,4 +135,11 @@ class GAStatistics:
 
         with open(w_json_path, "w") as f:
             json.dump([asdict(w.sim_records) for w in self.worst_history], f, indent=4)
+
+
+    def relative_improvement(self, window=5, eps=1e-12):
+        current = self.history[-1].best_fitness
+        old = self.history[-window].best_fitness
+
+        return abs(old - current) / (abs(old) + eps)
 

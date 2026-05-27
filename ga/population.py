@@ -42,6 +42,15 @@ class Population:
         self.best_individual = None
         self.worst_individual = None
         self.average_fitness = None
+    
+    def delete_worst_individuals(self, n_individuals_to_keep)->None:
+        """
+        Deletes all individuals except for the n_individuals_to_keep best ones.
+        """
+        if self.best_individual is None:
+            self.sort_population()
+
+        del self.individuals[n_individuals_to_keep:]
 
     def __iter__(self):
         return iter(self.individuals)

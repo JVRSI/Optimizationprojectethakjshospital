@@ -51,6 +51,8 @@ class GeneticAlgorithm:
         self.rng = rng
 
         self.genome_generator = genome_generator
+        self.population = None
+        self.time_initial = time.time()
 
 
     def initialize(self) -> None:
@@ -60,12 +62,20 @@ class GeneticAlgorithm:
         returns time of simulation
         """
 
-        self.population = Population(
-            [
-                Individual(self.genome_generator())
-                for _ in range(self.config.initial_population_size)
-            ]
-        )
+        if self.population is None:
+            self.population = Population(
+                [
+                    Individual(self.genome_generator())
+                    for _ in range(self.config.initial_population_size)
+                ]
+            )
+        else:
+            self.population.individuals.extend(
+                [
+                    Individual(self.genome_generator())
+                    for _ in range(self.config.initial_population_size - self.population.size())
+                ]
+            )
 
         # initial evaluation
         ta = time.time()
@@ -105,28 +115,21 @@ class GeneticAlgorithm:
 
     def run(self):
         """
-        Führt den genetischen Algorithmus über mehrere Generationen aus.
+        Runs genetic algorithm
 
-        Parameter:
-        - generations:
-            Anzahl der Generationen, die simuliert werden sollen.
-
-        Typische Aufgaben:
-        - initialize() einmal aufrufen.
-        - Für jede Generation step() ausführen.
-        - Optional: Fortschritt loggen oder beste Lösung speichern.
-        - Am Ende die beste gefundene Lösung zurückgeben.
+        returns best individual and exit status {"max_iterations", "max_time", "converged"}
         """
         generations = self.config.n_generations
 
+        exit_status = "max_iterations"
+
 
         #initialize
-
         ta = time.time()
         ts = self.initialize()
         te = time.time()
 
-        #statistics
+        #statistics of generation 0
         if self.config.collect_performance_data:
             self.statistics.record(
                 generation=0,
@@ -136,6 +139,43 @@ class GeneticAlgorithm:
             )
 
         for generation in range(1, generations+1):
+            
+            if time.time() - self.time_initial > self.config.max_time_to_run_s:
+                print("+---------------------------------------------------------------------+")
+                print("| Stopped because out of time                                         |")
+                print("+---------------------------------------------------------------------+")
+                exit_status = "max_time"
+                break
+
+            # check convergence
+            if self.statistics.steps_from_last_improvement >= self.config.n_steps_of_no_improvement_to_converge:
+                #random restart
+                if self.config.do_random_restarts:
+                    print("+---------------------------------------------------------------------+")
+                    print("| Doing random restart                                                |")
+                    print("+---------------------------------------------------------------------+")
+                    self.population.delete_worst_individuals(self.config.n_best_to_keep)
+                    ta = time.time()
+                    ts = self.initialize()
+                    te = time.time()
+
+                    #statistics of restart
+                    if self.config.collect_performance_data:
+                        self.statistics.record(
+                            generation=generation,
+                            population=self.population,
+                            time_creating_offspring=(te-ta-ts),
+                            time_simulation_total=ts,
+                            currently_random_restart=True,
+                        )
+                    continue
+                else:
+                    print("+---------------------------------------------------------------------+")
+                    print("| Stopped because converged                                           |")
+                    print("+---------------------------------------------------------------------+")
+                    exit_status = "converged"
+                    break
+
             print("-----------------------------------------------------------------------")
             print(f"Generation {generation}/{generations}")
             ta = time.time()
@@ -148,9 +188,9 @@ class GeneticAlgorithm:
                     population=self.population,
                     time_simulation_total=ts,
                     time_creating_offspring=(te-ta-ts),
-                )
+                )        
 
 
         best_individual = self.population.best()
 
-        return best_individual
+        return best_individual, exit_status

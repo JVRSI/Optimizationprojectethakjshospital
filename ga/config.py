@@ -29,3 +29,10 @@ class GAConfig:
     crossover_strategy : str = "single_grid" #only if variation strategy allows selection {single_grid, grid, single_point}
     n_crossovers : int = 10
     probability_of_crossover : float = 0.95  #only if Variation where mutation is tied to a probability
+
+    #convergence
+    do_random_restarts : bool = True #if not reached max iterations, restart if has converged
+    n_best_to_keep : int = 5 #number of best individuals to keep when doing random restart
+    n_steps_of_no_improvement_to_converge : int = 5
+
+    max_time_to_run_s : float = 7200
