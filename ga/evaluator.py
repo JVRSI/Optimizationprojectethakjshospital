@@ -22,12 +22,14 @@ class Evaluator(ABC):
             cities : list[Tuple[int,int,int]],
             cities_matrix = None,
             rng = None,
+            record_individual_history:bool = False,
         ):
         super().__init__()
 
         self.sim_config = sim_config
         self.cities = cities
         self.rng = rng
+        self.rih = record_individual_history
         #self.cities_matrix = cities_matrix
 
 
@@ -50,6 +52,10 @@ class SerialEvaluator(Evaluator):
 
 
 class ParallelEvaluator(Evaluator):
+    @staticmethod
+    def _wrapped(item, fn):
+        i, ind = item
+        return i, fn(ind)
 
     def __init__(
             self,
@@ -58,16 +64,13 @@ class ParallelEvaluator(Evaluator):
             n_workers : int = 16,
             rng = None,
             cities_matrix = None,
-            record_individual_history:bool = False
+            record_individual_history : bool = False
         ):
-        super().__init__(sim_config, cities,cities_matrix=cities_matrix, rng = rng)
-
+        super().__init__(sim_config, cities,cities_matrix=cities_matrix, rng = rng, record_individual_history=record_individual_history)
         self.workers = n_workers
-        self.sim_config = sim_config
-        self.rih = record_individual_history
 
     @staticmethod
-    def _evaluate_single(individual:Individual, simulation_config, cities, rng, rih = False):
+    def _evaluate_single(individual:Individual, simulation_config, cities, rng, rih):
         simulation = Simulation(
             start_pos=individual.genome,
             sc=simulation_config,
@@ -77,11 +80,10 @@ class ParallelEvaluator(Evaluator):
         )
         individual.fitness = simulation.run(log=False)
         if rih:
-            individual.sim_records = simulation.get_result()
+            individual.sim_records = simulation.get_result().to_scalar()
         return individual
 
     def evaluate(self, individuals: list[Individual]) -> None:
-
         fn = partial(
             self._evaluate_single,
             simulation_config=self.sim_config,
@@ -93,14 +95,11 @@ class ParallelEvaluator(Evaluator):
         # split
         to_run = [(i, ind) for i, ind in enumerate(individuals) if ind.fitness is None]
 
-        def wrapped(item):
-            i, ind = item
-            return i, fn(ind)
 
         # calculate new fitness values
         with ProcessPoolExecutor(max_workers=self.workers) as executor:
             computed = list(tqdm(
-                executor.map(wrapped, to_run),
+                executor.map(partial(ParallelEvaluator._wrapped, fn=fn), to_run),
                 total=len(to_run)
             ))
 

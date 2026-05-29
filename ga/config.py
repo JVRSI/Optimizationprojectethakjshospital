@@ -36,3 +36,4 @@ class GAConfig:
     n_steps_of_no_improvement_to_converge : int = 5
 
     max_time_to_run_s : float = 7200
+

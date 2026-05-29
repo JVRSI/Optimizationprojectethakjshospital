@@ -57,7 +57,8 @@ ga_config = GAConfig(
     probability_of_crossover=0.95,
     do_random_restarts=False,
     n_best_to_keep=10,
-    n_steps_of_no_improvement_to_converge=5
+    n_steps_of_no_improvement_to_converge=5,
+    max_time_to_run_s=7200,
 )
 
 

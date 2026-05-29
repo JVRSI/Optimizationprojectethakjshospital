@@ -25,7 +25,7 @@ class GeneticAlgorithm:
         variation : VariationStrategy,
         evaluator : Evaluator,
         statistics : GAStatistics,
-        rng : np.random.Generator,
+        rng : np.random.Generator = None,
     ):
         if not isinstance(config, GAConfig):
             raise TypeError(f"config must be instance of GAConfig, got {type(config)}")
@@ -37,8 +37,6 @@ class GeneticAlgorithm:
             raise TypeError(f"crossover must be instance of Crossover, got {type(variation)}")
         if not isinstance(evaluator, Evaluator):
             raise TypeError(f"evaluator must be instance of Evaluator, got {type(evaluator)}")
-        if not isinstance(rng, np.random.Generator):
-            raise TypeError(f"evaluator must be instance of Evaluator, got {type(rng)}")
 
         self.config = config
 
@@ -48,7 +46,6 @@ class GeneticAlgorithm:
         self.variation = variation
         self.evaluator = evaluator
 
-        self.rng = rng
 
         self.genome_generator = genome_generator
         self.population = None
@@ -139,8 +136,10 @@ class GeneticAlgorithm:
             )
 
         for generation in range(1, generations+1):
+            tc = time.time()
+            print(f"remaining time: {(self.config.max_time_to_run_s - (tc - self.time_initial))/60} min")
             
-            if time.time() - self.time_initial > self.config.max_time_to_run_s:
+            if tc - self.time_initial > self.config.max_time_to_run_s:
                 print("+---------------------------------------------------------------------+")
                 print("| Stopped because out of time                                         |")
                 print("+---------------------------------------------------------------------+")
@@ -148,13 +147,18 @@ class GeneticAlgorithm:
                 break
 
             # check convergence
-            if self.statistics.steps_from_last_improvement >= self.config.n_steps_of_no_improvement_to_converge:
+            #if self.statistics.steps_from_last_improvement >= self.config.n_steps_of_no_improvement_to_converge:
+            if self.statistics.relative_improvement(self.config.n_steps_of_no_improvement_to_converge) < 5e-3:
                 #random restart
                 if self.config.do_random_restarts:
                     print("+---------------------------------------------------------------------+")
                     print("| Doing random restart                                                |")
                     print("+---------------------------------------------------------------------+")
                     self.population.delete_worst_individuals(self.config.n_best_to_keep)
+
+                    self.statistics.steps_from_last_improvement = 0
+                    self.statistics.current_best = 100
+
                     ta = time.time()
                     ts = self.initialize()
                     te = time.time()
@@ -179,7 +183,7 @@ class GeneticAlgorithm:
             print("-----------------------------------------------------------------------")
             print(f"Generation {generation}/{generations}")
             ta = time.time()
-            ts = self.step(generation)
+            ts = self.step()
             te = time.time()
             
             if self.config.collect_performance_data:

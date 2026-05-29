@@ -1,0 +1,8 @@
+[
+    [
+        5,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: ClassicVariation\nIdea: Worked best so far, with random restart, but new sim config",
+        "single_point is not a valid crossover strategy",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 138, in main\n    variator = run.variator_factory(ga_config,seeds[3])\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_runs_configs/r1.py\", line 310, in <lambda>\n    variator_factory = lambda config, seed: ClassicVariation(\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 13, in __init__\n    self.crosser = BasicCrossoverVariation(rng=rng,ga_config=ga_config)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/basic.py\", line 56, in __init__\n    raise ValueError(f\"{ms} is not a valid crossover strategy\")\nValueError: single_point is not a valid crossover strategy\n"
+    ]
+]

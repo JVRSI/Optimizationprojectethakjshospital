@@ -50,6 +50,7 @@ class GAStatistics:
             self.best_history: list[Individual] = []
         self.steps_from_last_improvement = 0
         self.current_best = 100
+        self.steps_from_last_restart = -2
 
 
     def record(
@@ -100,7 +101,6 @@ class GAStatistics:
         self, 
         run_dir: str | Path,
         do_plot: bool,
-        record_individual_history: True,
     ):
 
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -122,22 +122,24 @@ class GAStatistics:
         if do_plot:
             plot_fitness(csv_path,run_dir)
         
-        if record_individual_history:
+        if self.rih:
             self.save_individual_history(run_dir=run_dir)
     
     def save_individual_history(self, run_dir):
         b_json_path = run_dir / "recordings_best.json"
 
         with open(b_json_path, "w") as f:
-            json.dump([asdict(b.sim_records) for b in self.best_history], f, indent=4)
+            json.dump([b.to_dict() for b in self.best_history], f, indent=4)
 
         w_json_path = run_dir / "recordings_worst.json"
 
         with open(w_json_path, "w") as f:
-            json.dump([asdict(w.sim_records) for w in self.worst_history], f, indent=4)
+            json.dump([w.to_dict() for w in self.worst_history], f, indent=4)
 
 
     def relative_improvement(self, window=5, eps=1e-12):
+        if len(self.history) <= window or self.history[-1].std_fitness > 0.004: #std is used to avoid restarting directly after restart again
+            return 100
         current = self.history[-1].best_fitness
         old = self.history[-window].best_fitness
 

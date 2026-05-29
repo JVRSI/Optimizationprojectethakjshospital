@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 try:
     from Simulation.entities import *
 except ImportError:
@@ -423,7 +423,7 @@ class Simulation:
 
 # Result Class
 @dataclass
-class SimResult:
+class SimResultScalar:
     not_admitted_count: int = 0
     not_survived_count: int = 0
     admitted_count: int = 0
@@ -436,6 +436,10 @@ class SimResult:
     admitted_nonurgent: int = 0
 
     total_travel_distance: float = 0.0
+
+
+@dataclass
+class SimResult(SimResultScalar):
     admitted_travel_distances: list = None
     not_survived_travel_distances: list = None
 
@@ -474,3 +478,11 @@ class SimResult:
             self.admitted_per_hospital = {}
         if self.rejected_per_hospital is None:
             self.rejected_per_hospital = {}
+
+    def to_scalar(self) -> SimResultScalar:
+        return SimResultScalar(
+            **{
+                f.name: getattr(self, f.name)
+                for f in fields(SimResultScalar)
+            }
+        )

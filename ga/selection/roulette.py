@@ -23,8 +23,9 @@ class RouletteSelection(SelectionStrategy):
 
         r = self.rng.random(self.n_parents) * cumsum[-1]
 
-        
 
         indices = np.searchsorted(cumsum,r)
+
+        indices = np.clip(indices, 0, len(population.individuals) - 1)
 
         population.individuals =  [population.individuals[i] for i in indices]

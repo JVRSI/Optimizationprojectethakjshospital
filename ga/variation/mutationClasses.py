@@ -39,7 +39,7 @@ class MutationStrategy(ABC):
 
     def get_position_from_total_index(self, idx): #total index as in the index of the city when enumerating all cities
         row = idx // self.width
-        col = idx % self.height
+        col = idx % self.width
         return row, col
     
     def get_genome_index(

@@ -18,8 +18,18 @@ class GenomeGenerator(ABC):
         self.rng = rng
         self.config = config
 
-        self.n = self.config.mean_hospital_large + self.config.mean_hospital_small
-        self.m = self.config.mean_hospital_large
+        large = self.rng.normal(
+            loc=self.config.mean_hospital_large,
+            scale=15
+        )
+
+        small = self.rng.normal(
+            loc=self.config.mean_hospital_small,
+            scale=20
+        )
+
+        self.m = max(0,int(round(large)))
+        self.n = max(0,int(round(large + small)))
 
         self.height = self.config.genome_size[0]
         self.width = self.config.genome_size[1]

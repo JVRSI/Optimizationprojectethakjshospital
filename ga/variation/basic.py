@@ -60,8 +60,8 @@ class BasicCrossoverVariation(VariationStrategy):
         parents : list[Individual],
     ) -> None:
         
-        t = len(parents)//2 #last parent if odd will not be crossed and doesn't loose fitness
+         #last parent if odd will not be crossed and doesn't loose fitness
         
-        for i in range(t):
+        for i in range(0, len(parents)-1, 2):
             self.crosser.crossover(parent1=parents[i],parent2=parents[i+1]) #+ maybe randomize ?
         pass

@@ -43,7 +43,8 @@ args = parser.parse_args()
 
 save_plot = False
 
-run_dir = RUNS_LOCAL / "RouletteSelection_MicroGAVariation_GravityGenerator_2026-05-22_11-19-23_ParallelEvaluator"
+#run_dir = RUNS_LOCAL / "RouletteSelection_EvolutionaryVariation_GravityGenerator_2026-05-22_14-09-44_ParallelEvaluator"
+run_dir = RUNS_DIR / "0_systematic_r1" / "4_7_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-29_07-53-45_ParallelEvaluator"
 #run_dir = RUNS_DIR  / ""
 
 def get_run_datetime(path: Path) -> datetime:
@@ -73,9 +74,10 @@ if args.newest:
 
 
 json_file = run_dir / "best.json"
+json_file = run_dir / "recordings_worst.json"
 
 with open(json_file, 'r') as f:
-    best = json.load(f)
+    best = json.load(f)[0]
 
 genome = best["genome"]
 fitness = best["fitness"]

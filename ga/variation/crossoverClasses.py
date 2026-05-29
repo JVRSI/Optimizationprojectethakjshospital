@@ -41,7 +41,7 @@ class CrossoverStrategy(ABC):
 
     def get_position_from_total_index(self, idx): #total index as in the index of the city when enumerating all cities
         row = idx // self.width
-        col = idx % self.height
+        col = idx % self.width
         return row, col
     
 
@@ -118,6 +118,8 @@ class GridCrossover(CrossoverStrategy):
         row_pivots = sorted(self.rng.choice(self.height, size=self.n_pivots, replace=False))
         col_pivots = sorted(self.rng.choice(self.height, size=self.n_pivots, replace=False))
 
+        tmp1 = parent1.genome.copy()
+
         parent1.genome = (
             [t for t in parent1.genome if self.from_parent1(t,row_pivots,col_pivots)]
             +
@@ -127,7 +129,7 @@ class GridCrossover(CrossoverStrategy):
         parent2.genome = (
             [t for t in parent2.genome if self.from_parent1(t,row_pivots,col_pivots)]
             +
-            [t for t in parent1.genome if not self.from_parent1(t,row_pivots,col_pivots)]
+            [t for t in tmp1 if not self.from_parent1(t,row_pivots,col_pivots)]
         )
     
 
