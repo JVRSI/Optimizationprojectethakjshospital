@@ -31,7 +31,7 @@ from Simulation.entities import City
 from systematic_runs_configs.r2 import runs
 runs_conf = "r2"
 
-skip_runs = []
+skip_runs = [0]
 
 
 

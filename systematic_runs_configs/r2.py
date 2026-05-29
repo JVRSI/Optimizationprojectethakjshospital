@@ -78,7 +78,8 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
             ),
             generator_factory = lambda config, seed: GravityGenerator(
                 rng=np.random.default_rng(seed),
-                config=config
+                config=config,
+                cities_matrix=cities_matrix
             ),
             selector_factory = lambda n_parents, seed: RouletteSelection(
                 n_parents=n_parents,
