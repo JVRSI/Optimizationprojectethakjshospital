@@ -200,7 +200,7 @@ class Simulation:
         fitness = 0.0
 
         self.result.death_rate = death_rate
-        self.result.admitted_rate = not_admitted_rate
+        self.result.not_admitted_rate = not_admitted_rate
         self.result.urgent_death_rate = urgent_death_rate
         self.result.urgent_not_admitted_rate = urgent_not_admitted_rate
         self.result.normalized_admitted_distance = normalized_admitted_distance
@@ -449,7 +449,7 @@ class SimResultScalar:
     total_travel_distance: float = 0.0
 
     death_rate: float = None
-    admitted_rate: float = None
+    not_admitted_rate: float = None
     urgent_death_rate: float = None
     urgent_not_admitted_rate: float = None
     normalized_admitted_distance: float = None
