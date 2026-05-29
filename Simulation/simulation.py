@@ -199,6 +199,17 @@ class Simulation:
 
         fitness = 0.0
 
+        self.result.death_rate = death_rate
+        self.result.admitted_rate = not_admitted_rate
+        self.result.urgent_death_rate = urgent_death_rate
+        self.result.urgent_not_admitted_rate = urgent_not_admitted_rate
+        self.result.normalized_admitted_distance = normalized_admitted_distance
+        self.result.normalized_not_survived_distance = normalized_not_survived_distance
+        self.result.normalized_admitted_choice_rank = normalized_admitted_choice_rank
+        self.result.normalized_not_survived_choice_rank = normalized_not_survived_choice_rank
+        self.result.normalized_unused_hospitals = normalized_unused_hospitals
+        self.result.normalized_cost = normalized_cost
+
         fitness += 0.30 * (death_rate + not_admitted_rate)
 
         fitness += 0.15 * urgent_death_rate
@@ -436,6 +447,17 @@ class SimResultScalar:
     admitted_nonurgent: int = 0
 
     total_travel_distance: float = 0.0
+
+    death_rate: float 
+    admitted_rate: float 
+    urgent_death_rate: float 
+    urgent_not_admitted_rate: float 
+    normalized_admitted_distance: float 
+    normalized_not_survived_distance: float 
+    normalized_admitted_choice_rank: float 
+    normalized_not_survived_choice_rank: float 
+    normalized_unused_hospitals: float 
+    normalized_cost: float 
 
 
 @dataclass
