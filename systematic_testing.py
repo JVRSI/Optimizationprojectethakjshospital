@@ -38,7 +38,7 @@ with open(DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded.pkl", "
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--n-workers", type=int, default=15)
+parser.add_argument("-w", "--n-workers", type=int, default=16)
 args = parser.parse_args()
 
 size = (219,345)
@@ -53,7 +53,7 @@ cities_matrix = load_population_matrix(MATRIX_PATH)
 
 runs = runs(size=size, record_history_of_best_and_worst=record_history_of_best_and_worst, cities_matrix=cities_matrix)
 
-skip_runs = [0]
+skip_runs = [0,1,2,3,5,6,7]
 
 
 

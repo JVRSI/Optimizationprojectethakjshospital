@@ -210,7 +210,8 @@ class Simulation:
         self.result.normalized_unused_hospitals = normalized_unused_hospitals
         self.result.normalized_cost = normalized_cost
 
-        fitness += 0.30 * (death_rate + not_admitted_rate)
+        fitness += 0.20 * death_rate
+        fitness += 0.10 * not_admitted_rate
 
         fitness += 0.15 * urgent_death_rate
         fitness += 0.05 * urgent_not_admitted_rate

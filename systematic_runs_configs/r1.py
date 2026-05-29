@@ -26,7 +26,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
         #         mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
         #         wandering_mutation_sigma=16,
         #         probability_of_mutation=0.08,
-        #         crossover_strategy="grid", #{single_grid, grid, single_point}
+        #         crossover_strategy="grid", #{single_grid, grid, single_break}
         #         n_crossovers=10,
         #         probability_of_crossover=0.95,
         #         do_random_restarts=False,
@@ -71,7 +71,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -115,7 +115,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -158,7 +158,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -202,7 +202,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="single_point", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -246,7 +246,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="single_point_equal_opportunity", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -290,7 +290,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.08,
-                crossover_strategy="single_point", #{single_grid, grid, single_point}
+                crossover_strategy="single_break", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -334,7 +334,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.008,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,
@@ -378,7 +378,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
                 wandering_mutation_sigma=16,
                 probability_of_mutation=0.15,
-                crossover_strategy="grid", #{single_grid, grid, single_point}
+                crossover_strategy="grid", #{single_grid, grid, single_break}
                 n_crossovers=10,
                 probability_of_crossover=0.95,
                 do_random_restarts=True,

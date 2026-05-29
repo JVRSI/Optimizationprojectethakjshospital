@@ -3,3 +3,4 @@ __pycache__/
 local_runs/
 .venv/
 .DS_Store
+local_plots/
