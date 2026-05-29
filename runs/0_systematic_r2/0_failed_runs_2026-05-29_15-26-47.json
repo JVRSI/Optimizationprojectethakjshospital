@@ -1,0 +1,8 @@
+[
+    [
+        1,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: ClassicVariation\nIdea: Long running SPMWEO",
+        "GravityGenerator.__init__() missing 1 required positional argument: 'cities_matrix'",
+        "Traceback (most recent call last):\n  File \"C:\\Users\\js200\\OneDrive\\Dokumente\\GitHub\\Optimizationprojectethakjshospital\\systematic_testing.py\", line 140, in main\n    genome_generator = run.generator_factory(ga_config,seeds[1])\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\js200\\OneDrive\\Dokumente\\GitHub\\Optimizationprojectethakjshospital\\systematic_runs_configs\\r2.py\", line 79, in <lambda>\n    generator_factory = lambda config, seed: GravityGenerator(\n                                             ^^^^^^^^^^^^^^^^^\nTypeError: GravityGenerator.__init__() missing 1 required positional argument: 'cities_matrix'\n"
+    ]
+]
