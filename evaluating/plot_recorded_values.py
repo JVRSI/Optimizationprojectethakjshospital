@@ -82,8 +82,8 @@ if __name__ == "__main__":
         #"reconstructed_fitness"
     ]].plot(kind='line', legend=True, figsize=(12,6))
     
-    if False:
-        df_norm[
+    if True:
+        df[[
             "not_admitted_count",
             "not_survived_count",
             "admitted_count",
@@ -93,8 +93,8 @@ if __name__ == "__main__":
             "not_admitted_nonurgent",
             "admitted_urgent",
             "admitted_nonurgent",
-            "total_travel_distance: fl",
-        ].plot(kind='line', legend=True, figsize=(12,6))
+            "total_travel_distance",
+        ]].plot(kind='line', legend=True, figsize=(12,6))
 
     
 

@@ -28,8 +28,11 @@ from Simulation.entities import City
 
 
 # runs configs
-from systematic_runs_configs.r1 import runs
-runs_conf = "r1"
+from systematic_runs_configs.r2 import runs
+runs_conf = "r2"
+
+skip_runs = []
+
 
 
 
@@ -53,7 +56,6 @@ cities_matrix = load_population_matrix(MATRIX_PATH)
 
 runs = runs(size=size, record_history_of_best_and_worst=record_history_of_best_and_worst, cities_matrix=cities_matrix)
 
-skip_runs = [0,1,2,3,5,6,7]
 
 
 
@@ -109,6 +111,8 @@ def main():
         ) + 1
     else:
         cur_i = 0
+    
+    runs_dir.mkdir(exist_ok=True)
 
     with open(runs_dir / f"{cur_i}_seeds_{date_start}.json", "w") as f:
         json.dump({
