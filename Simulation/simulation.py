@@ -448,16 +448,16 @@ class SimResultScalar:
 
     total_travel_distance: float = 0.0
 
-    death_rate: float 
-    admitted_rate: float 
-    urgent_death_rate: float 
-    urgent_not_admitted_rate: float 
-    normalized_admitted_distance: float 
-    normalized_not_survived_distance: float 
-    normalized_admitted_choice_rank: float 
-    normalized_not_survived_choice_rank: float 
-    normalized_unused_hospitals: float 
-    normalized_cost: float 
+    death_rate: float = None
+    admitted_rate: float = None
+    urgent_death_rate: float = None
+    urgent_not_admitted_rate: float = None
+    normalized_admitted_distance: float = None
+    normalized_not_survived_distance: float = None
+    normalized_admitted_choice_rank: float = None
+    normalized_not_survived_choice_rank: float = None
+    normalized_unused_hospitals: float = None
+    normalized_cost: float = None
 
 
 @dataclass
