@@ -210,8 +210,8 @@ class Simulation:
         self.result.normalized_unused_hospitals = normalized_unused_hospitals
         self.result.normalized_cost = normalized_cost
 
-        fitness += 0.20 * death_rate
-        fitness += 0.10 * not_admitted_rate
+        fitness += 0.30 * death_rate
+        fitness += 0.30 * not_admitted_rate
 
         fitness += 0.15 * urgent_death_rate
         fitness += 0.05 * urgent_not_admitted_rate
@@ -318,7 +318,7 @@ class Simulation:
             distance_penalty = self.sc.DISTANCE_PENALTY_N
             noise_std = self.sc.SURVIVAL_NOISE_STD_N
 
-        prob = base_prob - distance_penalty * distance
+        prob = base_prob - (distance_penalty * distance * distance)
         prob += self.rng.normal(0, noise_std)
 
         return max(0.0, min(1.0, prob))
