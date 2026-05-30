@@ -23,41 +23,58 @@ class City:
 
 class Hospital:
     __slots__ = (
-        "hos_id", "type","location","patientqueue","current_load","patient_counter","sc","capacity","cost"
+        "hos_id", "type","location","patientqueue","urgent_load","nonurgent_load","capacity_urgent", "capacity_nonurgent","patient_counter","sc","cost"
     )
     def __init__(self, type, id, location, sc):
         self.hos_id = id
         self.type = type
         self.location = location
         self.patientqueue = []
-        self.current_load = 0
+        self.urgent_load = 0
+        self.nonurgent_load = 0
         self.patient_counter = 0
-        self.capacity = 0
+        self.capacity_urgent = 0
+        self.capacity_nonurgent = 0
         self.cost = 0
         self.sc = sc
         if type == 2: # Large hospital
-            self.capacity = sc.CAPACITYL
+            self.capacity_urgent = sc.CAPACITYL_U
+            self.capacity_nonurgent = sc.CAPACITYL_N
             self.cost = sc.COSTL
         elif type == 1: # Small hospital
-            self.capacity = sc.CAPACITYS
+            self.capacity_urgent = sc.CAPACITYS_U
+            self.capacity_nonurgent = sc.CAPACITYS_N
             self.cost = sc.COSTS
-
+    
     def can_treat(self, patient):
-        if self.type == 2:
-            return True
-        return patient.urgency == self.sc.URGENCY_U
-
-    def add_patient(self, patient):
-        if self.current_load < self.capacity:
-            heapq.heappush(self.patientqueue, (patient.days, self.patient_counter, patient))
-            self.patient_counter += 1
-            self.current_load += 1
-            return True
+        if patient.urgency == self.sc.URGENCY_U:
+            return self.capacity_urgent > 0
+        if patient.urgency == self.sc.URGENCY_N:
+            return self.capacity_nonurgent > 0
         return False
+    
+    def add_patient(self, patient):
+        if patient.urgency == self.sc.URGENCY_U:
+            if self.urgent_load >= self.capacity_urgent:
+                return False
+            self.urgent_load += 1
+        elif patient.urgency == self.sc.URGENCY_N:
+            if self.nonurgent_load >= self.capacity_nonurgent:
+                return False
+            self.nonurgent_load += 1
+        else:
+            return False
+
+        heapq.heappush(self.patientqueue, (patient.days, self.patient_counter, patient))
+        self.patient_counter += 1
+        return True
 
     def treat_next(self, current_step):
         if self.patientqueue and self.patientqueue[0][0] == current_step:
             _, _, patient = heapq.heappop(self.patientqueue)
-            self.current_load -= 1
+            if patient.urgency == self.sc.URGENCY_U:
+                self.urgent_load -= 1
+            else:
+                self.nonurgent_load -= 1
             return patient
         return None
