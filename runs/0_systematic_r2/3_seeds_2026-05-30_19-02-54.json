@@ -1,0 +1,42 @@
+{
+    "master_entropy": {
+        "entropy": 1780160574,
+        "spawn_key": [],
+        "pool_size": 4,
+        "n_children_spawned": 4
+    },
+    "seeds_keys": [
+        {
+            "entropy": 1780160574,
+            "spawn_key": [
+                0
+            ],
+            "pool_size": 4,
+            "n_children_spawned": 0
+        },
+        {
+            "entropy": 1780160574,
+            "spawn_key": [
+                1
+            ],
+            "pool_size": 4,
+            "n_children_spawned": 0
+        },
+        {
+            "entropy": 1780160574,
+            "spawn_key": [
+                2
+            ],
+            "pool_size": 4,
+            "n_children_spawned": 0
+        },
+        {
+            "entropy": 1780160574,
+            "spawn_key": [
+                3
+            ],
+            "pool_size": 4,
+            "n_children_spawned": 0
+        }
+    ]
+}

@@ -64,8 +64,10 @@ runs = runs(size=size, record_history_of_best_and_worst=record_history_of_best_a
 sim_config = SimConfig(
     SEED=seed,
     END_DAYS=100,
-    CAPACITYL=100,
-    CAPACITYS=20,
+    CAPACITYL_N = 100,
+    CAPACITYL_U = 50,
+    CAPACITYS_N = 0,
+    CAPACITYS_U = 20,
     COSTL=1500,
     COSTS=250,
     TOTALCOST=37000,
