@@ -210,8 +210,8 @@ class Simulation:
         self.result.normalized_unused_hospitals = normalized_unused_hospitals
         self.result.normalized_cost = normalized_cost
 
-        fitness += 0.20 * death_rate
-        fitness += 0.10 * not_admitted_rate
+        fitness += 0.30 * death_rate
+        fitness += 0.30 * not_admitted_rate
 
         fitness += 0.15 * urgent_death_rate
         fitness += 0.05 * urgent_not_admitted_rate
@@ -307,6 +307,8 @@ class Simulation:
 
     def distance(self, pos1, pos2):
         return ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** 0.5
+    def distance_squared(self, pos1, pos2):
+        return ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) 
 
     def survival_probability(self, patient, distance):
         if patient.urgency == self.sc.URGENCY_U:
@@ -318,7 +320,7 @@ class Simulation:
             distance_penalty = self.sc.DISTANCE_PENALTY_N
             noise_std = self.sc.SURVIVAL_NOISE_STD_N
 
-        prob = base_prob - distance_penalty * distance
+        prob = base_prob - (distance_penalty * distance)
         prob += self.rng.normal(0, noise_std)
 
         return max(0.0, min(1.0, prob))
@@ -357,7 +359,7 @@ class Simulation:
 
     def sorted_hospitals_by_distance(self, city_pos):
         return sorted(
-            [(self.distance(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
+            [(self.distance_squared(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
             key=lambda item: item[0]
         )
 
@@ -402,7 +404,7 @@ class Simulation:
 
             choice_rank += 1
 
-            distance_to_hospital = self.distance(patient.home.location, hospital.location)
+            distance_to_hospital = self.distance_squared(patient.home.location, hospital.location)
             survival_probability = self.survival_probability(patient, distance_to_hospital)
 
             if self.rng.random() > survival_probability:

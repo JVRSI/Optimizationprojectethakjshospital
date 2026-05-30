@@ -30,7 +30,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 do_random_restarts=True,
                 n_best_to_keep=10,
                 n_steps_of_no_improvement_to_converge=20,
-                max_time_to_run_s=4*60*60,
+                max_time_to_run_s=1.5*60*60,
             ),
             generator_factory = lambda config, seed: GravityGenerator(
                 rng=np.random.default_rng(seed),
@@ -74,7 +74,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix):
                 do_random_restarts=True,
                 n_best_to_keep=10,
                 n_steps_of_no_improvement_to_converge=20,
-                max_time_to_run_s=4*60*60,
+                max_time_to_run_s=1.5*60*60,
             ),
             generator_factory = lambda config, seed: GravityGenerator(
                 rng=np.random.default_rng(seed),

@@ -8,8 +8,10 @@ class SimConfig:
     # Hospital capacities
     # Type 2 = large / major hospital
     # Type 1 = smaller regional hospital
-    CAPACITYL : int = 100
-    CAPACITYS  : int = 2
+    CAPACITYL_N : int = 100
+    CAPACITYL_U: int = 50
+    CAPACITYS_N  : int = 0
+    CAPACITYS_U  : int = 10
     COSTL : float = 10
     COSTS :float = 5
     TOTALCOST : float = 300
