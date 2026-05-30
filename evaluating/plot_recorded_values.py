@@ -16,7 +16,7 @@ except ImportError:
 if __name__ == "__main__":
 
     #run_dir = RUNS_LOCAL / "RouletteSelection_EvolutionaryVariation_GravityGenerator_2026-05-22_14-09-44_ParallelEvaluator"
-    run_dir = RUNS_DIR / "0_systematic_r1" / "5_4_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-29_11-44-19_ParallelEvaluator"
+    run_dir = RUNS_DIR / "0_systematic_r2" / "1_1_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-30_06-04-27_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
     p = "recordings_best"
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     df_norm = (df - df.min()) / (df.max() - df.min())
 
     df_fitness_calc_norm = df.copy()
-    df_fitness_calc_norm["death_rate"] *= 0.3
-    df_fitness_calc_norm["not_admitted_rate"] *= 0.3
+    df_fitness_calc_norm["death_rate"] *= 0.2
+    df_fitness_calc_norm["not_admitted_rate"] *= 0.1
     df_fitness_calc_norm["urgent_death_rate"] *= 0.15
     df_fitness_calc_norm["urgent_not_admitted_rate"] *= 0.05
     df_fitness_calc_norm["normalized_admitted_distance"] *= 0.05
@@ -93,7 +93,7 @@ if __name__ == "__main__":
             "not_admitted_nonurgent",
             "admitted_urgent",
             "admitted_nonurgent",
-            "total_travel_distance",
+            #"total_travel_distance",
         ]].plot(kind='line', legend=True, figsize=(12,6))
 
     

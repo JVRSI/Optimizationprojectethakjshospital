@@ -6,7 +6,8 @@ from dataclasses import asdict
 import json
 import sys
 import argparse
-
+import cProfile
+import pstats
 
 from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, RUNS_LOCAL
 
@@ -14,6 +15,8 @@ from ga import GAConfig, GeneticAlgorithm, BasicGenerator, GravityGenerator, Par
 from ga.selection import RouletteSelection
 from ga.variation import EvolutionaryVariation, MicroGAVariation, ClassicVariation
 from ga.analysis.statistics import GAStatistics
+from ga.individual import Individual
+
 
 from testSim import matrix_to_city_dataframe, load_population_matrix
 
@@ -38,16 +41,16 @@ record_history_of_best_and_worst = True
 ##############################################################################################
 #GA config
 ga_config = GAConfig(
-    n_generations=100,
-    initial_population_size=100,
-    population_size=100,
+    n_generations=2,
+    initial_population_size=10,
+    population_size=10,
     genome_size= size,
     mean_hospital_large=30,
     mean_hospital_small=50,
     collect_performance_data=True,
     plot_images=True,
     record_individual_history=record_history_of_best_and_worst,
-    n_parents=20,
+    n_parents=4,
     n_hospital_types=2, #not everywhere is support for variable hospital types
     mutation_strategy="mutable_wandering", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity}
     wandering_mutation_sigma=16,
@@ -159,10 +162,37 @@ def main():
         with open(dir_path / "best.json", "w") as f:
             json.dump(best_dict, f, indent=4)
 
+cities_matrix = load_population_matrix(MATRIX_PATH)
+
+def sim_only():
+    rng = np.random.default_rng(3)
+    generator = GravityGenerator(rng=rng,config=GAConfig,cities_matrix=cities_matrix)
+    individual = Individual(genome=generator())
+    sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng)
+    individual.fitness = sim.run()
+    return individual
+
 
 if __name__ == "__main__":
 
-    main()
+    #main()
+
+    #i = sim_only()
+    
+    profiler = cProfile.Profile()
+    profiler.enable()
+
+    sim_only()
+
+    profiler.disable()
+
+    stats = pstats.Stats(profiler)
+    stats.sort_stats("cumtime")
+    stats.print_stats(20)
+    
+    
+
+    #cProfile.run("sim_only()")
     pass
 
 
