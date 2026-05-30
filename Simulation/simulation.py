@@ -58,8 +58,8 @@ class Simulation:
         thread_id = threading.get_ident()
 
         if log:
-            start_time = time.time()
-            thread_id = threading.get_ident()
+            #start_time = time.time()
+            #thread_id = threading.get_ident()
             process_id = os.getpid()
             print(f"Simulation started in thread {thread_id}, process {process_id}")
 
@@ -75,10 +75,12 @@ class Simulation:
         while(self.steps < self.sc.END_DAYS):
             self.step()
 
+        duration = time.time() - start_time
         if log:
-            duration = time.time() - start_time
             print(f"Simulation finished in thread {thread_id}, in process {process_id}, after {duration:.4f} seconds")
             self.print_timing_results()
+        
+        self.duration = duration
 
         return self.calculate_fitness()
     
@@ -436,6 +438,7 @@ class Simulation:
                 if city.btot == 0:
                     continue
                 self.cities_list.append(city)
+
 
 # Result Class
 @dataclass

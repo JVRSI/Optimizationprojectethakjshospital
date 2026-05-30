@@ -8,6 +8,10 @@ import sys
 import argparse
 import cProfile
 import pstats
+import pandas as pd
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+
 
 from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, RUNS_LOCAL
 
@@ -171,16 +175,25 @@ def sim_only():
     generator = GravityGenerator(rng=rng,config=GAConfig,cities_matrix=cities_matrix)
     individual = Individual(genome=generator())
     sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng)
-    individual.fitness = sim.run()
+    individual.fitness = sim.run(log=True)
 
-    return sim.get_result()
+    t = sim.duration
+
+    return sim.get_result(), t
 
 
 if __name__ == "__main__":
 
-    #main()
+    sim_only()
 
-    res = sim_only()
+    #main()
+    #res = []
+    #for i in tqdm(range(1,101)):
+    #    sim_config.END_DAYS=i
+    #    r,t = sim_only()
+    #    r = asdict(r.to_scalar())
+    #    r["time"] = t/6
+    #    res.append(r)
 
     """
     
@@ -195,9 +208,58 @@ if __name__ == "__main__":
     stats.sort_stats("cumtime")
     stats.print_stats(20)
     """
-
-    print(asdict(res.to_scalar()))
-    
+    #
+    #df = pd.DataFrame(res)
+    #df[[
+    #    "time",
+    #    "death_rate",
+    #    "not_admitted_rate",
+    #    "urgent_death_rate",
+    #    "urgent_not_admitted_rate",
+    #    "normalized_admitted_distance",
+    #    "normalized_not_survived_distance",
+    #    "normalized_admitted_choice_rank",
+    #    "normalized_not_survived_choice_rank",
+    #    "normalized_unused_hospitals",
+    #    #"small_summed",
+    #    "normalized_cost",
+    #    #"reconstructed_fitness"
+    #]].plot(kind='line', legend=True, figsize=(12,6))
+    #df[[
+    #    "time",
+    #    "death_rate",
+    #    "not_admitted_rate",
+    #    "urgent_death_rate",
+    #    "urgent_not_admitted_rate",
+    #    "normalized_admitted_distance",
+    #    #"normalized_not_survived_distance",
+    #    "normalized_admitted_choice_rank",
+    #    "normalized_not_survived_choice_rank",
+    #    "normalized_unused_hospitals",
+    #    #"small_summed",
+    #    "normalized_cost",
+    #    #"reconstructed_fitness"
+    #]].plot(kind='line', legend=True, figsize=(12,6))
+    #df[[
+    #    "time",
+    #    "death_rate",
+    #    "not_admitted_rate",
+    #    "urgent_death_rate",
+    #    "urgent_not_admitted_rate",
+    #    #"normalized_admitted_distance",
+    #    #"normalized_not_survived_distance",
+    #    "normalized_admitted_choice_rank",
+    #    "normalized_not_survived_choice_rank",
+    #    "normalized_unused_hospitals",
+    #    #"small_summed",
+    #    #"normalized_cost",
+    #    #"reconstructed_fitness"
+    #]].plot(kind='line', legend=True, figsize=(12,6))
+    #plt.ylabel("Value")
+    #plt.title("Simulation Records")
+    #plt.tight_layout()
+    #plt.show()
+    #
     
 
     #cProfile.run("sim_only()")
