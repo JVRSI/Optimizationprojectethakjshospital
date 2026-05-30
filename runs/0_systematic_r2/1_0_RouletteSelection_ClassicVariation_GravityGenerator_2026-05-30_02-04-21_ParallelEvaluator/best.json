@@ -1,0 +1,182 @@
+{
+    "genome": [
+        [
+            1,
+            147,
+            164
+        ],
+        [
+            1,
+            156,
+            101
+        ],
+        [
+            1,
+            151,
+            196
+        ],
+        [
+            1,
+            150,
+            195
+        ],
+        [
+            1,
+            154,
+            119
+        ],
+        [
+            1,
+            151,
+            111
+        ],
+        [
+            1,
+            143,
+            155
+        ],
+        [
+            1,
+            116,
+            273
+        ],
+        [
+            1,
+            204,
+            244
+        ],
+        [
+            1,
+            187,
+            212
+        ],
+        [
+            2,
+            136,
+            163
+        ],
+        [
+            1,
+            115,
+            122
+        ],
+        [
+            1,
+            184,
+            209
+        ],
+        [
+            1,
+            72,
+            67
+        ],
+        [
+            2,
+            138,
+            147
+        ],
+        [
+            1,
+            177,
+            199
+        ],
+        [
+            1,
+            78,
+            51
+        ],
+        [
+            1,
+            78,
+            49
+        ],
+        [
+            1,
+            45,
+            12
+        ],
+        [
+            1,
+            172,
+            189
+        ],
+        [
+            1,
+            121,
+            115
+        ],
+        [
+            1,
+            175,
+            196
+        ],
+        [
+            1,
+            175,
+            197
+        ],
+        [
+            1,
+            176,
+            270
+        ],
+        [
+            1,
+            101,
+            43
+        ],
+        [
+            1,
+            134,
+            180
+        ],
+        [
+            2,
+            137,
+            178
+        ],
+        [
+            1,
+            29,
+            229
+        ],
+        [
+            1,
+            53,
+            122
+        ],
+        [
+            1,
+            172,
+            164
+        ],
+        [
+            1,
+            188,
+            173
+        ]
+    ],
+    "fitness": 0.16566948592044006,
+    "sim_records": {
+        "not_admitted_count": 64961,
+        "not_survived_count": 4063,
+        "admitted_count": 22307,
+        "not_survived_urgent": 676,
+        "not_survived_nonurgent": 3387,
+        "not_admitted_urgent": 0,
+        "not_admitted_nonurgent": 64961,
+        "admitted_urgent": 17541,
+        "admitted_nonurgent": 4766,
+        "total_travel_distance": 1278895.3476382054,
+        "death_rate": 0.044486537977247595,
+        "not_admitted_rate": 0.7112699959488016,
+        "urgent_death_rate": 0.0074016489472358785,
+        "urgent_not_admitted_rate": 0.0,
+        "normalized_admitted_distance": 0.10252375897918822,
+        "normalized_not_survived_distance": 0.20743142348686716,
+        "normalized_admitted_choice_rank": 0.4161025687004079,
+        "normalized_not_survived_choice_rank": 0.6414800229715317,
+        "normalized_unused_hospitals": 0.0,
+        "normalized_cost": 0.3108108108108108
+    }
+}
