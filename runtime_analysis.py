@@ -73,7 +73,7 @@ sim_config = SimConfig(
     SEED=seed,
     END_DAYS=100,
     CAPACITYL_N=100,
-    CAPACITYL_U=0,
+    CAPACITYL_U=40,
     CAPACITYS_N=0,
     CAPACITYS_U=20,
     COSTL=1500,
@@ -172,14 +172,17 @@ def sim_only():
     individual = Individual(genome=generator())
     sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng)
     individual.fitness = sim.run()
-    return individual
+
+    return sim.get_result()
 
 
 if __name__ == "__main__":
 
     #main()
 
-    #i = sim_only()
+    res = sim_only()
+
+    """
     
     profiler = cProfile.Profile()
     profiler.enable()
@@ -191,6 +194,9 @@ if __name__ == "__main__":
     stats = pstats.Stats(profiler)
     stats.sort_stats("cumtime")
     stats.print_stats(20)
+    """
+
+    print(asdict(res.to_scalar()))
     
     
 

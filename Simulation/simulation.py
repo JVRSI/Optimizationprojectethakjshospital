@@ -358,10 +358,12 @@ class Simulation:
             self.result.not_admitted_nonurgent += 1
 
     def sorted_hospitals_by_distance(self, city_pos):
-        return sorted(
-            [(self.distance_squared(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
-            key=lambda item: item[0]
-        )
+        values = [self.distance_squared(city_pos, (sp[1],sp[2])) for sp in self.start_pos]
+        return sorted(range(len(values)), key=values.__getitem__) #is faster, only returns hospital id
+        #return sorted(
+        #    [(self.distance_squared(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
+        #    key=lambda item: item[0]
+        #)
 
     def precompute_city_hospitals(self):
         if self.cities_list:
@@ -371,7 +373,7 @@ class Simulation:
 
                 city.hospitals_sorted = [
                     hospital_id
-                    for _, hospital_id, _ in self.sorted_hospitals_by_distance(city.location)
+                    for hospital_id in self.sorted_hospitals_by_distance(city.location)
                 ]
             return
 
@@ -384,7 +386,7 @@ class Simulation:
 
                 city.hospitals_sorted = [
                     hospital_id
-                    for _, hospital_id, _ in self.sorted_hospitals_by_distance((i, j))
+                    for hospital_id in self.sorted_hospitals_by_distance((i, j))
                 ]
 
     def send_patient_to_nearest_available_hospital(self, patient, city):
