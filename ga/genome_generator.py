@@ -20,16 +20,18 @@ class GenomeGenerator(ABC):
 
         large = self.rng.normal(
             loc=self.config.mean_hospital_large,
-            scale=15
+            scale=1
         )
 
         small = self.rng.normal(
             loc=self.config.mean_hospital_small,
-            scale=20
+            scale=1
         )
 
-        self.m = max(0,int(round(large)))
-        self.n = max(0,int(round(large + small)))
+        self.m = int(round(max(1,large)))
+        self.n = int(round(max(2,large + small)))
+
+        print(self.m, self.n-self.m)
 
         self.height = self.config.genome_size[0]
         self.width = self.config.genome_size[1]

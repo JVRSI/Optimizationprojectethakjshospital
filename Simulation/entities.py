@@ -48,9 +48,9 @@ class Hospital:
     
     def can_treat(self, patient):
         if patient.urgency == self.sc.URGENCY_U:
-            return self.capacity_urgent > 0
+            return self.capacity_urgent-self.urgent_load > 0
         if patient.urgency == self.sc.URGENCY_N:
-            return self.capacity_nonurgent > 0
+            return self.capacity_nonurgent-self.nonurgent_load > 0
         return False
     
     def add_patient(self, patient):

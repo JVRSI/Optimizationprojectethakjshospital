@@ -39,7 +39,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     #run_dir = RUNS_LOCAL / "RouletteSelection_EvolutionaryVariation_GravityGenerator_2026-05-22_14-09-44_ParallelEvaluator"
-    run_dir = RUNS_DIR / "0_systematic_r1" / "4_7_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-29_07-53-45_ParallelEvaluator"
+    run_dir = RUNS_DIR / "0_systematic_r2" / "3_0_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-30_20-32-58_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
     if args.newest:
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     json_file = run_dir / "recordings_worst.json"
 
     with open(json_file, 'r') as f:
-        best = json.load(f)[0]
+        best = json.load(f)[-1]
 
     genome = best["genome"]
     fitness = best["fitness"]

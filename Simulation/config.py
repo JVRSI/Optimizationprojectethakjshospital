@@ -39,3 +39,17 @@ class SimConfig:
     DISTANCE_PENALTY_N : float = 0.0002
     SURVIVAL_NOISE_STD_U : float = 0.01
     SURVIVAL_NOISE_STD_N : float = 0.003
+
+
+    #fitness calculation
+    death_rate_factor: float = 0.30
+    not_admitted_rate_factor: float = 0.30
+    urgent_death_rate_factor: float = 0.15
+    urgent_not_admitted_rate_factor: float = 0.05
+    normalized_admitted_distance_factor: float = 0.05
+    normalized_not_survived_distance_factor: float = 0.03
+    normalized_admitted_choice_rank_factor: float = 0.04
+    normalized_not_survived_choice_rank_factor: float = 0.03
+    normalized_unused_hospitals_factor: float = 0.03
+    normalized_cost_factor: float = 0.12
+

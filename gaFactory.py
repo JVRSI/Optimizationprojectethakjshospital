@@ -36,6 +36,7 @@ class GAFactory:
     selector_name: str
     variator_name: str
     idea: str
+    sim_config:SimConfig = None
 
     def __str__(self):
         return (

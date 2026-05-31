@@ -1,8 +1,12 @@
 from dataclasses import dataclass, fields
+from Simulation.entities import *
+from Simulation import SimConfig
 try:
     from Simulation.entities import *
+    from Simulation import SimConfig
 except ImportError:
     from entities import *
+    from config import SimConfig
 import numpy as np
 import threading
 import os
@@ -10,7 +14,7 @@ import time
 
 class Simulation:
     # ---------- Initialization -----------------------------------------------------------------------------------
-    def __init__(self, start_pos, sc, cities_list=None, cities=None, rng = None):
+    def __init__(self, start_pos, sc:SimConfig, cities_list=None, cities=None, rng = None):
         self.sc = sc
         self.start_pos = start_pos
 
@@ -33,6 +37,12 @@ class Simulation:
         self.step_times = []
         self.update_hospitals_times = []
         self.update_cities_times = []
+
+
+        #for analysis
+        self.do_analysis = True
+        self.survival_probability_per_distance:list[(int,float,float)] = []
+        self.survival_result_by_probability:list[(int,float,bool)] = []
 
     def initi(self):
         """
@@ -212,20 +222,16 @@ class Simulation:
         self.result.normalized_unused_hospitals = normalized_unused_hospitals
         self.result.normalized_cost = normalized_cost
 
-        fitness += 0.30 * death_rate
-        fitness += 0.30 * not_admitted_rate
-
-        fitness += 0.15 * urgent_death_rate
-        fitness += 0.05 * urgent_not_admitted_rate
-
-        fitness += 0.05 * normalized_admitted_distance
-        fitness += 0.03 * normalized_not_survived_distance
-
-        fitness += 0.04 * normalized_admitted_choice_rank
-        fitness += 0.03 * normalized_not_survived_choice_rank
-
-        fitness += 0.03 * normalized_unused_hospitals
-        fitness += 0.12 * normalized_cost
+        fitness += self.sc.death_rate_factor * death_rate
+        fitness += self.sc.not_admitted_rate_factor * not_admitted_rate
+        fitness += self.sc.urgent_death_rate_factor * urgent_death_rate
+        fitness += self.sc.urgent_not_admitted_rate_factor * urgent_not_admitted_rate
+        fitness += self.sc.normalized_admitted_distance_factor * normalized_admitted_distance
+        fitness += self.sc.normalized_not_survived_distance_factor * normalized_not_survived_distance
+        fitness += self.sc.normalized_admitted_choice_rank_factor * normalized_admitted_choice_rank
+        fitness += self.sc.normalized_not_survived_choice_rank_factor * normalized_not_survived_choice_rank
+        fitness += self.sc.normalized_unused_hospitals_factor * normalized_unused_hospitals
+        fitness += self.sc.normalized_cost_factor * normalized_cost
 
         return fitness
 
@@ -256,7 +262,7 @@ class Simulation:
             remaining_population = city.btot - urgent_sick
             nonurgent_sick = self.rng.binomial(remaining_population, self.sc.SICK_RATE_N)
 
-            sick_patients = []
+            sick_patients:list[Patient] = []
 
             for _ in range(urgent_sick):
                 days = max(1, int(self.rng.normal(self.sc.PATIENT_DAYS_U, 1)))
@@ -312,18 +318,23 @@ class Simulation:
     def distance_squared(self, pos1, pos2):
         return ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) 
 
-    def survival_probability(self, patient, distance):
+    def survival_probability(self, patient : Patient, distance):
         if patient.urgency == self.sc.URGENCY_U:
             base_prob = self.sc.BASE_SURVIVAL_PROB_U
             distance_penalty = self.sc.DISTANCE_PENALTY_U
             noise_std = self.sc.SURVIVAL_NOISE_STD_U
+            #prob = base_prob - (distance_penalty * distance)
+            prob = base_prob * np.e ** (-distance_penalty*distance)
         else:
             base_prob = self.sc.BASE_SURVIVAL_PROB_N
             distance_penalty = self.sc.DISTANCE_PENALTY_N
             noise_std = self.sc.SURVIVAL_NOISE_STD_N
+            prob = base_prob - (distance_penalty * distance)
 
-        prob = base_prob - (distance_penalty * distance)
         prob += self.rng.normal(0, noise_std)
+
+        if self.do_analysis:
+            self.survival_probability_per_distance.append((patient.urgency, distance**0.5, prob))
 
         return max(0.0, min(1.0, prob))
 
@@ -391,7 +402,7 @@ class Simulation:
                     for hospital_id in self.sorted_hospitals_by_distance((i, j))
                 ]
 
-    def send_patient_to_nearest_available_hospital(self, patient, city):
+    def send_patient_to_nearest_available_hospital(self, patient:Patient, city):
         """
         Try hospitals in ascending distance order until:
         - patient dies during travel -> deathrate
@@ -406,12 +417,18 @@ class Simulation:
             if not hospital.can_treat(patient):
                 continue
 
+
             choice_rank += 1
 
             distance_to_hospital = self.distance_squared(patient.home.location, hospital.location)
             survival_probability = self.survival_probability(patient, distance_to_hospital)
 
-            if self.rng.random() > survival_probability:
+
+            rn = self.rng.random()
+            if self.do_analysis:
+                self.survival_result_by_probability.append((patient.urgency,survival_probability,(rn<=survival_probability)))
+
+            if rn > survival_probability:
                 self.record_not_survived(patient, hospital, choice_rank, distance_to_hospital)
                 return None
 
@@ -419,6 +436,7 @@ class Simulation:
                 self.record_admission(patient, hospital, choice_rank, distance_to_hospital)
                 return hospital.hos_id
 
+            print(patient.urgency)
             self.result.rejected_per_hospital[hospital.hos_id] = self.result.rejected_per_hospital.get(hospital.hos_id, 0) + 1
 
         self.record_not_admitted(patient)
@@ -466,6 +484,40 @@ class SimResultScalar:
     normalized_not_survived_choice_rank: float = None
     normalized_unused_hospitals: float = None
     normalized_cost: float = None
+
+    def __str__(self):
+        RED        = "\033[38;5;160m"
+        GREEN      = "\033[38;5;10m"
+        YELLOW     = "\033[33m"
+        BLUE       = "\033[34m"
+        MAGENTA    = "\033[38;5;198m"
+        CYAN       = "\033[36m"
+        RESET      = "\033[0m"
+        BOLD_BLACK = "\033[30;1m"
+        return(
+            f"{BOLD_BLACK}Not Normalized{RESET}\n"
+            f"{GREEN  }            Admitted total:{RESET} {self.admitted_count:7d}\n"
+            f"{GREEN  }           Admitted urgent:{RESET} {self.admitted_urgent:7d}\n"
+            f"{GREEN  }       Admitted non-urgent:{RESET} {self.admitted_nonurgent:7d}\n"
+            f"{RED    }        Not admitted total:{RESET} {self.not_admitted_count:7d}\n"
+            f"{RED    }       Not admitted urgent:{RESET} {self.not_admitted_urgent:7d}\n"
+            f"{RED    }   Not admitted non-urgent:{RESET} {self.not_admitted_nonurgent:7d}\n"
+            f"{MAGENTA}        Not survived total:{RESET} {self.not_survived_count:7d}\n"
+            f"{MAGENTA}       Not survived urgent:{RESET} {self.not_survived_urgent:7d}\n"
+            f"{MAGENTA}   Not survived non-urgent:{RESET} {self.not_survived_nonurgent:7d}\n"
+            f"{CYAN   }     Travel distance total:{RESET} {self.total_travel_distance:10.2f}\n"
+            f"{BOLD_BLACK}Normalized{RESET}\n"
+            f"{RED    }        Not admitted total:{RESET} {self.not_admitted_rate:9.5f}\n"
+            f"{RED    }       Not admitted urgent:{RESET} {self.urgent_not_admitted_rate:9.5f}\n"
+            f"{MAGENTA}        Not survived total:{RESET} {self.death_rate:9.5f}\n"
+            f"{MAGENTA}       Not survived urgent:{RESET} {self.urgent_death_rate:9.5f}\n"
+            f"{CYAN   }         Admitted distance:{RESET} {self.normalized_admitted_distance:9.5f}\n"
+            f"{CYAN   }     Not survived distance:{RESET} {self.normalized_not_survived_distance:9.5f}\n"
+            f"{CYAN   }       Not survived choice:{RESET} {self.normalized_not_survived_choice_rank:9.5f}\n"
+            f"{CYAN   }          Unused Hospitals:{RESET} {self.normalized_unused_hospitals:9.5f}\n"
+            f"{CYAN   }                      Cost:{RESET} {self.normalized_cost:9.5f}\n"
+        
+        )
 
 
 @dataclass

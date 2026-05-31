@@ -28,8 +28,8 @@ from Simulation.entities import City
 
 
 # runs configs
-from systematic_runs_configs.r2 import runs
-runs_conf = "r2"
+from systematic_runs_configs.r4 import runs
+runs_conf = "r4"
 
 skip_runs = []
 
@@ -54,7 +54,7 @@ runs_dir = RUNS_DIR / f"0_systematic_{runs_conf}"
 
 cities_matrix = load_population_matrix(MATRIX_PATH)
 
-runs = runs(size=size, record_history_of_best_and_worst=record_history_of_best_and_worst, cities_matrix=cities_matrix)
+runs = runs(size=size, record_history_of_best_and_worst=record_history_of_best_and_worst, cities_matrix=cities_matrix, seed=seed)
 
 
 
@@ -136,7 +136,11 @@ def main():
             print(f"*******************************+-------------{''             }-------+***********************************")
             ga_config = run.ga_config
             ga_stats = GAStatistics(record_individual_history=ga_config.record_individual_history)
-            evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers=n_workers, rng=np.random.default_rng(seeds[0]),record_individual_history=ga_config.record_individual_history)
+            if run.sim_config is not None:
+                sc = run.sim_config
+            else:
+                sc = sim_config
+            evaluator = ParallelEvaluator(sim_config=sc,cities=cities_list,n_workers=n_workers, rng=np.random.default_rng(seeds[0]),record_individual_history=ga_config.record_individual_history)
          
 
             genome_generator = run.generator_factory(ga_config,seeds[1])
@@ -173,7 +177,7 @@ def main():
             with open(dir_path / "ga_config.json", "w") as f:
                 json.dump(ga_config_dict, f, indent=4)
 
-            sim_config_dict = asdict(sim_config)
+            sim_config_dict = asdict(sc)
             with open(dir_path / "sim_config.json", "w") as f:
                 json.dump(sim_config_dict, f, indent=4)
 

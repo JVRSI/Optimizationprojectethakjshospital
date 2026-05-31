@@ -16,10 +16,16 @@ except ImportError:
 if __name__ == "__main__":
 
     #run_dir = RUNS_LOCAL / "RouletteSelection_EvolutionaryVariation_GravityGenerator_2026-05-22_14-09-44_ParallelEvaluator"
-    run_dir = RUNS_DIR / "0_systematic_r2" / "1_1_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-30_06-04-27_ParallelEvaluator"
+    #run_dir = RUNS_DIR / "0_systematic_r3" / "0_1_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-31_05-43-03_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
-    p = "recordings_best"
+    run_dir = RUNS_DIR / "0_systematic_r3" 
+
+    run_dir = next(run_dir.glob("0_1_*"))
+
+    print(run_dir)
+
+    p = "recordings_worst"
     json_file = run_dir / f"{p}.json"
 
     with open(json_file, 'r') as f:
@@ -70,14 +76,14 @@ if __name__ == "__main__":
         "fitness",
         "death_rate",
         "not_admitted_rate",
-        #"urgent_death_rate",
-        #"urgent_not_admitted_rate",
-        #"normalized_admitted_distance",
-        #"normalized_not_survived_distance",
-        #"normalized_admitted_choice_rank",
-        #"normalized_not_survived_choice_rank",
-        #"normalized_unused_hospitals",
-        "small_summed",
+        "urgent_death_rate",
+        "urgent_not_admitted_rate",
+        "normalized_admitted_distance",
+        "normalized_not_survived_distance",
+        "normalized_admitted_choice_rank",
+        "normalized_not_survived_choice_rank",
+        "normalized_unused_hospitals",
+        #"small_summed",
         "normalized_cost",
         #"reconstructed_fitness"
     ]].plot(kind='line', legend=True, figsize=(12,6))

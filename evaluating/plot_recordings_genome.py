@@ -14,7 +14,7 @@ except ImportError:
 if __name__ == "__main__":
 
     #run_dir = RUNS_LOCAL / "RouletteSelection_EvolutionaryVariation_GravityGenerator_2026-05-22_14-09-44_ParallelEvaluator"
-    run_dir = RUNS_DIR / "0_systematic_r1" / "4_4_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-29_06-20-49_ParallelEvaluator"
+    run_dir = RUNS_DIR / "0_systematic_r2" / "3_0_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-30_20-32-58_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
     p = "recordings_best"
