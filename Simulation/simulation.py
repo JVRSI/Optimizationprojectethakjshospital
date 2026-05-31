@@ -51,6 +51,8 @@ class Simulation:
         """
         size = 0
         for hospital_type, x, y in self.start_pos:
+            if(hospital_type > 2 or hospital_type < 1):
+                continue
             self.hospitals.append(Hospital(hospital_type, size, (x, y), self.sc))
             size += 1
         self.precompute_city_hospitals()
@@ -191,19 +193,15 @@ class Simulation:
         normalized_admitted_distance = average_admitted_distance / max_distance
         normalized_not_survived_distance = average_not_survived_distance / max_distance
 
-        max_choice_rank = max(1, len([hospital for hospital in self.hospitals if hospital.type == 2]))
+        max_choice_rank = max(1, len(self.hospitals))
 
         normalized_admitted_choice_rank = average_admitted_choice_rank / max_choice_rank
         normalized_not_survived_choice_rank = average_not_survived_choice_rank / max_choice_rank
 
-        max_possible_cost = sum(
-            getattr(self.sc, "COSTL", 3)
-            for hospital in self.hospitals
-        )
 
         normalized_cost = 0.0
-        if max_possible_cost > 0:
-            normalized_cost = total_hospital_cost / self.sc.TOTALCOST 
+        
+        normalized_cost = total_hospital_cost / self.sc.TOTALCOST 
 
         normalized_unused_hospitals = 0.0
         if total_hospitals > 0:
@@ -371,8 +369,13 @@ class Simulation:
             self.result.not_admitted_nonurgent += 1
 
     def sorted_hospitals_by_distance(self, city_pos):
-        values = [self.distance_squared(city_pos, (sp[1],sp[2])) for sp in self.start_pos]
-        return sorted(range(len(values)), key=values.__getitem__) #is faster, only returns hospital id
+        values = [
+            self.distance_squared(city_pos, hospital.location)
+            for hospital in self.hospitals
+        ]
+        return sorted(range(len(values)), key=values.__getitem__)
+    
+    #is faster, only returns hospital id
         #return sorted(
         #    [(self.distance_squared(city_pos, hospital.location), hospital.hos_id, hospital) for hospital in self.hospitals],
         #    key=lambda item: item[0]
