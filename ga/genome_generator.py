@@ -28,6 +28,9 @@ class GenomeGenerator(ABC):
             scale=1
         )
 
+        large = self.config.mean_hospital_large
+        small = self.config.mean_hospital_small
+
         self.m = int(round(max(1,large)))
         self.n = int(round(max(2,large + small)))
 
@@ -86,6 +89,8 @@ class GravityGenerator(GenomeGenerator):
 
 
         epsilon = 1e-6
+
+        cities_matrix = cities_matrix**0.7
 
         #array of accumulated sums
         self.cumsum = np.cumsum(

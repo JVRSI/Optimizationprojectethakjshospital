@@ -138,7 +138,7 @@ class GAStatistics:
 
 
     def relative_improvement(self, window=5, eps=1e-12):
-        if len(self.history) <= window or self.history[-1].std_fitness > 0.004: #std is used to avoid restarting directly after restart again
+        if len(self.history) <= window or self.history[-1].std_fitness > 0.002: #std is used to avoid restarting directly after restart again
             return 100
         current = self.history[-1].best_fitness
         old = self.history[-window].best_fitness

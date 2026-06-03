@@ -18,8 +18,10 @@ class RouletteSelection(SelectionStrategy):
         epsilon = 1e-6
 
         cumsum = np.cumsum(
-            f_max - np.fromiter((i.fitness for i in population), dtype=float) + epsilon
+            (f_max - np.fromiter((i.fitness for i in population), dtype=float)) + epsilon
         )
+
+        print((f_max - np.fromiter((i.fitness for i in population), dtype=float)) + epsilon)
 
         r = self.rng.random(self.n_parents) * cumsum[-1]
 

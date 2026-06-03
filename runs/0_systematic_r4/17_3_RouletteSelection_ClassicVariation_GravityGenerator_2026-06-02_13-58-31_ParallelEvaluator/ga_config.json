@@ -1,0 +1,26 @@
+{
+    "n_generations": 1000,
+    "initial_population_size": 100,
+    "population_size": 100,
+    "genome_size": [
+        219,
+        345
+    ],
+    "mean_hospital_large": 35,
+    "mean_hospital_small": 110,
+    "collect_performance_data": true,
+    "plot_images": true,
+    "record_individual_history": true,
+    "n_parents": 20,
+    "n_hospital_types": 2,
+    "mutation_strategy": "mutable_wandering",
+    "wandering_mutation_sigma": 10,
+    "probability_of_mutation": 0.08,
+    "crossover_strategy": "grid",
+    "n_crossovers": 10,
+    "probability_of_crossover": 0.95,
+    "do_random_restarts": true,
+    "n_best_to_keep": 10,
+    "n_steps_of_no_improvement_to_converge": 10,
+    "max_time_to_run_s": 1800.0
+}

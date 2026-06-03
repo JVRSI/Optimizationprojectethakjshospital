@@ -140,3 +140,63 @@ class GridCrossover(CrossoverStrategy):
         cc = bisect_right(col_pivots, col)
 
         return (rr + cc) % 2 == 0
+    
+
+
+class PositiveGeneExchange(CrossoverStrategy):
+    def __init__(
+            self,
+            ga_config : GAConfig,
+            rng : np.random.Generator,
+            p_exchange: float,
+        ):
+        """
+        p exchange is percentage of given genes from smaller genome exchanged
+
+        should be in (0,0.5]
+        """
+        super().__init__(ga_config, rng)
+        self.p_exchange = p_exchange
+
+    def _crossover(
+            self, 
+            parent1 : Individual, 
+            parent2 : Individual, 
+        ): 
+
+        l1 = len(parent1.genome)
+        l2 = len(parent2.genome)
+
+        cs1 = sum(1 for g in parent1.genome if g[0] == 1)
+        cs2 = sum(1 for g in parent2.genome if g[0] == 1)
+
+        cl1 = l1 - cs1
+        cl2 = l2 - cs2
+
+
+        es = int(min(cs1,cs2) * self.p_exchange)
+        el = int(min(cl1,cl2) * self.p_exchange)
+
+        is1 = [i for i, g in enumerate(parent1.genome) if g[0] == 1]
+        is2 = [i for i, g in enumerate(parent2.genome) if g[0] == 1]
+
+        rs1 = self.rng.choice(cs1, size=es, replace=False)
+        rs2 = self.rng.choice(cs2, size=es, replace=False)
+
+        for i1, i2 in zip(rs1, rs2):
+            t = parent1.genome[is1[i1]]
+            parent1.genome[is1[i1]] = parent2.genome[is2[i2]]
+            parent2.genome[is2[i2]] = t
+
+
+
+        il1 = [i for i, g in enumerate(parent1.genome) if g[0] == 2]
+        il2 = [i for i, g in enumerate(parent2.genome) if g[0] == 2]
+
+        rl1 = self.rng.choice(cl1, size=el, replace=False)
+        rl2 = self.rng.choice(cl2, size=el, replace=False)
+
+        for i1, i2 in zip(rl1, rl2):
+            t = parent1.genome[il1[i1]]
+            parent1.genome[il1[i1]] = parent2.genome[il2[i2]]
+            parent2.genome[il2[i2]] = t

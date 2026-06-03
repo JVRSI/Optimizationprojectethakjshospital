@@ -148,7 +148,7 @@ class GeneticAlgorithm:
 
             # check convergence
             #if self.statistics.steps_from_last_improvement >= self.config.n_steps_of_no_improvement_to_converge:
-            if self.statistics.relative_improvement(self.config.n_steps_of_no_improvement_to_converge) < 0.0035:
+            if self.statistics.relative_improvement(self.config.n_steps_of_no_improvement_to_converge) < 0.005:
                 #random restart
                 if self.config.do_random_restarts:
                     print("+---------------------------------------------------------------------+")

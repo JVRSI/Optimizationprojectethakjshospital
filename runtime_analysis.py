@@ -118,7 +118,7 @@ evaluator = ParallelEvaluator(sim_config=sim_config,cities=cities_list,n_workers
 ga_stats = GAStatistics()
 
 store_run = False
-runs_dir = RUNS_LOCAL
+runs_dir = RUNS_DIR
 
 if args.dont_store_stats:
     store_run = False
@@ -177,12 +177,29 @@ def sim_only():
     generator = GravityGenerator(rng=rng,config=ga_config,cities_matrix=cities_matrix)
     genome=generator()
     individual = Individual(genome=genome)
-    sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng)
+    sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng,do_analysis=True)
     individual.fitness = sim.run(log=True)
 
     t = sim.duration
 
-    return sim.get_result(), t, sim.survival_probability_per_distance, sim.survival_result_by_probability
+    return sim.get_result(), t, sim.survival_probability_per_distance, sim.survival_result_by_probability, sim.patient_by_place_and_survival
+
+def sim_with_load(p:Path):
+    rng = np.random.default_rng(42)
+    with open(p / "recordings_best.json", 'r') as f:
+        best = json.load(f)[-1]
+    genome=[(g[0],g[1],g[2]) for g in best["genome"]]
+    individual = Individual(genome=genome)
+    with open(p / "sim_config.json", 'r') as f:
+        sc_d = json.load(f)
+    sc = SimConfig(**sc_d)
+    sc.END_DAYS = 500
+    sim = Simulation(start_pos=individual.genome,sc=sc,cities_list=cities_list,rng=rng,do_analysis=True)
+    individual.fitness = sim.run(log=True)
+
+    t = sim.duration
+
+    return sim.get_result(), t, sim.survival_probability_per_distance, sim.survival_result_by_probability, sim.patient_by_place_and_survival
 
 
 if __name__ == "__main__":
@@ -191,11 +208,93 @@ if __name__ == "__main__":
 
     #main()
 
-    res, _, p_by_dist, res_of_p = sim_only()
+    res, _, p_by_dist, res_of_p, p_by_place_survival = sim_with_load(runs_dir / "0_systematic_r4" / "28_4_TruncateSelection_ClassicVariation_GravityGenerator_2026-06-03_03-37-52_ParallelEvaluator")
 
     print(res.to_scalar())
 
-    if True: #plot probabilities stuff (need to set do_analysis = True in simulation __init__)
+    if True: #plot places where people survive or die
+        p_u = [(p[1],p[2]) for p in p_by_place_survival if p[0] == sim_config.URGENCY_U]
+        p_n = [(p[1],p[2]) for p in p_by_place_survival if p[0] == sim_config.URGENCY_N]
+        
+
+        
+        def give_ratio(l):
+            counts = defaultdict(lambda: [0, 0])
+
+            for value, coord in l:
+                counts[coord][1] += 1
+                if value:
+                    counts[coord][0] += 1
+
+            return [
+                (true_count / total_count, coord)
+                for coord, (true_count, total_count) in counts.items()
+            ], [
+                total_count for _, (_, total_count) in counts.items()
+            ]
+        r_u, t_u = give_ratio(p_u)
+        r_n, t_n = give_ratio(p_n)
+
+        mt_u = max([t for t in t_u])
+        mt_n = max([t for t in t_n])
+
+        t_u = [(t/mt_u)**0.5 for t in t_u]
+        t_n = [(t/mt_n)**0.5 for t in t_n]
+
+        r, t = r_u, t_u
+
+        plt.figure(figsize=(13, 8))
+
+        # col = [coord[0] for _, coord in r]
+        # row = [coord[1] for _, coord in r]
+        # c = [ratio for ratio, _ in r]
+
+        # scatter = plt.scatter(
+        #     row,
+        #     col,
+        #     c=c,
+        #     cmap="RdYlGn",  # Rot -> Gelb -> Grün
+        #     vmin=0,
+        #     vmax=1,
+        #     s=20
+        # )
+
+        
+
+        m = np.full(ga_config.genome_size, np.nan)
+        a = np.zeros(ga_config.genome_size)
+
+        for ((c, coord), alpha) in zip(r, t):
+            row, col = coord
+            m[row, col] = c
+            a[row, col] = alpha
+
+        #masked = np.ma.masked_where(m == -1, m)
+
+        #cmap = plt.colormaps["RdYlGn"].copy()
+        #cmap.set_bad((1,1,1,0))
+
+        cmap = plt.colormaps["RdYlGn"]
+
+        rgba = cmap(np.nan_to_num(m, nan=0))
+        rgba[..., 3] = np.where(np.isnan(m), 0, a)
+        
+        ish = plt.imshow(
+            rgba,
+            origin="lower",
+            cmap=cmap,
+            interpolation="none"
+        )
+
+        plt.colorbar(ish, label="Survived percentage")
+        plt.show()
+
+
+
+
+
+
+    if False: #plot probabilities stuff (need to set do_analysis = True in simulation __init__)
         rp_u = [(i[1],i[2]) for i in res_of_p if i[0] == sim_config.URGENCY_U]
         rp_n = [(i[1],i[2]) for i in res_of_p if i[0] == sim_config.URGENCY_N]
 

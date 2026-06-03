@@ -11,10 +11,11 @@ import numpy as np
 import threading
 import os
 import time
+from typing import Tuple
 
 class Simulation:
     # ---------- Initialization -----------------------------------------------------------------------------------
-    def __init__(self, start_pos, sc:SimConfig, cities_list=None, cities=None, rng = None):
+    def __init__(self, start_pos, sc:SimConfig, cities_list=None, cities=None, rng = None, do_analysis=False):
         self.sc = sc
         self.start_pos = start_pos
 
@@ -40,9 +41,10 @@ class Simulation:
 
 
         #for analysis
-        self.do_analysis = True
-        self.survival_probability_per_distance:list[(int,float,float)] = []
-        self.survival_result_by_probability:list[(int,float,bool)] = []
+        self.do_analysis = do_analysis
+        self.survival_probability_per_distance:list[Tuple[int,float,float]] = []
+        self.survival_result_by_probability:list[Tuple[int,float,bool]] = []
+        self.patient_by_place_and_survival:list[Tuple[int,bool,Tuple[int,int]]] = []
 
     def initi(self):
         """
@@ -289,7 +291,7 @@ class Simulation:
                 hospital_id = self.send_patient_to_nearest_available_hospital(patient, city)
 
                 if hospital_id is not None:
-                    city.in_hospital += 1
+                    city.in_hospital += 1   #WWWWWW
                 else:
                     # if the patient is not admitted or does not survive the trip,
                     # return them directly to the city population
@@ -405,7 +407,7 @@ class Simulation:
                     for hospital_id in self.sorted_hospitals_by_distance((i, j))
                 ]
 
-    def send_patient_to_nearest_available_hospital(self, patient:Patient, city):
+    def send_patient_to_nearest_available_hospital(self, patient:Patient, city:City):
         """
         Try hospitals in ascending distance order until:
         - patient dies during travel -> deathrate
@@ -430,6 +432,7 @@ class Simulation:
             rn = self.rng.random()
             if self.do_analysis:
                 self.survival_result_by_probability.append((patient.urgency,survival_probability,(rn<=survival_probability)))
+                self.patient_by_place_and_survival.append((patient.urgency,(rn <= survival_probability), city.location))
 
             if rn > survival_probability:
                 self.record_not_survived(patient, hospital, choice_rank, distance_to_hospital)

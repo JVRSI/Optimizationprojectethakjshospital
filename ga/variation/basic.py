@@ -2,8 +2,8 @@ import numpy as np
 
 from ga.variation.base import VariationStrategy
 from ga.individual import Individual
-from ga.variation.mutationClasses import SinglePointMutation, SingePointMutationWithEqualOpportunity, SinglePointWanderMutation, SinglePointWanderMutationWithProbabilityOfNormalMutation
-from ga.variation.crossoverClasses import SingleBreakCrossover, SingleGridCrossover, GridCrossover
+from ga.variation.mutationClasses import SinglePointMutation, SingePointMutationWithEqualOpportunity, SinglePointWanderMutation, SinglePointWanderMutationWithProbabilityOfNormalMutation, SinglePointTeleportationMutation
+from ga.variation.crossoverClasses import SingleBreakCrossover, SingleGridCrossover, GridCrossover, PositiveGeneExchange
 
 
 class BasicMutationVariation(VariationStrategy):
@@ -24,6 +24,8 @@ class BasicMutationVariation(VariationStrategy):
             self.mutator = SinglePointMutation(ga_config=ga_config,rng=rng)
         elif ms == "single_point_equal_opportunity":
             self.mutator = SingePointMutationWithEqualOpportunity(ga_config=ga_config,rng=rng)
+        elif ms == "teleport":
+            self.mutator = SinglePointTeleportationMutation(ga_config=ga_config,rng=rng)
         else:
             raise ValueError(f"{ms} is not a valid mutation strategy")
 
@@ -52,6 +54,8 @@ class BasicCrossoverVariation(VariationStrategy):
             self.crosser = GridCrossover(ga_config=ga_config, rng=rng, n_pivots=ga_config.n_crossovers)
         elif ms == "single_break":
             self.crosser = SingleBreakCrossover(ga_config=ga_config, rng=rng)
+        elif ms == "positive_gene_exchange":
+            self.crosser = PositiveGeneExchange(ga_config=ga_config,rng=rng,p_exchange=self.config.p_exchange)
         else:
             raise ValueError(f"{ms} is not a valid crossover strategy")
 

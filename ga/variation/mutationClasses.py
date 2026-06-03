@@ -156,6 +156,26 @@ class SinglePointWanderMutation(MutationStrategy):
         print(f"No city without hospital within vicinity found, no mutation done when mutation was intended. Number of hospitals: {len(individual.genome)}")
 
 
+class SinglePointTeleportationMutation(MutationStrategy):
+    def _mutate(
+            self, 
+            individual: Individual
+        ) -> None:
+
+        i = self.rng.integers(len(individual.genome))
+        t,_,_ = individual.genome[i]
+
+        for _ in range(5):
+            row, col = self.get_position_from_total_index(self.rng.integers(self.n_genes))
+            if self.get_genome_index(genome=individual.genome,row=row,col=col) is not None:
+                continue
+            individual.genome[i] = (t, row, col)
+            return
+        print(f"No city without hospital found, no mutation done when mutation was intended. Number of hospitals: {len(individual.genome)}")
+
+        
+
+
 
     
     

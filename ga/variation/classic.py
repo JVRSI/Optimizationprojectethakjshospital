@@ -1,4 +1,6 @@
 import numpy as np
+import heapq
+
 
 from ga.variation.base import VariationStrategy
 from ga.individual import Individual
@@ -13,9 +15,11 @@ class ClassicVariation(VariationStrategy):
         self.crosser = BasicCrossoverVariation(rng=rng,ga_config=ga_config)
         self.pm = ga_config.probability_of_mutation
         self.pc = ga_config.probability_of_crossover
-        self.n = ga_config.population_size
+        self.e = ga_config.n_elites
+        self.n = ga_config.population_size - self.e
         self.k = ga_config.n_parents
         self.m = self.n - self.k
+        
 
     
     def variate(
@@ -25,11 +29,19 @@ class ClassicVariation(VariationStrategy):
         """
         n_parents should be reasonably smaller than population_size
         """
+        #clone E elites
+        elites = []
+        if self.e > 0:
+            best_is = heapq.nsmallest(self.e, range(len(parents)), key=lambda i : parents[i].fitness)
+            elites = [parents[i].clone() for i in best_is]
+
+
         # input K parents from selection
         
-        # select M = N-K parents to duplicate (-K because of computation, we already have them so why not keep) #!LOGIC ?
+        # select M = N-K-E parents to duplicate (-K because of computation, we already have them so why not keep) #!LOGIC ?
         idx = self.rng.choice(self.k, size=self.m, replace=True)
         parents.extend([parents[i].clone() for i in idx])
+
 
         #select random individuals for crossover
         nc = self.rng.binomial(self.n,self.pc)
@@ -40,3 +52,5 @@ class ClassicVariation(VariationStrategy):
         nm = self.rng.binomial(self.n,self.pm)
         idx = self.rng.choice(self.n, size=nm, replace=False)
         self.mutator.variate([parents[i] for i in idx])
+
+        parents.extend(elites)

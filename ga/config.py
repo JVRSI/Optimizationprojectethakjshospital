@@ -17,6 +17,7 @@ class GAConfig:
     record_individual_history : bool = False
 
     n_parents : int = 5
+    n_elites : int = 1
 
     n_hospital_types : int = 2  # shouldn't this be simulation config, or some global config
 
@@ -29,6 +30,7 @@ class GAConfig:
     crossover_strategy : str = "single_grid" #only if variation strategy allows selection {single_grid, grid, single_point}
     n_crossovers : int = 10
     probability_of_crossover : float = 0.95  #only if Variation where mutation is tied to a probability
+    p_exchange : float = 0.2
 
     #convergence
     do_random_restarts : bool = True #if not reached max iterations, restart if has converged
