@@ -1,5 +1,4 @@
 import numpy as np
-import heapq
 
 
 from ga.variation.base import VariationStrategy
@@ -29,16 +28,11 @@ class ClassicVariation(VariationStrategy):
         """
         n_parents should be reasonably smaller than population_size
         """
-        #clone E elites
-        elites = []
-        if self.e > 0:
-            best_is = heapq.nsmallest(self.e, range(len(parents)), key=lambda i : parents[i].fitness)
-            elites = [parents[i].clone() for i in best_is]
 
 
         # input K parents from selection
         
-        # select M = N-K-E parents to duplicate (-K because of computation, we already have them so why not keep) #!LOGIC ?
+        # select M = N-K-E parents to duplicate (-K because of computation, we already have them so why not keep) 
         idx = self.rng.choice(self.k, size=self.m, replace=True)
         parents.extend([parents[i].clone() for i in idx])
 
@@ -53,4 +47,4 @@ class ClassicVariation(VariationStrategy):
         idx = self.rng.choice(self.n, size=nm, replace=False)
         self.mutator.variate([parents[i] for i in idx])
 
-        parents.extend(elites)
+        

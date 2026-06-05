@@ -1,0 +1,38 @@
+[
+    [
+        5,
+        "Generator: GravityGenerator\nSelection: TruncateSelection\nVariation: MicroGAVariation\nIdea: ",
+        "Cannot take a larger sample than population when replace is False",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/microGA.py\", line 40, in variate\n    idx = self.rng.choice(len(parents), size=self.config.n_parents, replace=False)\n  File \"numpy/random/_generator.pyx\", line 922, in numpy.random._generator.Generator.choice\nValueError: Cannot take a larger sample than population when replace is False\n"
+    ],
+    [
+        6,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "negative dimensions are not allowed",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 42, in variate\n    idx = self.rng.choice(self.k, size=self.m, replace=True)\n  File \"numpy/random/_generator.pyx\", line 919, in numpy.random._generator.Generator.choice\n  File \"numpy/random/_generator.pyx\", line 679, in numpy.random._generator.Generator.integers\n  File \"numpy/random/_bounded_integers.pyx\", line 1343, in numpy.random._bounded_integers._rand_int64\nValueError: negative dimensions are not allowed\n"
+    ],
+    [
+        7,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "negative dimensions are not allowed",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 42, in variate\n    idx = self.rng.choice(self.k, size=self.m, replace=True)\n  File \"numpy/random/_generator.pyx\", line 919, in numpy.random._generator.Generator.choice\n  File \"numpy/random/_generator.pyx\", line 679, in numpy.random._generator.Generator.integers\n  File \"numpy/random/_bounded_integers.pyx\", line 1343, in numpy.random._bounded_integers._rand_int64\nValueError: negative dimensions are not allowed\n"
+    ],
+    [
+        8,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "negative dimensions are not allowed",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 42, in variate\n    idx = self.rng.choice(self.k, size=self.m, replace=True)\n  File \"numpy/random/_generator.pyx\", line 919, in numpy.random._generator.Generator.choice\n  File \"numpy/random/_generator.pyx\", line 679, in numpy.random._generator.Generator.integers\n  File \"numpy/random/_bounded_integers.pyx\", line 1343, in numpy.random._bounded_integers._rand_int64\nValueError: negative dimensions are not allowed\n"
+    ],
+    [
+        9,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "negative dimensions are not allowed",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 42, in variate\n    idx = self.rng.choice(self.k, size=self.m, replace=True)\n  File \"numpy/random/_generator.pyx\", line 919, in numpy.random._generator.Generator.choice\n  File \"numpy/random/_generator.pyx\", line 679, in numpy.random._generator.Generator.integers\n  File \"numpy/random/_bounded_integers.pyx\", line 1343, in numpy.random._bounded_integers._rand_int64\nValueError: negative dimensions are not allowed\n"
+    ],
+    [
+        10,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "negative dimensions are not allowed",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 166, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 191, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 102, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/classic.py\", line 42, in variate\n    idx = self.rng.choice(self.k, size=self.m, replace=True)\n  File \"numpy/random/_generator.pyx\", line 919, in numpy.random._generator.Generator.choice\n  File \"numpy/random/_generator.pyx\", line 679, in numpy.random._generator.Generator.integers\n  File \"numpy/random/_bounded_integers.pyx\", line 1343, in numpy.random._bounded_integers._rand_int64\nValueError: negative dimensions are not allowed\n"
+    ]
+]

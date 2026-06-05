@@ -28,15 +28,18 @@ from Simulation.entities import City
 
 
 # runs configs
-from systematic_runs_configs.r4 import runs
-runs_conf = "r4"
+from systematic_runs_configs.r6 import runs
+runs_conf = "r6"
 
-skip_runs = [0,1,2,3,4]
+skip_runs = []
+
+save_stuff = True
+
+if not save_stuff:
+    print("\033[38;5;160mATTENTION\033[0m Nothing is saved in this run")
 
 
-
-
-with open(DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded.pkl", "rb") as f:
+with open(DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded_with_coverage.pkl", "rb") as f:
     cities_list = pickle.load(f)
 
 
@@ -114,13 +117,17 @@ def main():
     else:
         cur_i = 0
     
-    runs_dir.mkdir(exist_ok=True)
+    
+    
 
-    with open(runs_dir / f"{cur_i}_seeds_{date_start}.json", "w") as f:
-        json.dump({
-            "master_entropy": seed_seq.state,
-            "seeds_keys":[s.state for s in seeds],
-        }, f, indent=4)
+
+    if save_stuff:
+        runs_dir.mkdir(exist_ok=True)
+        with open(runs_dir / f"{cur_i}_seeds_{date_start}.json", "w") as f:
+            json.dump({
+                "master_entropy": seed_seq.state,
+                "seeds_keys":[s.state for s in seeds],
+            }, f, indent=4)
 
 
 
@@ -157,34 +164,38 @@ def main():
                 statistics=ga_stats,
             )
             best, status = ga.run()
+            last_population_dict = ga.population.to_dict()
 
 
             print("-------------------------------------------------------------------------------")
             print(status)
 
 
+            if save_stuff:
+                # save run result, config and stats (in a new folder within runs)
+                dir_name = f"{cur_i}_{i}_{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
+                dir_path = runs_dir / dir_name
 
-            # save run result, config and stats (in a new folder within runs)
-            dir_name = f"{cur_i}_{i}_{selector.__class__.__name__}_{variator.__class__.__name__}_{genome_generator.__class__.__name__}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}_{evaluator.__class__.__name__}"
-            dir_path = runs_dir / dir_name
+                # stats and plots
+                if ga_config.collect_performance_data:
+                    ga_stats.save_csv(dir_path, ga_config.plot_images, sc)
 
-            # stats and plots
-            if ga_config.collect_performance_data:
-                ga_stats.save_csv(dir_path, ga_config.plot_images)
+                # config
+                ga_config_dict = asdict(ga_config)
+                with open(dir_path / "ga_config.json", "w") as f:
+                    json.dump(ga_config_dict, f, indent=4)
 
-            # config
-            ga_config_dict = asdict(ga_config)
-            with open(dir_path / "ga_config.json", "w") as f:
-                json.dump(ga_config_dict, f, indent=4)
+                sim_config_dict = asdict(sc)
+                with open(dir_path / "sim_config.json", "w") as f:
+                    json.dump(sim_config_dict, f, indent=4)
 
-            sim_config_dict = asdict(sc)
-            with open(dir_path / "sim_config.json", "w") as f:
-                json.dump(sim_config_dict, f, indent=4)
+                # result
+                best_dict = best.to_dict()
+                with open(dir_path / "best.json", "w") as f:
+                    json.dump(best_dict, f, indent=4)
 
-            # result
-            best_dict = best.to_dict()
-            with open(dir_path / "best.json", "w") as f:
-                json.dump(best_dict, f, indent=4)
+                with open(dir_path / "last_generation.json", "w") as f:
+                    json.dump(last_population_dict, f, indent=4)
         
             #"""
         except KeyboardInterrupt:
@@ -204,8 +215,9 @@ def main():
             failed_runs.append([i,str(run),str(e),traceback.format_exc()])
             #"""
         
-    with open(runs_dir / f"{cur_i}_failed_runs_{date_start}.json", "w") as f:
-        json.dump(failed_runs, f, indent=4)
+    if save_stuff:
+        with open(runs_dir / f"{cur_i}_failed_runs_{date_start}.json", "w") as f:
+            json.dump(failed_runs, f, indent=4)
     
     
 

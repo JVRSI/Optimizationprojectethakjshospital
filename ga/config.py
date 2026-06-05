@@ -11,6 +11,7 @@ class GAConfig:
     genome_size: Tuple[float, float] = (10, 20) # (height, width)
     mean_hospital_large: int = 30
     mean_hospital_small: float = 50
+    random_amount : bool = True
 
     collect_performance_data: bool = True # to safe to csv and plot
     plot_images : bool = True # to also create nice plots (only plots if data is collected)
@@ -36,6 +37,10 @@ class GAConfig:
     do_random_restarts : bool = True #if not reached max iterations, restart if has converged
     n_best_to_keep : int = 5 #number of best individuals to keep when doing random restart
     n_steps_of_no_improvement_to_converge : int = 5
+    std_threshold : float = 0.002 
+    slop_threshold : float = 0.005 
 
     max_time_to_run_s : float = 7200
+
+
 

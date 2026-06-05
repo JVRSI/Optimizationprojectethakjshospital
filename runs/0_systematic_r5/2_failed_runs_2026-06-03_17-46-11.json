@@ -1,0 +1,8 @@
+[
+    [
+        7,
+        "Generator: GravityGenerator\nSelection: RouletteSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "TruncateSelection.__init__() got an unexpected keyword argument 'config'",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 146, in main\n    genome_generator = run.generator_factory(ga_config,seeds[1])\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_runs_configs/r5.py\", line 308, in <lambda>\n    ),\nTypeError: TruncateSelection.__init__() got an unexpected keyword argument 'config'\n"
+    ]
+]

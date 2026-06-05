@@ -54,3 +54,16 @@ class Population:
 
     def __iter__(self):
         return iter(self.individuals)
+    
+    def to_dict(self):
+        return {
+            "individuals": [ind.to_dict() for ind in self.individuals]
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        individuals = [
+            Individual.from_dict(ind_data)
+            for ind_data in data["individuals"]
+        ]
+        return cls(individuals)

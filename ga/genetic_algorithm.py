@@ -1,4 +1,6 @@
 import time
+import heapq
+
 
 from ga.population import Population
 from ga.individual import Individual
@@ -81,6 +83,8 @@ class GeneticAlgorithm:
         )
         te = time.time()
 
+        self.population.clear_stats()
+
         return te - ta
 
 
@@ -92,6 +96,11 @@ class GeneticAlgorithm:
         """
 
         #stuff is done inplace (hopefully)
+
+        elites = []
+        if self.config.n_elites > 0:
+            best_is = heapq.nsmallest(self.config.n_elites, range(len(self.population.individuals)), key=lambda i : self.population.individuals[i].fitness)
+            elites = [self.population.individuals[i].clone() for i in best_is]
 
         # select parents to construct offspring from
         self.selection.select(self.population)
@@ -105,6 +114,8 @@ class GeneticAlgorithm:
         te = time.time()
 
         self.population.clear_stats()
+
+        self.population.individuals.extend(elites)
 
         #+ statistics
         return te - ta
@@ -148,12 +159,13 @@ class GeneticAlgorithm:
 
             # check convergence
             #if self.statistics.steps_from_last_improvement >= self.config.n_steps_of_no_improvement_to_converge:
-            if self.statistics.relative_improvement(self.config.n_steps_of_no_improvement_to_converge) < 0.005:
+            if self.statistics.relative_improvement(window=self.config.n_steps_of_no_improvement_to_converge, std_threshold=self.config.std_threshold) < self.config.slop_threshold:
                 #random restart
                 if self.config.do_random_restarts:
                     print("+---------------------------------------------------------------------+")
                     print("| Doing random restart                                                |")
                     print("+---------------------------------------------------------------------+")
+
                     self.population.delete_worst_individuals(self.config.n_best_to_keep)
 
                     self.statistics.steps_from_last_improvement = 0

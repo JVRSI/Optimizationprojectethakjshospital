@@ -33,7 +33,7 @@ from Simulation.entities import City
 
 
 
-with open(DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded.pkl", "rb") as f:
+with open(DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded_with_coverage.pkl", "rb") as f:
     cities_list = pickle.load(f)
 
 

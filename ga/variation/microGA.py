@@ -29,7 +29,7 @@ class MicroGAVariation(VariationStrategy):
 
         """
 
-        n_elite = self.config.population_size - self.config.n_parents
+        n_elite = self.config.population_size - self.config.n_parents - self.config.n_elites
 
         fitness = np.fromiter((p.fitness for p in parents), dtype=float)  #!COMPUTATION, might be to much overhead
 

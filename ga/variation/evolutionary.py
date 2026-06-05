@@ -11,7 +11,7 @@ class EvolutionaryVariation(VariationStrategy):
 
         self.mutator = BasicMutationVariation(rng=rng,ga_config=ga_config)
 
-        self.k = self.config.population_size - self.config.n_parents
+        self.k = self.config.population_size - self.config.n_parents - self.config.n_elites
         self.m = self.config.n_parents
 
     def variate(

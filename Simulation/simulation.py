@@ -211,6 +211,16 @@ class Simulation:
 
         fitness = 0.0
 
+        coverage = 0
+        cities_with_patients = 0
+        for city in self.cities_list:
+            if city.total_urgent_patients == 0:
+                continue
+            coverage += (city.total_survived_urgent_patients/city.total_urgent_patients)
+            cities_with_patients += 1
+
+        bad_coverage = 1 - (coverage / cities_with_patients)
+
         self.result.death_rate = death_rate
         self.result.not_admitted_rate = not_admitted_rate
         self.result.urgent_death_rate = urgent_death_rate
@@ -221,6 +231,7 @@ class Simulation:
         self.result.normalized_not_survived_choice_rank = normalized_not_survived_choice_rank
         self.result.normalized_unused_hospitals = normalized_unused_hospitals
         self.result.normalized_cost = normalized_cost
+        self.result.bad_coverage = bad_coverage
 
         fitness += self.sc.death_rate_factor * death_rate
         fitness += self.sc.not_admitted_rate_factor * not_admitted_rate
@@ -232,6 +243,7 @@ class Simulation:
         fitness += self.sc.normalized_not_survived_choice_rank_factor * normalized_not_survived_choice_rank
         fitness += self.sc.normalized_unused_hospitals_factor * normalized_unused_hospitals
         fitness += self.sc.normalized_cost_factor * normalized_cost
+        fitness += self.sc.bad_coverage_factor * bad_coverage
 
         return fitness
 
@@ -264,6 +276,8 @@ class Simulation:
 
             sick_patients:list[Patient] = []
 
+            city.total_urgent_patients += urgent_sick
+
             for _ in range(urgent_sick):
                 days = max(1, int(self.rng.normal(self.sc.PATIENT_DAYS_U, 1)))
                 sick_patients.append(
@@ -291,7 +305,9 @@ class Simulation:
                 hospital_id = self.send_patient_to_nearest_available_hospital(patient, city)
 
                 if hospital_id is not None:
-                    city.in_hospital += 1   #WWWWWW
+                    city.in_hospital += 1
+                    if patient.urgency == self.sc.URGENCY_U:
+                        city.total_survived_urgent_patients += 1
                 else:
                     # if the patient is not admitted or does not survive the trip,
                     # return them directly to the city population
@@ -491,6 +507,8 @@ class SimResultScalar:
     normalized_unused_hospitals: float = None
     normalized_cost: float = None
 
+    bad_coverage : float = None # 1 - average of death rate per city over all cities
+
     def __str__(self):
         RED        = "\033[38;5;160m"
         GREEN      = "\033[38;5;10m"
@@ -522,7 +540,7 @@ class SimResultScalar:
             f"{CYAN   }       Not survived choice:{RESET} {self.normalized_not_survived_choice_rank:9.5f}\n"
             f"{CYAN   }          Unused Hospitals:{RESET} {self.normalized_unused_hospitals:9.5f}\n"
             f"{CYAN   }                      Cost:{RESET} {self.normalized_cost:9.5f}\n"
-        
+            f"{CYAN   }              Bad Coverage:{RESET} {self.bad_coverage:9.5f}\n"
         )
 
 

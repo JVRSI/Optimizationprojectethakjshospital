@@ -6,7 +6,8 @@ import json
 
 from ga.population import Population
 from ga.individual import Individual
-from ga.analysis.plotting import plot_fitness
+from ga.analysis.plotting import plot_fitness, plot_fitness_components
+from Simulation import SimConfig
 
 
 @dataclass
@@ -50,7 +51,7 @@ class GAStatistics:
             self.best_history: list[Individual] = []
         self.steps_from_last_improvement = 0
         self.current_best = 100
-        self.steps_from_last_restart = -2
+        self.time_of_last_improvement = 0
 
 
     def record(
@@ -101,6 +102,7 @@ class GAStatistics:
         self, 
         run_dir: str | Path,
         do_plot: bool,
+        sim_config : SimConfig = None
     ):
 
         run_dir.mkdir(parents=True, exist_ok=True)
@@ -118,14 +120,17 @@ class GAStatistics:
 
             for stat in self.history:
                 writer.writerow(asdict(stat))
+        
+        if self.rih:
+            self.save_individual_history(run_dir=run_dir, do_plot=do_plot, sim_config=sim_config)
 
         if do_plot:
             plot_fitness(csv_path,run_dir)
+
         
-        if self.rih:
-            self.save_individual_history(run_dir=run_dir)
+        
     
-    def save_individual_history(self, run_dir):
+    def save_individual_history(self, run_dir, do_plot, sim_config):
         b_json_path = run_dir / "recordings_best.json"
 
         with open(b_json_path, "w") as f:
@@ -135,13 +140,21 @@ class GAStatistics:
 
         with open(w_json_path, "w") as f:
             json.dump([w.to_dict() for w in self.worst_history], f, indent=4)
+        
+        if do_plot:
+            if sim_config is None:
+                raise ValueError("If plotting, one needs the sim config")
+            plot_fitness_components(b_json_path,run_dir,sim_config=sim_config)
 
 
-    def relative_improvement(self, window=5, eps=1e-12):
-        if len(self.history) <= window or self.history[-1].std_fitness > 0.002: #std is used to avoid restarting directly after restart again
+    def relative_improvement(self, window=5, std_threshold=0.002, eps=1e-12):
+        if window == 0: #for MC
+            return 0
+        if len(self.history) <= window or len(self.history) - self.time_of_last_improvement <= window or self.history[-1].std_fitness > std_threshold: #std is used to avoid restarting directly after restart again
             return 100
         current = self.history[-1].best_fitness
         old = self.history[-window].best_fitness
+        self.time_of_last_improvement = len(self.history)
 
         return abs(old - current) / (abs(old) + eps)
 

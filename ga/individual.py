@@ -55,3 +55,10 @@ class Individual:
         if isinstance(obj, list):
             return [self.convert_numpy(v) for v in obj]
         return obj
+    
+    @classmethod
+    def from_dict(cls, data):
+        genome = [(g[0],g[1],g[2]) for g in data["genome"]]
+        ind = cls(genome)
+        ind.fitness = data["fitness"]
+        return ind

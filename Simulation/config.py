@@ -52,4 +52,5 @@ class SimConfig:
     normalized_not_survived_choice_rank_factor: float = 0.03
     normalized_unused_hospitals_factor: float = 0.03
     normalized_cost_factor: float = 0.12
+    bad_coverage_factor : float = 0.5
 

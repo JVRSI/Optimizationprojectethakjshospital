@@ -200,3 +200,92 @@ class PositiveGeneExchange(CrossoverStrategy):
             t = parent1.genome[il1[i1]]
             parent1.genome[il1[i1]] = parent2.genome[il2[i2]]
             parent2.genome[il2[i2]] = t
+
+
+class PositiveGridGeneExchange(CrossoverStrategy):
+    def __init__(
+            self,
+            ga_config : GAConfig,
+            rng : np.random.Generator,
+        ):
+        """
+        p exchange is percentage of given genes from smaller genome exchanged
+
+        should be in (0,0.5]
+        """
+        super().__init__(ga_config, rng)
+        self.n_pivots = ga_config.n_crossovers
+
+    def _crossover(
+            self, 
+            parent1 : Individual, 
+            parent2 : Individual, 
+        ): 
+
+        ns = sum([1 for i in parent1.genome if i[0] == 1])
+        nu = len(parent1.genome) - ns
+
+        row_pivots = sorted(self.rng.choice(self.height, size=self.n_pivots, replace=False))
+        col_pivots = sorted(self.rng.choice(self.height, size=self.n_pivots, replace=False))
+
+
+
+        tmp1 = parent1.genome.copy()
+
+        parent1.genome = (
+            [t for t in parent1.genome if self.from_parent1(t,row_pivots,col_pivots)]
+            +
+            [t for t in parent2.genome if not self.from_parent1(t,row_pivots,col_pivots)]
+        )
+
+        parent2.genome = (
+            [t for t in parent2.genome if self.from_parent1(t,row_pivots,col_pivots)]
+            +
+            [t for t in tmp1 if not self.from_parent1(t,row_pivots,col_pivots)]
+        )
+
+        nns = sum([1 for i in parent1.genome if i[0] == 1])
+        nnu = len(parent1.genome) - nns
+
+        dns = nns - ns
+        dnu = nnu - nu
+
+        if dns != 0:
+            if dns < 0:
+                dns *= -1 #move small hospitals from 2 to 1
+                self.move_overflow(p_from=parent2, p_to=parent1, d=dns, t=1)
+            else:
+                self.move_overflow(p_from=parent1, p_to=parent2, d=dns, t=1)
+    
+        if dnu != 0:
+            if dnu < 0:
+                dnu *= -1 #move large hospitals from 2 to 1
+                self.move_overflow(p_from=parent2, p_to=parent1, d=dnu, t=2)
+            else:
+                self.move_overflow(p_from=parent1, p_to=parent2, d=dnu, t=2)
+        
+
+    def move_overflow(self, p_from, p_to, d, t):
+        i = 0
+        c = 0
+        move = []
+        while i < len(p_from.genome) and c < d:
+            if p_from.genome[i][0] == t:
+                move.append(p_from.genome[i])
+                del p_from.genome[i]
+                c += 1
+            else:
+                i += 1
+        p_to.genome.extend(move)
+
+
+    def from_parent1(self,t,row_pivots,col_pivots):
+        row, col = t[1], t[2]
+
+        rr = bisect_right(row_pivots, row)
+        cc = bisect_right(col_pivots, col)
+
+        return (rr + cc) % 2 == 0
+    
+
+    

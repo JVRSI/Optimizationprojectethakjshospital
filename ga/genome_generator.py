@@ -13,28 +13,26 @@ class GenomeGenerator(ABC):
     def __init__(
         self, 
         rng: np.random.Generator,
-        config : GAConfig
+        config : GAConfig,
     ):
         self.rng = rng
         self.config = config
 
-        large = self.rng.normal(
-            loc=self.config.mean_hospital_large,
-            scale=1
-        )
-
-        small = self.rng.normal(
-            loc=self.config.mean_hospital_small,
-            scale=1
-        )
-
-        large = self.config.mean_hospital_large
-        small = self.config.mean_hospital_small
+        if self.config.random_amount:
+            large = self.rng.normal(
+                loc=self.config.mean_hospital_large,
+                scale=1
+            )
+            small = self.rng.normal(
+                loc=self.config.mean_hospital_small,
+                scale=3
+            )
+        else:
+            large = self.config.mean_hospital_large
+            small = self.config.mean_hospital_small
 
         self.m = int(round(max(1,large)))
         self.n = int(round(max(2,large + small)))
-
-        print(self.m, self.n-self.m)
 
         self.height = self.config.genome_size[0]
         self.width = self.config.genome_size[1]

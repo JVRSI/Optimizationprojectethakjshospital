@@ -1,0 +1,8 @@
+[
+    [
+        5,
+        "Generator: GravityGenerator\nSelection: TruncateSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "kth(=90) out of bounds (10)",
+        "Traceback (most recent call last):\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/systematic_testing.py\", line 159, in main\n    best, status = ga.run()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 186, in run\n    ts = self.step()\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 100, in step\n    self.variation.variate(self.population.individuals)\n  File \"/home/shroom/Documents/eth/faecher/optima/Optimizationprojectethakjshospital/ga/variation/microGA.py\", line 36, in variate\n    idx = np.argpartition(fitness, n_elite)[:n_elite]\n  File \"/home/shroom/anaconda3/envs/optima/lib/python3.10/site-packages/numpy/_core/fromnumeric.py\", line 962, in argpartition\n    return _wrapfunc(a, 'argpartition', kth, axis=axis, kind=kind, order=order)\n  File \"/home/shroom/anaconda3/envs/optima/lib/python3.10/site-packages/numpy/_core/fromnumeric.py\", line 57, in _wrapfunc\n    return bound(*args, **kwds)\nValueError: kth(=90) out of bounds (10)\n"
+    ]
+]

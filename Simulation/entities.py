@@ -10,13 +10,15 @@ class Patient:
 
 # Object for the cells
 class City:
-    __slots__ = ("city_id", "btot", "hospitals_sorted", "in_hospital", "location")
+    __slots__ = ("city_id", "btot", "hospitals_sorted", "in_hospital", "location","total_urgent_patients","total_survived_urgent_patients")
     def __init__(self, id, btot, inHospital, hospitals, location=(-10,-100)):
         self.city_id = id
         self.btot = btot
         self.hospitals_sorted = hospitals
         self.in_hospital = inHospital 
         self.location = location
+        self.total_urgent_patients = 0
+        self.total_survived_urgent_patients = 0
     has_hospital = False
     hospital_ob = None
 

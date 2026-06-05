@@ -8,7 +8,7 @@ from Simulation.entities import City
 from paths import DATA_DIR
 
 MATRIX_FILE = DATA_DIR / "gov_data" / "Daten Matrix Reduced.csv"
-OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded.pkl"
+OUTPUT_FILE = DATA_DIR / "gov_data" / "cities_list_reduced_from_root_rounded_with_coverage.pkl"
 
 
 def make_list_of_cities_from_matrix(cities):
