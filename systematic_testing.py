@@ -31,7 +31,7 @@ from Simulation.entities import City
 from systematic_runs_configs.r6 import runs
 runs_conf = "r6"
 
-skip_runs = [0,8,9,16,17]
+skip_runs = [0,1,8,16,17]
 
 save_stuff = True
 
