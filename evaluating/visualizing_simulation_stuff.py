@@ -29,17 +29,19 @@ if __name__ == "__main__":
 
     matrix = matrix**0.5
 
+
     plt.figure(figsize=(13, 8), facecolor=basicCol.background)
 
     plt.imshow(
         matrix,
         origin="lower",
         cmap=basicCol.custom_cmap,
-        interpolation="none"
+        interpolation="none",
+        #aspect="equal"
     )
 
-    x = 129
-    y = 136
+    x = 128
+    y = 134
     r = 50
 
     # Kreis hinzufügen
@@ -47,28 +49,34 @@ if __name__ == "__main__":
         (x, y),      # Mittelpunkt
         r,           # Radius
         fill=False,  # nur Rand
-        edgecolor="red",
+        edgecolor="#1b475d",
         linewidth=2
     )
     circle2 = Circle(
         (x, y),      # Mittelpunkt
         25,           # Radius
         fill=False,  # nur Rand
-        edgecolor="red",
+        edgecolor="#b4bd62",
         linewidth=2
     )
 
     circle3 = Circle(
         (x, y),      # Mittelpunkt
         2,           # Radius
-        fill=True,  # nur Rand
         linewidth=2,
+        facecolor="#fad564"
     )
 
     plt.gca().add_patch(circle)
     plt.gca().add_patch(circle2)
     plt.gca().add_patch(circle3)
 
+
+    plt.xticks(range(0, matrix.shape[1], 25))
+    plt.yticks(range(0, matrix.shape[0], 25))
+    plt.gca().set_axisbelow(True)   
+    plt.grid(True, color="gray", linewidth=0.5, alpha=0.3)
+    
     plt.show()
 
 

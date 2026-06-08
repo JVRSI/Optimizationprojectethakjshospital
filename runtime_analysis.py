@@ -51,7 +51,7 @@ ga_config = GAConfig(
     initial_population_size=10,
     population_size=10,
     genome_size= size,
-    mean_hospital_large=30,
+    mean_hospital_large=20,
     mean_hospital_small=50,
     collect_performance_data=True,
     plot_images=True,
@@ -178,13 +178,13 @@ def sim_only():
     genome=generator()
     individual = Individual(genome=genome)
     sim = Simulation(start_pos=individual.genome,sc=sim_config,cities_list=cities_list,rng=rng,do_analysis=True)
-    individual.fitness = sim.run(log=True)
+    individual.fitness = sim.run(log=False)
 
     t = sim.duration
 
     return sim.get_result(), t, sim.survival_probability_per_distance, sim.survival_result_by_probability, sim.patient_by_place_and_survival
 
-def sim_with_load(p:Path):
+def sim_with_load(p:Path, i:int = None):
     rng = np.random.default_rng(42)
     with open(p / "recordings_best.json", 'r') as f:
         best = json.load(f)[-1]
@@ -193,9 +193,11 @@ def sim_with_load(p:Path):
     with open(p / "sim_config.json", 'r') as f:
         sc_d = json.load(f)
     sc = SimConfig(**sc_d)
-    sc.END_DAYS = 500
+    sc.END_DAYS = 1000
+    if i is not None:
+        sc.END_DAYS = i
     sim = Simulation(start_pos=individual.genome,sc=sc,cities_list=cities_list,rng=rng,do_analysis=True)
-    individual.fitness = sim.run(log=True)
+    individual.fitness = sim.run(log=False)
 
     t = sim.duration
 
@@ -208,9 +210,9 @@ if __name__ == "__main__":
 
     #main()
 
-    res, _, p_by_dist, res_of_p, p_by_place_survival = sim_with_load(runs_dir / "0_systematic_r4" / "28_4_TruncateSelection_ClassicVariation_GravityGenerator_2026-06-03_03-37-52_ParallelEvaluator")
+    res, _, p_by_dist, res_of_p, p_by_place_survival = sim_with_load(runs_dir / "0_systematic_r6" / "0_0_TruncateSelection_ClassicVariation_BasicGenerator_2026-06-04_23-19-59_ParallelEvaluator")
 
-    print(res.to_scalar())
+    #print(res.to_scalar())
 
     if True: #plot places where people survive or die
         p_u = [(p[1],p[2]) for p in p_by_place_survival if p[0] == sim_config.URGENCY_U]
@@ -238,12 +240,14 @@ if __name__ == "__main__":
         mt_u = max([t for t in t_u])
         mt_n = max([t for t in t_n])
 
-        t_u = [(t/mt_u)**0.5 for t in t_u]
-        t_n = [(t/mt_n)**0.5 for t in t_n]
+        t_u = [(t/mt_u)**0.4 for t in t_u]
+        t_n = [(t/mt_n)**0.4 for t in t_n]
 
         r, t = r_u, t_u
 
-        plt.figure(figsize=(13, 8))
+        
+
+        plt.figure(figsize=(13, 8), facecolor="#f7f1e5")
 
         # col = [coord[0] for _, coord in r]
         # row = [coord[1] for _, coord in r]
@@ -267,20 +271,38 @@ if __name__ == "__main__":
         for ((c, coord), alpha) in zip(r, t):
             row, col = coord
             m[row, col] = c
-            a[row, col] = alpha
+            a[row, col] = (alpha*0.7 + 0.3)
 
         #masked = np.ma.masked_where(m == -1, m)
 
         #cmap = plt.colormaps["RdYlGn"].copy()
         #cmap.set_bad((1,1,1,0))
 
-        cmap = plt.colormaps["RdYlGn"]
+        #cmap = plt.colormaps["RdYlGn"]
 
-        rgba = cmap(np.nan_to_num(m, nan=0))
-        rgba[..., 3] = np.where(np.isnan(m), 0, a)
+        ax = plt.gca()
+        ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
+
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+        
+        cmap = plt.colormaps["RdYlGn"].copy()
+
+        norm = np.nan_to_num(m, nan=0)
+        fg = cmap(norm)[..., :3]
+
+        bg = np.array([0xF7, 0xF1, 0xE5]) / 255.0
+
+        a = np.nan_to_num(a, nan=0)
+        a = np.clip(a, 0, 1)[..., None]
+
+        rgb = a * fg + (1 - a) * bg
+
+        #rgba = cmap(np.nan_to_num(m, nan=0))
+        #rgba[..., 3] = np.where(np.isnan(m), 0, a)
         
         ish = plt.imshow(
-            rgba,
+            rgb,
             origin="lower",
             cmap=cmap,
             interpolation="none"
@@ -294,7 +316,7 @@ if __name__ == "__main__":
 
 
 
-    if False: #plot probabilities stuff (need to set do_analysis = True in simulation __init__)
+    if False: #plot probabilities stuff 
         rp_u = [(i[1],i[2]) for i in res_of_p if i[0] == sim_config.URGENCY_U]
         rp_n = [(i[1],i[2]) for i in res_of_p if i[0] == sim_config.URGENCY_N]
 
@@ -327,11 +349,12 @@ if __name__ == "__main__":
         
 
         # plot
-        plt.scatter(x1,y1, marker='o', label='Non-urgent')
-        plt.scatter(x2, y2, marker='o', label='urgent')
+        plt.scatter(x1,y1, marker='o', s=9, label='Non-urgent', facecolors="#b4bd62")
+        plt.scatter(x2, y2, marker='o', s=9, label='urgent', facecolors="#fad564")
 
-        plt.xlabel("Distanz")
+        plt.xlabel("distance")
         plt.ylabel("p")
+        plt.title("Empirical survival probability")
         plt.legend()
         plt.grid(True)
         plt.show()
@@ -353,19 +376,19 @@ if __name__ == "__main__":
     
     if False:
         res = []
-        for i in tqdm(range(1,10)):
-            sim_config.END_DAYS=i
-            r,t = sim_only()
+        for i in tqdm(range(1,100)):
+            sim_config.END_DAYS = i
+            r,t, _, _, _ = sim_only() #sim_with_load(runs_dir / "0_systematic_r6" / "0_7_TruncateSelection_EvolutionaryVariation_GravityGenerator_2026-06-05_02-29-08_ParallelEvaluator", i)
             r = asdict(r.to_scalar())
             r["time"] = t/6
             res.append(r)
 
         df = pd.DataFrame(res)
         df[[
-            "time",
+            #"time",
             "death_rate",
             "not_admitted_rate",
-            #"urgent_death_rate",
+            "urgent_death_rate",
             "urgent_not_admitted_rate",
             #"normalized_admitted_distance",
             #"normalized_not_survived_distance",
@@ -374,37 +397,19 @@ if __name__ == "__main__":
             #"normalized_unused_hospitals",
             #"small_summed",
             #"normalized_cost",
-            #"reconstructed_fitness"
         ]].plot(kind='line', legend=True, figsize=(12,6))
         df[[
-            "time",
+            #"time",
             "death_rate",
             "not_admitted_rate",
             "urgent_death_rate",
             "urgent_not_admitted_rate",
             "normalized_admitted_distance",
-            #"normalized_not_survived_distance",
+            "normalized_not_survived_distance",
             "normalized_admitted_choice_rank",
             "normalized_not_survived_choice_rank",
             "normalized_unused_hospitals",
-            #"small_summed",
             "normalized_cost",
-            #"reconstructed_fitness"
-        ]].plot(kind='line', legend=True, figsize=(12,6))
-        df[[
-            "time",
-            "death_rate",
-            "not_admitted_rate",
-            "urgent_death_rate",
-            "urgent_not_admitted_rate",
-            #"normalized_admitted_distance",
-            #"normalized_not_survived_distance",
-            "normalized_admitted_choice_rank",
-            "normalized_not_survived_choice_rank",
-            "normalized_unused_hospitals",
-            #"small_summed",
-            #"normalized_cost",
-            #"reconstructed_fitness"
         ]].plot(kind='line', legend=True, figsize=(12,6))
         plt.ylabel("Value")
         plt.title("Simulation Records")

@@ -31,7 +31,7 @@ from Simulation.entities import City
 from systematic_runs_configs.r6 import runs
 runs_conf = "r6"
 
-skip_runs = [8]
+skip_runs = [0,8,9,16,17]
 
 save_stuff = True
 
@@ -48,7 +48,7 @@ parser.add_argument("-w", "--n-workers", type=int, default=16)
 args = parser.parse_args()
 
 size = (219,345)
-seed = int(time.time())
+seed = 1780652528 #int(time.time())
 
 n_workers = args.n_workers
 record_history_of_best_and_worst = True

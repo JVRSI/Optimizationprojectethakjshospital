@@ -112,7 +112,7 @@ def plot_genome(
         c=colors.hospital_s,
         edgecolors=None,
         linewidths=0.8,
-        label="Hospitals"
+        label="Small hospitals"
     )
 
     
@@ -121,6 +121,7 @@ def plot_genome(
         title = "Genome"
     else:
         title = f"Genome with fitness {fitness:4.4f}"
+    title = ""
     #plt.xlabel("Reduced matrix x-coordinate")
     #plt.ylabel("Reduced matrix y-coordinate")
 

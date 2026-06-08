@@ -19,23 +19,26 @@ if __name__ == "__main__":
     #run_dir = RUNS_DIR / "0_systematic_r3" / "0_1_RouletteSelection_ClassicVariation_GravityGenerator_2026-05-31_05-43-03_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
-    run_dir = RUNS_DIR / "0_systematic_r5" 
+    run_dir = RUNS_DIR / "0_systematic_r6" 
 
-    run_dir = next(run_dir.glob("3_7_*"))
+    run_dir = next(run_dir.glob("1_17_*"))
 
     print(run_dir)
 
-    p = "recordings_worst"
+    p = "recordings_best"
     json_file = run_dir / f"{p}.json"
 
     with open(json_file, 'r') as f:
         best_history = json.load(f)
+        
     
     sim_records = []
     for best in best_history:
         t = best["sim_records"]
         t["fitness"] = best["fitness"]
         sim_records.append(t)
+        #print(sum([1 for p in best["genome"] if p[0] == 1]), "small")
+        #print(sum([1 for p in best["genome"] if p[0] == 2]), "large")
     
     df = pd.DataFrame(sim_records)
     df_norm = (df - df.min()) / (df.max() - df.min())
@@ -50,7 +53,7 @@ if __name__ == "__main__":
     df_fitness_calc_norm["normalized_admitted_choice_rank"] *= 0
     df_fitness_calc_norm["normalized_not_survived_choice_rank"] *= 0
     df_fitness_calc_norm["normalized_unused_hospitals"] *= 0
-    df_fitness_calc_norm["normalized_cost"] *= 0.15
+    df_fitness_calc_norm["normalized_cost"] *= 0.01
 
 
 
@@ -81,13 +84,13 @@ if __name__ == "__main__":
         "not_admitted_rate",
         "urgent_death_rate",
         "urgent_not_admitted_rate",
-        "normalized_admitted_distance",
-        "normalized_not_survived_distance",
-        "normalized_admitted_choice_rank",
-        "normalized_not_survived_choice_rank",
-        "normalized_unused_hospitals",
+        #"normalized_admitted_distance",
+        #"normalized_not_survived_distance",
+        #"normalized_admitted_choice_rank",
+        #"normalized_not_survived_choice_rank",
+        #"normalized_unused_hospitals",
         #"small_summed",
-        #"normalized_cost",
+        "normalized_cost",
         #"reconstructed_fitness"
     ]].plot(kind='line', legend=True, figsize=(12,6))
     

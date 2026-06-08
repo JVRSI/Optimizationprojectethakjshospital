@@ -16,8 +16,8 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
         initial_population_size=100,
         population_size=100,
         genome_size= size,
-        mean_hospital_large=30,
-        mean_hospital_small=120,
+        mean_hospital_large=29,
+        mean_hospital_small=101,
         random_amount = False,
         collect_performance_data=True,
         plot_images=True,
@@ -97,7 +97,6 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
         GAFactory(
             ga_config = replace(gc,
                 random_amount=True,
-                max_time_to_run_s = 0.5*60*60,
                 n_best_to_keep=1,
                 n_steps_of_no_improvement_to_converge=0,
             ),

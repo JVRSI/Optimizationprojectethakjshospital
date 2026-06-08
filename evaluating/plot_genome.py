@@ -42,9 +42,9 @@ if __name__ == "__main__":
     #run_dir = RUNS_DIR / "0_systematic_r4" / "8_1_RouletteSelection_ClassicVariation_GravityGenerator_2026-06-01_12-48-38_ParallelEvaluator"
     #run_dir = RUNS_DIR  / ""
 
-    run_dir = RUNS_DIR / "0_systematic_r4" 
+    run_dir = RUNS_DIR / "0_systematic_r6" 
 
-    run_dir = next(run_dir.glob("28_3_*"))
+    run_dir = next(run_dir.glob("0_0_*"))
 
     if args.newest:
         run_dir = get_latest_run(RUNS_LOCAL)
@@ -53,9 +53,10 @@ if __name__ == "__main__":
 
     json_file = run_dir / "best.json"
     json_file = run_dir / "recordings_best.json"
+    json_file = run_dir / "last_generation.json"
 
     with open(json_file, 'r') as f:
-        best = json.load(f)[0]
+        best = json.load(f)["individuals"][20]
 
     genome = best["genome"]
     fitness = best["fitness"]
