@@ -13,6 +13,8 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import math
+import matplotlib as mpl
+from PIL import Image
 
 
 from paths import DATA_DIR, RUNS_DIR, MATRIX_PATH, RUNS_LOCAL
@@ -293,6 +295,7 @@ if __name__ == "__main__":
 
         bg = np.array([0xF7, 0xF1, 0xE5]) / 255.0
 
+
         a = np.nan_to_num(a, nan=0)
         a = np.clip(a, 0, 1)[..., None]
 
@@ -300,16 +303,28 @@ if __name__ == "__main__":
 
         #rgba = cmap(np.nan_to_num(m, nan=0))
         #rgba[..., 3] = np.where(np.isnan(m), 0, a)
+
+
+        rgbt = np.flipud(rgb)
+        img = Image.fromarray((rgbt*255).astype(np.uint8))
+        img = img.resize((norm.shape[1]*25,norm.shape[0]*25), Image.Resampling.NEAREST)
+        img.save("heatmap_upscaled_25.png")
+
+        '''
         
         ish = plt.imshow(
             rgb,
             origin="lower",
             cmap=cmap,
-            interpolation="none"
+            interpolation="none",
+            resample=False,
         )
 
-        plt.colorbar(ish, label="Survived percentage")
+        mpl.rcParams["savefig.dpi"] = 600
+
+        #plt.colorbar(ish, label="Survived percentage")
         plt.show()
+        '''
 
 
 

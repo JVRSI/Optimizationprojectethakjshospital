@@ -4,6 +4,7 @@ from typing import Tuple
 from tqdm import tqdm
 import os
 import copy
+import numpy as np
 
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
@@ -88,7 +89,7 @@ class ParallelEvaluator(Evaluator):
             self._evaluate_single,
             simulation_config=self.sim_config,
             cities=self.cities,
-            rng=self.rng,
+            rng=np.random.default_rng(self.rng.integers()),
             rih=self.rih
         )
 
