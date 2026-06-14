@@ -89,7 +89,7 @@ class ParallelEvaluator(Evaluator):
             self._evaluate_single,
             simulation_config=self.sim_config,
             cities=self.cities,
-            rng=np.random.default_rng(self.rng.integers()),
+            rng=np.random.default_rng(self.rng.integers(0, np.iinfo(np.uint32).max)),
             rih=self.rih
         )
 
