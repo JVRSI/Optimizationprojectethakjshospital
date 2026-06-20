@@ -2,7 +2,7 @@ import numpy as np
 
 from ga.variation.base import VariationStrategy
 from ga.individual import Individual
-from ga.variation.mutationClasses import SinglePointMutation, SingePointMutationWithEqualOpportunity, SinglePointWanderMutation, SinglePointWanderMutationWithProbabilityOfNormalMutation, SinglePointTeleportationMutation
+from ga.variation.mutationClasses import SinglePointMutation, SingePointMutationWithEqualOpportunity, SinglePointWanderMutation, SinglePointWanderMutationWithProbabilityOfNormalMutation, SinglePointTeleportationMutation, SinglePointWanderMutationWithProbabilityOfWanderMutation
 from ga.variation.crossoverClasses import SingleBreakCrossover, SingleGridCrossover, GridCrossover, PositiveGeneExchange, PositiveGridGeneExchange
 
 
@@ -26,6 +26,8 @@ class BasicMutationVariation(VariationStrategy):
             self.mutator = SingePointMutationWithEqualOpportunity(ga_config=ga_config,rng=rng)
         elif ms == "teleport":
             self.mutator = SinglePointTeleportationMutation(ga_config=ga_config,rng=rng)
+        elif ms == "wandering_teleport":
+            self.mutator = SinglePointWanderMutationWithProbabilityOfWanderMutation(ga_config=ga_config,rng=rng)
         else:
             raise ValueError(f"{ms} is not a valid mutation strategy")
 

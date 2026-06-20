@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
 
     #fluid
-    if True:
+    if False:
 
         #Random MC
         if best_dict[0] is not None:

@@ -25,7 +25,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
         n_parents=10,
         n_elites=2,
         n_hospital_types=2, #not everywhere is support for variable hospital types
-        mutation_strategy="teleport", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity, teleport}
+        mutation_strategy="teleport", #{wandering, mutable_wandering, single_point, single_point_equal_opportunity, teleport, wandering_teleport}
         wandering_mutation_sigma=10,
         probability_of_mutation=0.3,
         crossover_strategy="positive_grid", #{single_grid, grid, single_break, positive_gene_exchange, positive_grid}
@@ -110,6 +110,139 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
                 probability_of_crossover=0.8694,
                 mean_hospital_large=50,
                 mean_hospital_small=180,
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        ###################################################################################################
+        # Fluid, vary mutation strategy
+        ###################################################################################################
+        #-----------------------------------------------------------------------------------------------------------
+        # 2 Fluid Classic, m:0.8694, c:0.6554, single_point
+        GAFactory(
+            ga_config = replace(gc,
+                random_amount=True,
+                crossover_strategy="grid",
+                mutation_strategy="single_point",
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        #-----------------------------------------------------------------------------------------------------------
+        # 3 Fluid Classic, m:0.8694, c:0.6554, single_point_equal_opportunity
+        GAFactory(
+            ga_config = replace(gc,
+                random_amount=True,
+                crossover_strategy="grid",
+                mutation_strategy="single_point_equal_opportunity",
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        #-----------------------------------------------------------------------------------------------------------
+        # 4 Fluid Classic, m:0.8694, c:0.6554, wandering
+        GAFactory(
+            ga_config = replace(gc,
+                random_amount=True,
+                crossover_strategy="grid",
+                mutation_strategy="wandering",
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        #-----------------------------------------------------------------------------------------------------------
+        # 5 Fluid Classic, m:0.8694, c:0.6554, mutable_wandering
+        GAFactory(
+            ga_config = replace(gc,
+                random_amount=True,
+                crossover_strategy="grid",
+                mutation_strategy="mutable_wandering",
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        ###################################################################################################
+        # Fixed, vary mutation strategy
+        ###################################################################################################
+        #-----------------------------------------------------------------------------------------------------------
+        # 6 Fixed Classic, m:0.8694, c:0.6554, teleport
+        GAFactory(
+            ga_config = replace(gc,
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554,
+                mutation_strategy="teleport",
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        #-----------------------------------------------------------------------------------------------------------
+        # 7 Fixed Classic, m:0.8694, c:0.6554, wandering_teleport
+        GAFactory(
+            ga_config = replace(gc,
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554,
+                mutation_strategy="wandering_teleport",
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
+        #-----------------------------------------------------------------------------------------------------------
+        # 8 Fixed Classic, m:0.8694, c:0.6554, wandering
+        GAFactory(
+            ga_config = replace(gc,
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554,
+                mutation_strategy="wandering",
             ),
             generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),

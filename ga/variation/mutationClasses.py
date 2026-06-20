@@ -174,8 +174,32 @@ class SinglePointTeleportationMutation(MutationStrategy):
         print(f"No city without hospital found, no mutation done when mutation was intended. Number of hospitals: {len(individual.genome)}")
 
         
+class SinglePointWanderMutationWithProbabilityOfWanderMutation(MutationStrategy):
+    def __init__(
+            self,
+            ga_config: GAConfig,
+            rng : np.random.Generator,
+            sigma : float = 6,
+        ):
+        super().__init__(ga_config, rng)
+
+        assert sigma > 0, "sigma must be strictly positiv"
+
+        self.sigma = sigma
+        self.teleport = SinglePointTeleportationMutation(ga_config, rng)
+        self.wander = SinglePointWanderMutation(ga_config, rng)
+
+    def _mutate(
+            self,
+            individual : Individual,
+            probability_of_normal_mutation : float = 0.5
+        ) -> None:
 
 
+        if self.rng.random() < probability_of_normal_mutation: #teleport mutation
+            self.teleport._mutate(individual)
+        else: # wandering mutation
+            self.wander._mutate(individual)
 
     
     
@@ -207,9 +231,9 @@ class SinglePointWanderMutationWithProbabilityOfNormalMutation(MutationStrategy)
         """
 
         if self.rng.random() < probability_of_normal_mutation: #normal mutation
-            self.normal.mutate(individual)
+            self.normal._mutate(individual)
         else: # wandering mutation
-            self.wander.mutate(individual)
+            self.wander._mutate(individual)
 
 
 
