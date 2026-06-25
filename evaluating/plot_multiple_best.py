@@ -13,7 +13,8 @@ except ImportError:
     from evaluating.helpers import plot_genome, create_gif
 
 
-if __name__ == "__main__":
+
+def fluid_vs_liquid():
 
     version = "r6"
     season = "2"
@@ -74,9 +75,6 @@ if __name__ == "__main__":
         with open(run_dir / r / p, "r") as f:
             best_dict_f.append(json.load(f))
     
-
-    a = f"{gc_dict[3]['probability_of_mutation']:.4f}".rstrip("0").rstrip(".")
-
     legends = [
         "Random MC",
         "Gravity MC",
@@ -105,7 +103,7 @@ if __name__ == "__main__":
 
 
     #fluid
-    if False:
+    if True:
 
         #Random MC
         if best_dict[0] is not None:
@@ -141,7 +139,7 @@ if __name__ == "__main__":
                 #ms = 8,
             )
 
-    if True:
+    if False:
 
         #Random MC
         if best_dict_f[0] is not None:
@@ -184,6 +182,138 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+def mutation_check():
+
+    version = "r7"
+    season = "3"
+
+    run_dir = RUNS_DIR / f"0_systematic_{version}"
+
+    p = "recordings_best.json"
+    
+
+    
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    classic_colors = plt.cm.viridis(np.linspace(0, 1, 6))
+    classic_colors2 = plt.cm.Spectral(np.linspace(0, 1, 6))
+    markers = [
+        "o",
+        "x",
+        "+",
+        "*",
+        "s",
+        "^",
+        "v",
+        "D",
+        ".",
+    ]
+
+
+    runs_fluid = [
+        next(run_dir.glob(f"{season}_2_*") ,None),
+        next(run_dir.glob(f"{season}_3_*") ,None),
+        next(run_dir.glob(f"{season}_4_*") ,None),
+        next(run_dir.glob(f"{season}_5_*") ,None),
+    ]
+
+    best_dict_fluid = []
+    for r in runs_fluid:
+        if r is None:
+            best_dict_fluid.append(None)
+            continue
+        with open(run_dir / r / p, "r") as f:
+            best_dict_fluid.append(json.load(f))
+    
+    gc_dict_fluid = []
+    for r in runs_fluid:
+        with open(run_dir / r / "ga_config.json", "r") as f:
+            gc_dict_fluid.append(json.load(f))
+
+    legends_fluid = [
+        f"fluid m:{gc_dict_fluid[0]['mutation_strategy']}",
+        f"fluid m:{gc_dict_fluid[1]['mutation_strategy']}",
+        f"fluid m:{gc_dict_fluid[2]['mutation_strategy']}",
+        f"fluid m:{gc_dict_fluid[3]['mutation_strategy']}",
+    ]
+
+
+    #fluid
+    if True:
+        for idx, color in zip(range(0, 4), classic_colors):
+            if best_dict_fluid[idx] is None:
+                continue
+            fitness = [d["fitness"] for d in best_dict_fluid[idx]]
+            ax.plot(
+                fitness,
+                label=legends_fluid[idx],
+                color=color,
+                linewidth=1.5,
+                marker=markers[idx],
+                markevery=(5, 50+5*idx),
+                #ms = 8,
+            )
+
+    
+    runs_fixed = [
+        next(run_dir.glob(f"{season}_6_*") ,None),
+        next(run_dir.glob(f"{season}_7_*") ,None),
+        next(run_dir.glob(f"{season}_8_*") ,None),
+    ]
+
+    best_dict_fixed = []
+    for r in runs_fixed:
+        if r is None:
+            best_dict_fixed.append(None)
+            continue
+        with open(run_dir / r / p, "r") as f:
+            best_dict_fixed.append(json.load(f))
+    
+    gc_dict_fixed = []
+    for r in runs_fixed:
+        with open(run_dir / r / "ga_config.json", "r") as f:
+            gc_dict_fixed.append(json.load(f))
+
+    legends_fixed = [
+        f"fixed m:{gc_dict_fixed[0]['mutation_strategy']}",
+        f"fixed m:{gc_dict_fixed[1]['mutation_strategy']}",
+        f"fixed m:{gc_dict_fixed[2]['mutation_strategy']}",
+    ]
+
+    #fixed
+    if True:
+        for idx, color in zip(range(0, 3), classic_colors2):
+            if best_dict_fixed[idx] is None:
+                continue
+            fitness = [d["fitness"] for d in best_dict_fixed[idx]]
+            ax.plot(
+                fitness,
+                label=legends_fixed[idx],
+                color=color,
+                linewidth=1.5,
+                marker=markers[idx+4],
+                markevery=(5, 50+5*idx),
+                #ms = 8,
+            )
+
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+    
+
+
+
+
+
+if __name__ == "__main__":
+    #fluid_vs_liquid()
+    mutation_check()
 
 
 
