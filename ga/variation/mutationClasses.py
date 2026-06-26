@@ -102,8 +102,9 @@ class SingePointMutationWithEqualOpportunity(MutationStrategy):
         self, 
         individual : Individual,
     ) -> None:
-        if self.rng.random() < 0.5: #change / delete hospital #+ change probability of add/delete hospital
-            i = self.rng.integers(len(individual.genome))
+        l = len(individual.genome)
+        if self.rng.random() < 0.5 and l > 0: #change / delete hospital #+ change probability of add/delete hospital
+            i = self.rng.integers(l)
             _,r,c = individual.genome[i]
             self.do_point_mutation(i=i,genome=individual.genome,row=r,col=c)
             return
@@ -138,7 +139,10 @@ class SinglePointWanderMutation(MutationStrategy):
         """
         lets one hospital randomly wander in vicinity
         """
-        i = self.rng.integers(len(individual.genome))
+        l = len(individual.genome)
+        if l == 0:
+            return
+        i = self.rng.integers(l)
         t,row,col = individual.genome[i]
 
         for k in range(5):
@@ -162,7 +166,12 @@ class SinglePointTeleportationMutation(MutationStrategy):
             individual: Individual
         ) -> None:
 
-        i = self.rng.integers(len(individual.genome))
+        l = len(individual.genome)
+
+        if l == 0: 
+            return
+
+        i = self.rng.integers(l)
         t,_,_ = individual.genome[i]
 
         for _ in range(5):

@@ -193,7 +193,7 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
             ga_config = replace(gc,
                 probability_of_mutation=0.8694,
                 probability_of_crossover=0.6554,
-                mutation_strategy="positive_grid",
+                crossover_strategy="positive_grid",
                 n_crossovers=30,
             ),
             generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),

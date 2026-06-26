@@ -32,7 +32,7 @@ from systematic_runs_configs.r8 import runs
 runs_conf = "r8"
 
 #r6 skip_runs = [0,1,8,16,17]
-skip_runs = []
+skip_runs = [2,3,4,5]
 
 save_stuff = True
 
@@ -49,7 +49,7 @@ parser.add_argument("-w", "--n-workers", type=int, default=16)
 args = parser.parse_args()
 
 size = (219,345)
-seed = int(time.time()) #r6 seed: 1780652528
+seed = 1782458519 #int(time.time()) #r6 seed: 1780652528 # r8_0 seed: 1782458519
 
 n_workers = args.n_workers
 record_history_of_best_and_worst = True
