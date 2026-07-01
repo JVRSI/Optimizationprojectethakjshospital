@@ -205,4 +205,24 @@ def runs(size, record_history_of_best_and_worst, cities_matrix, seed=40):
             idea="",
             sim_config=sc,
         ),
+        ###################################################################################################################
+        # additional fluid, multiple break
+        #-----------------------------------------------------------------------------------------------------------
+        # 7 Fluid Classic, m:0.8694, c:0.6554, break 10
+        GAFactory(
+            ga_config = replace(gc,
+                random_amount=True,
+                crossover_strategy="break",
+                probability_of_mutation=0.8694,
+                probability_of_crossover=0.6554
+            ),
+            generator_factory = lambda config, seed: GravityGenerator(rng=np.random.default_rng(seed),config=config,cities_matrix=cities_matrix),
+            selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
+            variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
+            generator_name="GravityGenerator",
+            selector_name="TruncateSelection",
+            variator_name="ClassicVariation",
+            idea="",
+            sim_config=sc,
+        ),
     ]

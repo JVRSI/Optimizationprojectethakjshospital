@@ -23,6 +23,7 @@ class CrossoverStrategy(ABC):
         self.width = ga_config.genome_size[1]
         self.n_genes = self.height * self.width
         self.rng = rng
+        self.n_pivots = ga_config.n_crossovers
 
     def crossover(self, parent1 : Individual, parent2 : Individual):
         parent1.fitness = None
@@ -65,6 +66,45 @@ class SingleBreakCrossover(CrossoverStrategy):
 
         parent1.genome = keep_1 + move_2_to_1
         parent2.genome = keep_2 + move_1_to_2
+
+class BreakCrossover(CrossoverStrategy):
+    def _crossover(
+            self, 
+            parent1 : Individual, 
+            parent2 : Individual, 
+        ): 
+        pivot_indices = sorted(self.rng.choice(self.n_genes - 1, size=self.n_pivots, replace=False))
+        pivots = [self.get_position_from_total_index(i) for i in pivot_indices]
+
+
+        new_parent1 = []
+        new_parent2 = []
+
+        for t in parent1.genome:
+            segment = self.get_segment((t[1], t[2]), pivots)
+            if segment % 2 == 0:
+                new_parent1.append(t)
+            else:
+                new_parent2.append(t)
+
+        for t in parent2.genome:
+            segment = self.get_segment((t[1], t[2]), pivots)
+            if segment % 2 == 0:
+                new_parent2.append(t)
+            else:
+                new_parent1.append(t)
+
+        parent1.genome = new_parent1
+        parent2.genome = new_parent2
+    
+    def get_segment(self, pos, pivots):
+            segment = 0
+            for pivot in pivots:
+                if pos > pivot:
+                    segment += 1
+                else:
+                    break
+            return segment
 
 
 class SingleGridCrossover(CrossoverStrategy):

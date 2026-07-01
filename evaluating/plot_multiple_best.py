@@ -277,9 +277,9 @@ def mutation_check():
             gc_dict_fixed.append(json.load(f))
 
     legends_fixed = [
-        f"fixed m:{gc_dict_fixed[0]['mutation_strategy']}",
-        f"fixed m:{gc_dict_fixed[1]['mutation_strategy']}",
-        f"fixed m:{gc_dict_fixed[2]['mutation_strategy']}",
+        f"fixed c:{gc_dict_fixed[0]['mutation_strategy']}",
+        f"fixed c:{gc_dict_fixed[1]['mutation_strategy']}",
+        f"fixed c:{gc_dict_fixed[2]['mutation_strategy']}",
     ]
 
     #fixed
@@ -307,14 +307,133 @@ def mutation_check():
     plt.show()
     
 
+def crossover_check():
+
+    version = "r8"
+    #season = "3"
+
+    run_dir = RUNS_DIR / f"0_systematic_{version}"
+
+    p = "recordings_best.json"
+    
+
+    
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    classic_colors = plt.cm.viridis(np.linspace(0, 1, 6))
+    classic_colors2 = plt.cm.Spectral(np.linspace(0, 1, 6))
+    markers = [
+        "o",
+        "x",
+        "+",
+        "*",
+        "s",
+        "^",
+        "v",
+        "D",
+        ".",
+    ]
 
 
+    runs_fluid = [
+        next(run_dir.glob(f"1_0_*") ,None),
+        next(run_dir.glob(f"1_1_*") ,None),
+        next(run_dir.glob(f"0_2_*") ,None),
+        next(run_dir.glob(f"0_3_*") ,None),
+    ]
+
+    best_dict_fluid = []
+    for r in runs_fluid:
+        if r is None:
+            best_dict_fluid.append(None)
+            continue
+        with open(run_dir / r / p, "r") as f:
+            best_dict_fluid.append(json.load(f))
+    
+    gc_dict_fluid = []
+    for r in runs_fluid:
+        with open(run_dir / r / "ga_config.json", "r") as f:
+            gc_dict_fluid.append(json.load(f))
+
+    legends_fluid = [
+        f"fluid c:{gc_dict_fluid[0]['crossover_strategy']}",
+        f"fluid c:{gc_dict_fluid[1]['crossover_strategy']}",
+        f"fluid c:{gc_dict_fluid[2]['crossover_strategy']} {gc_dict_fluid[2]['n_crossovers']}",
+        f"fluid c:{gc_dict_fluid[3]['crossover_strategy']} {gc_dict_fluid[3]['n_crossovers']}",
+    ]
+
+
+    #fluid
+    if True:
+        for idx, color in zip(range(0, 4), classic_colors):
+            if best_dict_fluid[idx] is None:
+                continue
+            fitness = [d["fitness"] for d in best_dict_fluid[idx]]
+            ax.plot(
+                fitness,
+                label=legends_fluid[idx],
+                color=color,
+                linewidth=1.5,
+                marker=markers[idx],
+                markevery=(5, 50+5*idx),
+                #ms = 8,
+            )
+
+    
+    runs_fixed = [
+        next(run_dir.glob(f"0_4_*") ,None),
+        next(run_dir.glob(f"0_5_*") ,None),
+        next(run_dir.glob(f"1_6_*") ,None),
+    ]
+
+    best_dict_fixed = []
+    for r in runs_fixed:
+        if r is None:
+            best_dict_fixed.append(None)
+            continue
+        with open(run_dir / r / p, "r") as f:
+            best_dict_fixed.append(json.load(f))
+    
+    gc_dict_fixed = []
+    for r in runs_fixed:
+        with open(run_dir / r / "ga_config.json", "r") as f:
+            gc_dict_fixed.append(json.load(f))
+
+    legends_fixed = [
+        f"fixed m:{gc_dict_fixed[0]['crossover_strategy']}",
+        f"fixed m:{gc_dict_fixed[1]['crossover_strategy']} {gc_dict_fixed[1]['n_crossovers']}",
+        f"fixed m:{gc_dict_fixed[2]['crossover_strategy']} {gc_dict_fixed[2]['n_crossovers']}",
+    ]
+
+    #fixed
+    if True:
+        for idx, color in zip(range(0, 3), classic_colors2):
+            if best_dict_fixed[idx] is None:
+                continue
+            fitness = [d["fitness"] for d in best_dict_fixed[idx]]
+            ax.plot(
+                fitness,
+                label=legends_fixed[idx],
+                color=color,
+                linewidth=1.5,
+                marker=markers[idx+4],
+                markevery=(5, 50+5*idx),
+                #ms = 8,
+            )
+
+
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == "__main__":
     #fluid_vs_liquid()
-    mutation_check()
-
+    #mutation_check()
+    crossover_check()
 
 
 """

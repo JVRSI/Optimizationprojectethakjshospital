@@ -32,7 +32,7 @@ from systematic_runs_configs.r8 import runs
 runs_conf = "r8"
 
 #r6 skip_runs = [0,1,8,16,17]
-skip_runs = [2,3,4,5]
+skip_runs = [0,1,2,3,4,5,6]
 
 save_stuff = True
 
