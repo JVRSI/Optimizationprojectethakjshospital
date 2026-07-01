@@ -139,7 +139,7 @@ def fluid_vs_liquid():
                 #ms = 8,
             )
 
-    if False:
+    if True:
 
         #Random MC
         if best_dict_f[0] is not None:
@@ -277,9 +277,9 @@ def mutation_check():
             gc_dict_fixed.append(json.load(f))
 
     legends_fixed = [
-        f"fixed c:{gc_dict_fixed[0]['mutation_strategy']}",
-        f"fixed c:{gc_dict_fixed[1]['mutation_strategy']}",
-        f"fixed c:{gc_dict_fixed[2]['mutation_strategy']}",
+        f"fixed m:{gc_dict_fixed[0]['mutation_strategy']}",
+        f"fixed m:{gc_dict_fixed[1]['mutation_strategy']}",
+        f"fixed m:{gc_dict_fixed[2]['mutation_strategy']}",
     ]
 
     #fixed
@@ -400,9 +400,9 @@ def crossover_check():
             gc_dict_fixed.append(json.load(f))
 
     legends_fixed = [
-        f"fixed m:{gc_dict_fixed[0]['crossover_strategy']}",
-        f"fixed m:{gc_dict_fixed[1]['crossover_strategy']} {gc_dict_fixed[1]['n_crossovers']}",
-        f"fixed m:{gc_dict_fixed[2]['crossover_strategy']} {gc_dict_fixed[2]['n_crossovers']}",
+        f"fixed c:{gc_dict_fixed[0]['crossover_strategy']}",
+        f"fixed c:{gc_dict_fixed[1]['crossover_strategy']} {gc_dict_fixed[1]['n_crossovers']}",
+        f"fixed c:{gc_dict_fixed[2]['crossover_strategy']} {gc_dict_fixed[2]['n_crossovers']}",
     ]
 
     #fixed
@@ -431,8 +431,8 @@ def crossover_check():
 
 
 if __name__ == "__main__":
-    #fluid_vs_liquid()
-    #mutation_check()
+    fluid_vs_liquid()
+    mutation_check()
     crossover_check()
 
 

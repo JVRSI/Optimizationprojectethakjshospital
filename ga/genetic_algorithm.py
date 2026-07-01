@@ -8,7 +8,7 @@ from ga.config import GAConfig
 from ga.selection.base import SelectionStrategy
 from ga.variation.base import VariationStrategy
 from ga.evaluator import Evaluator
-from ga.genome_generator import GenomeGenerator
+from ga.genome_generator import GenomeGenerator, LoadFromFile
 from ga.analysis.statistics import GAStatistics
 
 import numpy as np
@@ -50,6 +50,9 @@ class GeneticAlgorithm:
 
 
         self.genome_generator = genome_generator
+        self.loadingFromFile = False
+        if isinstance(self.genome_generator, LoadFromFile):
+            self.loadingFromFile = True
         self.population = None
         self.time_initial = time.time()
 
@@ -61,20 +64,30 @@ class GeneticAlgorithm:
         returns time of simulation
         """
 
-        if self.population is None:
+        if self.population is None and not self.loadingFromFile:
             self.population = Population(
                 [
                     Individual(self.genome_generator())
                     for _ in range(self.config.initial_population_size)
                 ]
             )
-        else:
+        elif not self.loadingFromFile:
             self.population.individuals.extend(
                 [
                     Individual(self.genome_generator())
                     for _ in range(self.config.initial_population_size - self.population.size())
                 ]
             )
+        else:
+            self.population = Population(
+                [
+                    Individual(genome)
+                    for genome in iter(self.genome_generator, None)
+                ]
+            )
+
+
+
 
         # initial evaluation
         ta = time.time()

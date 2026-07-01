@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import TypeAlias
 import numpy as np
+from pathlib import Path
+import json
+
 
 from ga.config import GAConfig
 
@@ -111,4 +114,35 @@ class GravityGenerator(GenomeGenerator):
 
 
         return list(zip(types, row, col))
+    
+class LoadFromFile(GenomeGenerator):
+    def __init__(
+            self, 
+            rng : np.random.Generator, 
+            config : GAConfig,
+            folder_path : Path
+        ):
+        super().__init__(rng, config)
+
+        self.file_path = folder_path / "last_generation.json"
+        if not self.file_path.exists():
+            raise FileExistsError(f"File {self.file_path} doesn't exist")
+
+        with self.file_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        self.individuals = data["individuals"]
+        self.i = 0
+
+
+    
+    def __call__(self) -> Genome:
+        if self.i >= len(self.individuals):
+            return None
+
+        genome_data = self.individuals[self.i]["genome"]
+        self.i += 1
+
+        # [[type, row, col], ...] -> [(type, row, col), ...]
+        return [tuple(gene) for gene in genome_data]
 
