@@ -310,7 +310,9 @@ def mutation_check():
 def crossover_check():
 
     version = "r8"
-    #season = "3"
+    season_a = "0"
+    season_b = "1"
+    #season_b = "1"
 
     run_dir = RUNS_DIR / f"0_systematic_{version}"
 
@@ -336,10 +338,10 @@ def crossover_check():
 
 
     runs_fluid = [
-        next(run_dir.glob(f"1_0_*") ,None),
-        next(run_dir.glob(f"1_1_*") ,None),
-        next(run_dir.glob(f"0_2_*") ,None),
-        next(run_dir.glob(f"0_3_*") ,None),
+        next(run_dir.glob(f"{season_b}_0_*") ,None),
+        next(run_dir.glob(f"{season_b}_1_*") ,None),
+        next(run_dir.glob(f"{season_a}_2_*") ,None),
+        next(run_dir.glob(f"{season_a}_3_*") ,None),
     ]
 
     best_dict_fluid = []
@@ -381,9 +383,9 @@ def crossover_check():
 
     
     runs_fixed = [
-        next(run_dir.glob(f"0_4_*") ,None),
-        next(run_dir.glob(f"0_5_*") ,None),
-        next(run_dir.glob(f"1_6_*") ,None),
+        next(run_dir.glob(f"{season_a}_4_*") ,None),
+        next(run_dir.glob(f"{season_a}_5_*") ,None),
+        next(run_dir.glob(f"{season_b}_6_*") ,None),
     ]
 
     best_dict_fixed = []

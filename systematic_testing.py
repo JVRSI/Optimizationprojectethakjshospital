@@ -52,7 +52,7 @@ parser.add_argument("-w", "--n-workers", type=int, default=16)
 args = parser.parse_args()
 
 size = (219,345)
-seed = 1782458519 #int(time.time()) #r6 seed: 1780652528 # r8_0 seed: 1782458519
+seed = int(time.time()) #r6 seed: 1780652528 # r8_0 seed: 1782458519
 
 n_workers = args.n_workers
 record_history_of_best_and_worst = True
