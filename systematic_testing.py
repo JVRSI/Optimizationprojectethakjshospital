@@ -225,7 +225,7 @@ def main():
     
 
 
-def cleanup_runs():
+def cleanup_runs(skip_runs_cleanup):
     #like main, but with different seed per run, and otherwise more control and directly here generated run configs
 
     failed_runs = []
@@ -299,7 +299,7 @@ def cleanup_runs():
         slop_threshold=0.005,
         std_threshold=0.002
     )
-    def sc(seed_sc): 
+    def sc_construct(seed_sc): 
         return SimConfig(
             SEED=seed_sc,
             END_DAYS=30,
@@ -349,7 +349,7 @@ def cleanup_runs():
             selector_name="TruncateSelection",
             variator_name="ClassicVariation",
             idea="MC Gravity, fluid",
-            sim_config= lambda seed: sc(seed_sc=seed),
+            sim_config= lambda seed: sc_construct(seed_sc=seed),
         ),
         #-----------------------------------------------------------------------------------------------------------
         # Improve on best
@@ -364,7 +364,7 @@ def cleanup_runs():
             selector_name="TruncateSelection",
             variator_name="EvolutionaryVariation",
             idea="",
-            sim_config= lambda seed: sc(seed_sc=seed),
+            sim_config= lambda seed: sc_construct(seed_sc=seed),
         ),
         #-----------------------------------------------------------------------------------------------------------
         # Improve on best smaller sigma
@@ -380,7 +380,7 @@ def cleanup_runs():
             selector_name="TruncateSelection",
             variator_name="EvolutionaryVariation",
             idea="",
-            sim_config= lambda seed: sc(seed_sc=seed),
+            sim_config= lambda seed: sc_construct(seed_sc=seed),
         ),
         #-----------------------------------------------------------------------------------------------------------
         # Improve on best compare
@@ -397,7 +397,7 @@ def cleanup_runs():
             selector_name="TruncateSelection",
             variator_name="ClassicVariation",
             idea="",
-            sim_config= lambda seed: sc(seed_sc=seed),
+            sim_config= lambda seed: sc_construct(seed_sc=seed),
         ),
 
     ]
@@ -409,7 +409,7 @@ def cleanup_runs():
     print("################################+--------------------+###################################")
     for i, run in enumerate(runs_cleanup):
         
-        if i in skip_runs:
+        if i in skip_runs_cleanup:
             print(f"*******************************+--------------{''                     }------+***********************************")
             print(f"*******************************| Skipping  {(i+1):3}/{len(runs_cleanup):<3}  |***********************************")
             print(f"*******************************+--------------{''                     }------+***********************************")
@@ -511,17 +511,9 @@ def cleanup_runs():
 if __name__ == "__main__":
 
 
-    cleanup_runs()
+    cleanup_runs([0])
 
-    main()
-
-
-
-
-
-
-
-
+    #main()
 
 
 
