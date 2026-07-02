@@ -1,0 +1,20 @@
+[
+    [
+        1,
+        "Generator: LoadFromFile\nSelection: TruncateSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "'SimConfig' object is not callable",
+        "Traceback (most recent call last):\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 424, in cleanup_runs\n    sc = run.sim_config(seeds[i][0])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 367, in <lambda>\n    sim_config= lambda seed: sc(seed_sc=seed),\n                             ^^^^^^^^^^^^^^^^\nTypeError: 'SimConfig' object is not callable\n"
+    ],
+    [
+        2,
+        "Generator: LoadFromFile\nSelection: TruncateSelection\nVariation: EvolutionaryVariation\nIdea: ",
+        "'SimConfig' object is not callable",
+        "Traceback (most recent call last):\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 424, in cleanup_runs\n    sc = run.sim_config(seeds[i][0])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 383, in <lambda>\n    sim_config= lambda seed: sc(seed_sc=seed),\n                             ^^^^^^^^^^^^^^^^\nTypeError: 'SimConfig' object is not callable\n"
+    ],
+    [
+        3,
+        "Generator: LoadFromFile\nSelection: TruncateSelection\nVariation: ClassicVariation\nIdea: ",
+        "'SimConfig' object is not callable",
+        "Traceback (most recent call last):\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 424, in cleanup_runs\n    sc = run.sim_config(seeds[i][0])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 400, in <lambda>\n    sim_config= lambda seed: sc(seed_sc=seed),\n                             ^^^^^^^^^^^^^^^^\nTypeError: 'SimConfig' object is not callable\n"
+    ]
+]
