@@ -294,7 +294,7 @@ def cleanup_runs(skip_runs_cleanup):
         p_exchange=0.3,
         do_random_restarts=True,
         n_best_to_keep=10,
-        n_steps_of_no_improvement_to_converge=5,
+        n_steps_of_no_improvement_to_converge=100,
         max_time_to_run_s=2*60*60,
         slop_threshold=0.005,
         std_threshold=0.002
@@ -516,7 +516,7 @@ def cleanup_runs(skip_runs_cleanup):
 if __name__ == "__main__":
 
 
-    #cleanup_runs([0])
+    cleanup_runs([0])
 
     main()
 

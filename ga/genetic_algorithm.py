@@ -1,5 +1,6 @@
 import time
 import heapq
+from itertools import islice
 
 
 from ga.population import Population
@@ -71,20 +72,21 @@ class GeneticAlgorithm:
                     for _ in range(self.config.initial_population_size)
                 ]
             )
-        elif not self.loadingFromFile:
+        elif self.loadingFromFile and self.population is None:
+            self.population = Population(
+                [
+                    Individual(genome)
+                    for genome in islice(iter(self.genome_generator, None),200)
+                ]
+            )
+        else:
             self.population.individuals.extend(
                 [
                     Individual(self.genome_generator())
                     for _ in range(self.config.initial_population_size - self.population.size())
                 ]
             )
-        else:
-            self.population = Population(
-                [
-                    Individual(genome)
-                    for genome in iter(self.genome_generator, None)
-                ]
-            )
+
 
 
 
