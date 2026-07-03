@@ -356,6 +356,7 @@ def cleanup_runs(skip_runs_cleanup):
         GAFactory(
             ga_config = replace(gc,
                 mutation_strategy="wandering",
+                do_random_restarts=False,
             ),
             generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
@@ -372,6 +373,7 @@ def cleanup_runs(skip_runs_cleanup):
             ga_config = replace(gc,
                 mutation_strategy="wandering",
                 wandering_mutation_sigma=5,
+                do_random_restarts=False,
             ),
             generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
@@ -389,6 +391,7 @@ def cleanup_runs(skip_runs_cleanup):
                 probability_of_mutation=0.8694,
                 probability_of_crossover=0.6554,
                 mutation_strategy="wandering",
+                n_steps_of_no_improvement_to_converge=20,
             ),
             generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
