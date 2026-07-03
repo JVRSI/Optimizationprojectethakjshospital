@@ -516,9 +516,9 @@ def cleanup_runs(skip_runs_cleanup):
 if __name__ == "__main__":
 
 
-    cleanup_runs([0])
+    cleanup_runs([0,1,2])
 
-    main()
+    #main()
 
 
 
