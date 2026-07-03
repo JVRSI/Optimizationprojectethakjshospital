@@ -1,0 +1,8 @@
+[
+    [
+        3,
+        "Generator: LoadFromFile\nSelection: TruncateSelection\nVariation: ClassicVariation\nIdea: ",
+        "list index out of range",
+        "Traceback (most recent call last):\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/systematic_testing.py\", line 448, in cleanup_runs\n    best, status = ga.run()\n                   ^^^^^^^^\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/ga/genetic_algorithm.py\", line 193, in run\n    self.statistics.record(\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/ga/analysis/statistics.py\", line 70, in record\n    best = population.best()\n           ^^^^^^^^^^^^^^^^^\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/ga/population.py\", line 25, in best\n    self.sort_population()\n  File \"/Users/johannessigmund/programming/Semester 4/Optimization Project/Optimizationprojectethakjshospital/ga/population.py\", line 19, in sort_population\n    self.best_individual = self.individuals[0]\n                           ~~~~~~~~~~~~~~~~^^^\nIndexError: list index out of range\n"
+    ]
+]
