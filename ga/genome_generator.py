@@ -141,7 +141,7 @@ class LoadFromFile(GenomeGenerator):
 
     
     def __call__(self) -> Genome | None:
-        if self.i >= len(self.individuals):
+        if self.i >= len(self.individuals) and self.from_file:
             self.from_file = False
             return None
 
