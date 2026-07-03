@@ -120,29 +120,37 @@ class LoadFromFile(GenomeGenerator):
             self, 
             rng : np.random.Generator, 
             config : GAConfig,
-            folder_path : Path
+            folder_path : Path,
+            cities_matrix
         ):
         super().__init__(rng, config)
 
         self.file_path = folder_path / "last_generation.json"
         if not self.file_path.exists():
-            raise FileExistsError(f"File {self.file_path} doesn't exist")
+            raise FileNotFoundError(f"File {self.file_path} doesn't exist")
 
         with self.file_path.open("r", encoding="utf-8") as f:
             data = json.load(f)
 
         self.individuals = data["individuals"]
         self.i = 0
+        self.from_file = True
+
+        self.rrs = GravityGenerator(rng=rng,config=config,cities_matrix=cities_matrix)
 
 
     
-    def __call__(self) -> Genome:
+    def __call__(self) -> Genome | None:
         if self.i >= len(self.individuals):
+            self.from_file = False
             return None
 
-        genome_data = self.individuals[self.i]["genome"]
-        self.i += 1
+        if self.from_file:
+            genome_data = self.individuals[self.i]["genome"]
+            self.i += 1
 
-        # [[type, row, col], ...] -> [(type, row, col), ...]
-        return [tuple(gene) for gene in genome_data]
+            # [[type, row, col], ...] -> [(type, row, col), ...]
+            return [tuple(gene) for gene in genome_data]
+        else:
+            return self.rrs()
 

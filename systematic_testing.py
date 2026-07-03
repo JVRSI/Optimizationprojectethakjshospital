@@ -357,7 +357,7 @@ def cleanup_runs(skip_runs_cleanup):
             ga_config = replace(gc,
                 mutation_strategy="wandering",
             ),
-            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best),
+            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
             variator_factory = lambda config, seed: EvolutionaryVariation(ga_config=config,rng=np.random.default_rng(seed)),
             generator_name="LoadFromFile",
@@ -373,7 +373,7 @@ def cleanup_runs(skip_runs_cleanup):
                 mutation_strategy="wandering",
                 wandering_mutation_sigma=5,
             ),
-            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best),
+            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
             variator_factory = lambda config, seed: EvolutionaryVariation(ga_config=config,rng=np.random.default_rng(seed)),
             generator_name="LoadFromFile",
@@ -390,7 +390,7 @@ def cleanup_runs(skip_runs_cleanup):
                 probability_of_crossover=0.6554,
                 mutation_strategy="wandering",
             ),
-            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best),
+            generator_factory = lambda config, seed: LoadFromFile(rng=np.random.default_rng(seed),config=config, folder_path=folder_of_best,cities_matrix=cities_matrix),
             selector_factory = lambda n_parents, seed: TruncateSelection(n_parents=n_parents,rng=np.random.default_rng(seed)),
             variator_factory = lambda config, seed: ClassicVariation(ga_config=config,rng=np.random.default_rng(seed)),
             generator_name="LoadFromFile",
@@ -399,6 +399,8 @@ def cleanup_runs(skip_runs_cleanup):
             idea="",
             sim_config= lambda seed: sc_construct(seed_sc=seed),
         ),
+        #----------------------------------------------------------------------------------------------------------
+        # break 10
 
     ]
 
